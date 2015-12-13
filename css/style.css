@@ -1,0 +1,17 @@
+* {
+  padding: 0;
+  margin: 0;
+  border: 0 none; }
+
+canvas {
+  width: 768px;
+  height: 640px;
+  display: block;
+  position: absolute;
+  top: 50%;
+  margin-top: -323px;
+  margin-left: -397px;
+  left: 50%;
+  border: 3px solid #000; }
+
+/*# sourceMappingURL=style.css.map */

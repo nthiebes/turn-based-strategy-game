@@ -1,0 +1,27 @@
+{
+  "name": "Ridane",
+  "version": "0.1.0",
+  "private": true,
+  "devDependencies": {
+    "grunt": "~0.4.0",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-sass": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-newer": "*",
+    "jshint": "^2.8.0"
+  },
+  "jshintConfig": {
+    "undef": true,
+    "unused": true,
+    "predef": [
+      "rd",
+      "$",
+      "window",
+      "document",
+      "requestTimeout",
+      "location",
+      "requestAnimFrame",
+      "Image"
+    ]
+  }
+}
