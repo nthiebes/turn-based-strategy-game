@@ -93,9 +93,12 @@ rd.define('game.main', (function(canvas) {
 			unitStats = rd.game.units.getStats();
 			units = rd.game.units.get();
 			rd.game.canvas.init();
+			rd.game.map.init();
 			main();
 
-			rd.game.combat.fight(units[0], units[1]);
+			//rd.game.combat.fight(units[0], units[1]);
+			
+			rd.game.canvas.renderMoveRange(unitStats[0]);
         });
 	};
 

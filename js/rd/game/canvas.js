@@ -35,6 +35,7 @@ rd.define('game.canvas', (function() {
         colTileCount = ground1[0].length,
         imageNumTiles = 16,
         tileSize = 32,
+        fieldWidth = tileSize * 2,
         tilesetImage,
         unitStats,
 
@@ -50,6 +51,35 @@ rd.define('game.canvas', (function() {
                 ctxGround1.drawImage(tilesetImage, (tileCol * tileSize), (tileRow * tileSize), tileSize, tileSize, (c * tileSize), (r * tileSize), tileSize, tileSize);
             }
         }
+    },
+
+
+    drawLine = function(lineWidth, lineColor, x1, y1, x2, y2) {
+        ctxGround1.fillStyle = lineColor;
+        ctxGround1.strokeStyle = lineColor;
+        ctxGround1.beginPath();
+        ctxGround1.moveTo(x1, y1);
+        ctxGround1.lineTo(x2, y2);
+        ctxGround1.lineWidth = lineWidth;
+        ctxGround1.stroke();
+        ctxGround1.closePath();
+    },
+
+
+    drawMovable = function(lineWidth, lineColor, x1, y1) {
+        ctxGround1.fillStyle = lineColor;
+        ctxGround1.strokeStyle = lineColor;
+        ctxGround1.beginPath();
+        ctxGround1.moveTo(x1 + 10, y1 + 10);
+
+        ctxGround1.lineTo(x1 + 54, y1 + 10);
+        ctxGround1.lineTo(x1 + 54, y1 + 54);
+        ctxGround1.lineTo(x1 + 10, y1 + 54);
+        ctxGround1.lineTo(x1 + 10, y1 + 10);
+        
+        ctxGround1.lineWidth = lineWidth;
+        ctxGround1.stroke();
+        ctxGround1.closePath();
     },
 
 
@@ -81,10 +111,46 @@ rd.define('game.canvas', (function() {
     },
 
 
+    renderMoveRange = function(unit) {
+        var moveRange = unit.attributes.moveRange,
+            availableFields = [],
+            previousField = unit.pos;
+
+        //console.log(moveRange);
+
+        availableFields.push(previousField);
+
+        //console.log(availableFields);
+
+        getSurroundingFields(previousField);
+
+        for (var i=1; i<=moveRange; i++) {
+            // top
+            // availableFields.push([previousField[]]);
+            // previousField
+        }
+    },
+
+
+    getSurroundingFields = function(field) {
+        var fields = [];
+        // top
+        //availableFields.push([previousField[]]);
+    },
+
+
     init = function() {
         tilesetImage = rd.utils.resources.get('img/tileset.png');
         unitStats = rd.game.units.getStats();
         drawImage();
+
+        for (var i=1; i<colTileCount/2; i++) {
+            drawLine(1, 'rgba(255,255,255,0.3)', fieldWidth * i, 0, fieldWidth * i, tileSize * rowTileCount);
+        }
+
+        for (var j=1; j<rowTileCount/2; j++) {
+            drawLine(1, 'rgba(255,255,255,0.3)', 0, fieldWidth * j, tileSize * colTileCount, fieldWidth * j);
+        }
     };
 
 
@@ -93,6 +159,9 @@ rd.define('game.canvas', (function() {
      */
     return {
         render: render,
+        drawLine : drawLine,
+        renderMoveRange: renderMoveRange,
+        drawMovable: drawMovable,
         init: init
     };
 

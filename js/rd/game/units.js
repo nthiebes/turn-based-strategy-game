@@ -63,7 +63,9 @@ rd.define('game.units', (function() {
             },
             attributes: {
                 attack: 5,
-                defense: 5
+                defense: 5,
+                attackRange: 1,
+                moveRange: 5
             }
         });
 
@@ -101,7 +103,9 @@ rd.define('game.units', (function() {
             },
             attributes: {
                 attack: 5,
-                defense: 5
+                defense: 5,
+                attackRange: 6,
+                moveRange: 4
             }
         });
     };
