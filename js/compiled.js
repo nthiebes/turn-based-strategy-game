@@ -517,7 +517,7 @@ rd.define('game.map', (function() {
      */
     var map =  [[0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,1,1,1,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,1,0,0,0,0],
                 [0,0,0,0,0,0,0,1,0,0,0,0],
                 [0,0,0,1,1,1,1,1,0,0,0,0],
@@ -564,12 +564,17 @@ rd.define('game.map', (function() {
         currentPath = findPath(map, [0,0], [cell[0],cell[1]]);
 
         for (var i=0; i<currentPath.length; i++) {
-            rd.game.canvas.drawMovable(1, '#0f0', currentPath[i][0] * tileSize, currentPath[i][1] * tileSize);
+            rd.game.canvas.drawMovable(2, '0,200,0', 1, currentPath[i][0] * tileSize, currentPath[i][1] * tileSize);
         }
 
         // calculate path
         //currentPath = findPath(world,pathStart,pathEnd);
         //redraw();
+    },
+
+
+    getMap = function() {
+        return map;
     },
 
 
@@ -842,7 +847,8 @@ rd.define('game.map', (function() {
      * Return public functions
      */
     return {
-        init: init
+        init: init,
+        getMap: getMap
     };
 
 })());
@@ -886,6 +892,7 @@ rd.define('game.canvas', (function() {
         fieldWidth = tileSize * 2,
         tilesetImage,
         unitStats,
+        map,
 
 
     drawImage = function() {
@@ -914,20 +921,36 @@ rd.define('game.canvas', (function() {
     },
 
 
-    drawMovable = function(lineWidth, lineColor, x1, y1) {
-        ctxGround1.fillStyle = lineColor;
-        ctxGround1.strokeStyle = lineColor;
+    drawMovable = function(lineWidth, rgbColor, opacity, x1, y1) {
+        ctxGround1.strokeStyle = 'rgba(' + rgbColor + ',' + opacity + ')';
+        ctxGround1.fillStyle = 'rgba(' + rgbColor + ',' + (opacity >= 0.8 ? opacity - 0.8 : 0) + ')';
         ctxGround1.beginPath();
-        ctxGround1.moveTo(x1 + 10, y1 + 10);
+        ctxGround1.moveTo(x1 + 8, y1 + 8);
 
-        ctxGround1.lineTo(x1 + 54, y1 + 10);
-        ctxGround1.lineTo(x1 + 54, y1 + 54);
-        ctxGround1.lineTo(x1 + 10, y1 + 54);
-        ctxGround1.lineTo(x1 + 10, y1 + 10);
+        ctxGround1.lineTo(x1 + 27, y1 + 8);
+        ctxGround1.lineTo(x1 + 32, y1 + 3);
+        ctxGround1.lineTo(x1 + 37, y1 + 8);
+        ctxGround1.lineTo(x1 + 56, y1 + 8);
+
+        ctxGround1.lineTo(x1 + 56, y1 + 27);
+        ctxGround1.lineTo(x1 + 61, y1 + 32);
+        ctxGround1.lineTo(x1 + 56, y1 + 37);
+        ctxGround1.lineTo(x1 + 56, y1 + 56);
+
+        ctxGround1.lineTo(x1 + 37, y1 + 56);
+        ctxGround1.lineTo(x1 + 32, y1 + 61);
+        ctxGround1.lineTo(x1 + 27, y1 + 56);
+        ctxGround1.lineTo(x1 + 8, y1 + 56);
+
+        ctxGround1.lineTo(x1 + 8, y1 + 37);
+        ctxGround1.lineTo(x1 + 3, y1 + 32);
+        ctxGround1.lineTo(x1 + 8, y1 + 27);
+        ctxGround1.lineTo(x1 + 8, y1 + 8);
         
+        ctxGround1.closePath();
         ctxGround1.lineWidth = lineWidth;
         ctxGround1.stroke();
-        ctxGround1.closePath();
+        ctxGround1.fill();
     },
 
 
@@ -962,28 +985,75 @@ rd.define('game.canvas', (function() {
     renderMoveRange = function(unit) {
         var moveRange = unit.attributes.moveRange,
             availableFields = [],
+            newFields,
             previousField = unit.pos;
 
         //console.log(moveRange);
 
+        map = rd.game.map.getMap();
+
         availableFields.push(previousField);
 
-        //console.log(availableFields);
+        newFields = getSurroundingFields(previousField);
 
-        getSurroundingFields(previousField);
-
-        for (var i=1; i<=moveRange; i++) {
-            // top
-            // availableFields.push([previousField[]]);
-            // previousField
+        for (var i=0; i<newFields.length; i++) {
+            availableFields.push( newFields[i] );
         }
+
+
+        console.log('availableFields', availableFields);
+
+
+        // for (var i=1; i<=moveRange; i++) {
+            
+
+        //     for (var j=0; j<availableFields.length; j++) {
+        //         console.log( availableFields[j] );
+        //         availableFields.push( getSurroundingFields(availableFields[j]) );
+        //     }
+        // }
+
+        // console.log('availableFields', availableFields);
     },
 
 
     getSurroundingFields = function(field) {
         var fields = [];
-        // top
-        //availableFields.push([previousField[]]);
+
+        console.log('field', field);
+
+        var fieldType = map[ field[0] ][ field[1] ],
+            top = [],
+            right = []
+            bottom = []
+            left = [];
+
+        // Nothing in our way
+        if (fieldType === 0) {
+            // Top
+            if (field[1] > 0) {
+                fields.push( [field[0], field[1] - 1] );
+            }
+
+            // Right
+            if (field[0] < map[0].length) {
+                fields.push( [field[0] + 1, field[1]] );
+            }
+
+            // Bottom
+            if (field[1] < map.length) {
+                fields.push( [field[0], field[1] + 1] );
+            }
+
+            // Left
+            if (field[0] > 0) {
+                fields.push( [field[0] - 1, field[1]] );
+            }
+        }
+
+        console.log( 'fields', fields );
+
+        return fields;
     },
 
 
@@ -992,13 +1062,19 @@ rd.define('game.canvas', (function() {
         unitStats = rd.game.units.getStats();
         drawImage();
 
-        for (var i=1; i<colTileCount/2; i++) {
-            drawLine(1, 'rgba(255,255,255,0.3)', fieldWidth * i, 0, fieldWidth * i, tileSize * rowTileCount);
+        for (var i=0; i<colTileCount/2; i++) {
+            for (var j=0; j<rowTileCount/2; j++) {
+                drawMovable(2, '255,255,255', '0.2', fieldWidth * i, fieldWidth * j);
+            }
         }
 
-        for (var j=1; j<rowTileCount/2; j++) {
-            drawLine(1, 'rgba(255,255,255,0.3)', 0, fieldWidth * j, tileSize * colTileCount, fieldWidth * j);
-        }
+        // for (var i=1; i<colTileCount/2; i++) {
+        //     drawLine(1, 'rgba(255,255,255,0.3)', fieldWidth * i, 0, fieldWidth * i, tileSize * rowTileCount);
+        // }
+
+        // for (var j=1; j<rowTileCount/2; j++) {
+        //     drawLine(1, 'rgba(255,255,255,0.3)', 0, fieldWidth * j, tileSize * colTileCount, fieldWidth * j);
+        // }
     };
 
 

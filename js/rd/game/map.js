@@ -9,7 +9,7 @@ rd.define('game.map', (function() {
      */
     var map =  [[0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,1,1,1,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,1,0,0,0,0],
                 [0,0,0,0,0,0,0,1,0,0,0,0],
                 [0,0,0,1,1,1,1,1,0,0,0,0],
@@ -56,12 +56,17 @@ rd.define('game.map', (function() {
         currentPath = findPath(map, [0,0], [cell[0],cell[1]]);
 
         for (var i=0; i<currentPath.length; i++) {
-            rd.game.canvas.drawMovable(1, '#0f0', currentPath[i][0] * tileSize, currentPath[i][1] * tileSize);
+            rd.game.canvas.drawMovable(2, '0,200,0', 1, currentPath[i][0] * tileSize, currentPath[i][1] * tileSize);
         }
 
         // calculate path
         //currentPath = findPath(world,pathStart,pathEnd);
         //redraw();
+    },
+
+
+    getMap = function() {
+        return map;
     },
 
 
@@ -334,7 +339,8 @@ rd.define('game.map', (function() {
      * Return public functions
      */
     return {
-        init: init
+        init: init,
+        getMap: getMap
     };
 
 })());
