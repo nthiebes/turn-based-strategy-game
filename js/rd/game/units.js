@@ -1,6 +1,5 @@
 /**
  * Units controller
- * @namespace rd.game.units
  */
 rd.define('game.units', (function() {
 
@@ -9,16 +8,29 @@ rd.define('game.units', (function() {
      */
     var units = [],
 
+
+    /**
+     * Add a new unit
+     * @param {object} newUnit
+     */
     add = function(newUnit) {
         units.push(new rd.game.unit(newUnit));
     },
 
     
+    /**
+     * Get a list of all units
+     * @return {array}
+     */
     get = function() {
         return units;
     },
 
 
+    /**
+     * Get a list of all unit and their stats
+     * @return {array}
+     */
     getStats = function() {
         var returnArray = [];
         for (var i=0; i<units.length; i++) {
@@ -28,7 +40,11 @@ rd.define('game.units', (function() {
     },
 
 
+    /**
+     * Initialization
+     */
     init = function() {
+        // data should be in an external file/database
         add({
             name: 'Nico',
             pos: [0, 0],

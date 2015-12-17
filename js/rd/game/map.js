@@ -1,6 +1,5 @@
 /**
  * Combat controller
- * @namespace rd.game.map
  */
 rd.define('game.map', (function() {
 
@@ -22,16 +21,23 @@ rd.define('game.map', (function() {
         currentPath,
 
 
+    /**
+     * Register the event listener
+     */
     eventListener = function() {
         canvas.addEventListener('click', canvasClick);
     },
 
 
+    /**
+     * Handle a canvas click event
+     * @param {object} e Event
+     */
     canvasClick = function(e) {
-        var x;
-        var y;
+        var x,
+            y;
 
-        // grab html page coords
+        // Grab html page coords
         if (e.pageX !== undefined && e.pageY !== undefined) {
             x = e.pageX;
             y = e.pageY;
@@ -42,29 +48,36 @@ rd.define('game.map', (function() {
             document.documentElement.scrollTop;
         }
 
-        // make them relative to the canvas only
+        // Make them relative to the canvas only
         x -= canvas.offsetLeft;
         y -= canvas.offsetTop;
 
-        // return tile x,y that we clicked
+        // Return tile x,y that we clicked
         var cell = [
             Math.floor(x/tileSize),
             Math.floor(y/tileSize)
         ];
 
-        // now we know while tile we clicked
+        // Now we know which tile we clicked and can calculate a path
         currentPath = findPath(map, [0,0], [cell[0],cell[1]]);
 
+        // Highlight the tiles
         for (var i=0; i<currentPath.length; i++) {
-            rd.game.canvas.drawMovable(2, '0,200,0', 1, currentPath[i][0] * tileSize, currentPath[i][1] * tileSize);
+            rd.game.canvas.drawMovable({
+                lineWidth: 2,
+                rgbColor: '0,200,0',
+                opacity: 1,
+                x: currentPath[i][0] * tileSize,
+                y: currentPath[i][1] * tileSize
+            });
         }
-
-        // calculate path
-        //currentPath = findPath(world,pathStart,pathEnd);
-        //redraw();
     },
 
 
+    /**
+     * Get the map array
+     * @return {array}
+     */
     getMap = function() {
         return map;
     },
@@ -72,17 +85,15 @@ rd.define('game.map', (function() {
 
     /**
      * Find a path using the A * algorithm
+     * http://buildnewgames.com/astar/
      * @param  {array} world
      * @param  {array} pathStart
      * @param  {array} pathEnd
      * @return {array}
      */
-    findPath = function(world, pathStart, pathEnd){
-        // shortcuts for speed
+    findPath = function(world, pathStart, pathEnd) {
+        // Shortcuts for speed
         var abs = Math.abs;
-        var max = Math.max;
-        var pow = Math.pow;
-        var sqrt = Math.sqrt;
 
         // the world data are integers:
         // anything higher than this number is considered blocked
@@ -103,46 +114,11 @@ rd.define('game.map', (function() {
         var distanceFunction = ManhattanDistance;
         var findNeighbours = function(){}; // empty
 
-        /*
-
-        // alternate heuristics, depending on your game:
-
-        // diagonals allowed but no sqeezing through cracks:
-        var distanceFunction = DiagonalDistance;
-        var findNeighbours = DiagonalNeighbours;
-
-        // diagonals and squeezing through cracks allowed:
-        var distanceFunction = DiagonalDistance;
-        var findNeighbours = DiagonalNeighboursFree;
-
-        // euclidean but no squeezing through cracks:
-        var distanceFunction = EuclideanDistance;
-        var findNeighbours = DiagonalNeighbours;
-
-        // euclidean and squeezing through cracks allowed:
-        var distanceFunction = EuclideanDistance;
-        var findNeighbours = DiagonalNeighboursFree;
-
-        */
-
         // distanceFunction functions
         // these return how far away a point is to another
-
-        function ManhattanDistance(Point, Goal){
+        function ManhattanDistance(Point, Goal) {
             // linear movement - no diagonals - just cardinal directions (NSEW)
             return abs(Point.x - Goal.x) + abs(Point.y - Goal.y);
-        }
-
-        function DiagonalDistance(Point, Goal){
-            // diagonal movement - assumes diag dist is 1, same as cardinals
-            return max(abs(Point.x - Goal.x), abs(Point.y - Goal.y));
-        }
-
-        function EuclideanDistance(Point, Goal){
-            // diagonals are considered a little farther than cardinal directions
-            // diagonal movement using Euclide (AC = sqrt(AB^2 + BC^2))
-            // where AB = x2 - x1 and BC = y2 - y1 and AC will be [x3, y3]
-            return sqrt(pow(Point.x - Goal.x, 2) + pow(Point.y - Goal.y, 2));
         }
 
         // Neighbours functions, used by findNeighbours function
@@ -151,7 +127,7 @@ rd.define('game.map', (function() {
         // Returns every available North, South, East or West
         // cell that is empty. No diagonals,
         // unless distanceFunction function is not Manhattan
-        function Neighbours(x, y){
+        function Neighbours(x, y) {
             var N = y - 1,
             S = y + 1,
             E = x + 1,
@@ -173,60 +149,16 @@ rd.define('game.map', (function() {
             return result;
         }
 
-        // returns every available North East, South East,
-        // South West or North West cell - no squeezing through
-        // "cracks" between two diagonals
-        function DiagonalNeighbours(myN, myS, myE, myW, N, S, E, W, result){
-            if(myN)
-            {
-                if(myE && canWalkHere(E, N))
-                result.push({x:E, y:N});
-                if(myW && canWalkHere(W, N))
-                result.push({x:W, y:N});
-            }
-            if(myS)
-            {
-                if(myE && canWalkHere(E, S))
-                result.push({x:E, y:S});
-                if(myW && canWalkHere(W, S))
-                result.push({x:W, y:S});
-            }
-        }
-
-        // returns every available North East, South East,
-        // South West or North West cell including the times that
-        // you would be squeezing through a "crack"
-        function DiagonalNeighboursFree(myN, myS, myE, myW, N, S, E, W, result){
-            myN = N > -1;
-            myS = S < worldHeight;
-            myE = E < worldWidth;
-            myW = W > -1;
-            if(myE)
-            {
-                if(myN && canWalkHere(E, N))
-                result.push({x:E, y:N});
-                if(myS && canWalkHere(E, S))
-                result.push({x:E, y:S});
-            }
-            if(myW)
-            {
-                if(myN && canWalkHere(W, N))
-                result.push({x:W, y:N});
-                if(myS && canWalkHere(W, S))
-                result.push({x:W, y:S});
-            }
-        }
-
         // returns boolean value (world cell is available and open)
-        function canWalkHere(x, y){
-            return ((world[x] != null) &&
-                (world[x][y] != null) &&
+        function canWalkHere(y, x) {
+            return ((world[x] !== null) &&
+                (world[x][y] !== null) &&
                 (world[x][y] <= maxWalkableTileNum));
         }
 
         // Node function, returns a new object with Node properties
         // Used in the calculatePath function to store route costs, etc.
-        function Node(Parent, Point){
+        function Node(Parent, Point) {
             var newNode = {
                 // pointer to another Node object
                 Parent:Parent,
@@ -247,7 +179,7 @@ rd.define('game.map', (function() {
         }
 
         // Path function, executes AStar algorithm operations
-        function calculatePath(){
+        function calculatePath() {
             // create Nodes from the Start and End x,y coordinates
             var mypathStart = Node(null, {x:pathStart[0], y:pathStart[1]});
             var mypathEnd = Node(null, {x:pathEnd[0], y:pathEnd[1]});
@@ -268,12 +200,10 @@ rd.define('game.map', (function() {
             // temp integer variables used in the calculations
             var length, max, min, i, j;
             // iterate through the open list until none are left
-            while(length = Open.length)
-            {
+            while (length = Open.length) {
                 max = worldSize;
                 min = -1;
-                for(i = 0; i < length; i++)
-                {
+                for (i = 0; i < length; i++) {
                     if(Open[i].f < max)
                     {
                         max = Open[i].f;
@@ -283,11 +213,9 @@ rd.define('game.map', (function() {
                 // grab the next node and remove it from Open array
                 myNode = Open.splice(min, 1)[0];
                 // is it the destination node?
-                if(myNode.value === mypathEnd.value)
-                {
+                if (myNode.value === mypathEnd.value) {
                     myPath = Closed[Closed.push(myNode) - 1];
-                    do
-                    {
+                    do {
                         result.push([myPath.x, myPath.y]);
                     }
                     while (myPath = myPath.Parent);
@@ -296,16 +224,13 @@ rd.define('game.map', (function() {
                     // we want to return start to finish
                     result.reverse();
                 }
-                else // not the destination
-                {
+                else { // not the destination
                     // find which nearby nodes are walkable
                     myNeighbours = Neighbours(myNode.x, myNode.y);
                     // test each one that hasn't been tried already
-                    for(i = 0, j = myNeighbours.length; i < j; i++)
-                    {
+                    for (i = 0, j = myNeighbours.length; i < j; i++) {
                         myPath = Node(myNode, myNeighbours[i]);
-                        if (!AStar[myPath.value])
-                        {
+                        if (!AStar[myPath.value]) {
                             // estimated cost of this particular route so far
                             myPath.g = myNode.g + distanceFunction(myNeighbours[i], myNode);
                             // estimated cost of entire guessed route to the destination
@@ -330,6 +255,9 @@ rd.define('game.map', (function() {
     },
 
 
+    /**
+     * Initialization
+     */
     init = function() {
         eventListener();
     };

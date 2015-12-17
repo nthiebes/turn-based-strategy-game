@@ -1,38 +1,48 @@
 /**
  * Sprite controller
- * @namespace rd.utils.sprite
  */
 rd.define('utils.sprite', function(cfg) {
 
+    /**
+     * Variables
+     */
     var me = this,
 
 
-    update = function(dt) {
+    /**
+     * Update the sprite (e.g. speed)
+     * @param  {int} delta
+     */
+    update = function(delta) {
         // Stay not yet working correct
         if (!(me.stay && me.done)) {
-            me._index += me.speed*dt;
+            me._index += me.speed * delta;
             // Always start with first frame
-            if( me.frames.length === 1 ){
+            if (me.frames.length === 1) {
                 me._index = 0;
             }
         }
     },
 
 
+    /**
+     * Render the sprite onto the canvas
+     * @param {object} ctx
+     */
     render = function(ctx) {
         var frame;
 
-        if(me.speed > 0) {
-            var max = me.frames.length;
-            var idx = Math.floor(me._index);
+        if (me.speed > 0) {
+            var max = me.frames.length,
+                idx = Math.floor(me._index);
             frame = me.frames[idx % max];
 
-            if(me.once && idx >= max) {
+            if (me.once && idx >= max) {
                 me.done = true;
             }
 
             // End animation
-            if( idx >= max ){
+            if (idx >= max){
                 me._index = 0;
             }
         }
@@ -42,19 +52,18 @@ rd.define('utils.sprite', function(cfg) {
 
         me.currentFrame = frame;
 
+        var x = me.pos[0],
+            y = me.pos[1];
 
-        var x = me.pos[0];
-        var y = me.pos[1];
-
-        if(me.dir == 'vertical') {
+        if (me.dir === 'vertical') {
             y += frame * me.size[1];
         }
         else {
             x += frame * me.size[0];
         }
 
-        //if it is done and it has to run once, we dont update
-        if(!(me.done && me.once)){
+        // If it is done and it has to run once, we dont update
+        if (!(me.done && me.once)) {
             ctx.drawImage(rd.utils.resources.get(me.url),
                           x, y,
                           me.size[0], me.size[1],
@@ -64,11 +73,19 @@ rd.define('utils.sprite', function(cfg) {
     },
 
 
+    /**
+     * Update the frames of a sprite
+     * @param {array} newFrames
+     */
     setFrames = function(newFrames) {
         me.frames = newFrames;
     },
 
 
+    /**
+     * Update the positions within a sprite (e.g. for an animation)
+     * @param {[type]} newPos [description]
+     */
     setPos = function(newPos) {
         me.pos = newPos;
     };

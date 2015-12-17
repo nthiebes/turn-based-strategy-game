@@ -68,7 +68,6 @@ window.requestTimeout = function(fn, delay){
 };
 /**
  * Resources controller
- * @namespace utils.resources
  */
 rd.define('utils.resources', (function() {
 
@@ -81,21 +80,27 @@ rd.define('utils.resources', (function() {
 
     /**
      * Load an image url or an array of image urls
-     * @param  {[type]} urlOrArr [description]
+     * @param {string|array} urlOrArr
      */
     load = function(urlOrArr) {
         if(urlOrArr instanceof Array) {
             urlOrArr.forEach(function(url) {
-                _load(url);
+                loadImage(url);
             });
         }
         else {
-            _load(urlOrArr);
+            loadImage(urlOrArr);
         }
     },
 
-    _load = function(url) {
-        if(resourceCache[url]) {
+
+    /**
+     * Load a single image from an url
+     * @param  {string} url [description]
+     * @return {image}
+     */
+    loadImage = function(url) {
+        if (resourceCache[url]) {
             return resourceCache[url];
         }
         else {
@@ -114,10 +119,21 @@ rd.define('utils.resources', (function() {
         }
     },
 
+
+    /**
+     * Get an image by url
+     * @param  {string} url
+     * @return {image}
+     */
     get = function(url) {
         return resourceCache[url];
     },
 
+
+    /**
+     * Check if the resource has been loaded
+     * @return {boolean}
+     */
     isReady = function() {
         var ready = true;
         for(var k in resourceCache) {
@@ -129,6 +145,11 @@ rd.define('utils.resources', (function() {
         return ready;
     },
 
+
+    /**
+     * Ready callback function
+     * @param  {function} func
+     */
     onReady = function(func) {
         readyCallbacks.push(func);
     };
@@ -147,39 +168,49 @@ rd.define('utils.resources', (function() {
 })());
 /**
  * Sprite controller
- * @namespace rd.utils.sprite
  */
 rd.define('utils.sprite', function(cfg) {
 
+    /**
+     * Variables
+     */
     var me = this,
 
 
-    update = function(dt) {
+    /**
+     * Update the sprite (e.g. speed)
+     * @param  {int} delta
+     */
+    update = function(delta) {
         // Stay not yet working correct
         if (!(me.stay && me.done)) {
-            me._index += me.speed*dt;
+            me._index += me.speed * delta;
             // Always start with first frame
-            if( me.frames.length === 1 ){
+            if (me.frames.length === 1) {
                 me._index = 0;
             }
         }
     },
 
 
+    /**
+     * Render the sprite onto the canvas
+     * @param {object} ctx
+     */
     render = function(ctx) {
         var frame;
 
-        if(me.speed > 0) {
-            var max = me.frames.length;
-            var idx = Math.floor(me._index);
+        if (me.speed > 0) {
+            var max = me.frames.length,
+                idx = Math.floor(me._index);
             frame = me.frames[idx % max];
 
-            if(me.once && idx >= max) {
+            if (me.once && idx >= max) {
                 me.done = true;
             }
 
             // End animation
-            if( idx >= max ){
+            if (idx >= max){
                 me._index = 0;
             }
         }
@@ -189,19 +220,18 @@ rd.define('utils.sprite', function(cfg) {
 
         me.currentFrame = frame;
 
+        var x = me.pos[0],
+            y = me.pos[1];
 
-        var x = me.pos[0];
-        var y = me.pos[1];
-
-        if(me.dir == 'vertical') {
+        if (me.dir === 'vertical') {
             y += frame * me.size[1];
         }
         else {
             x += frame * me.size[0];
         }
 
-        //if it is done and it has to run once, we dont update
-        if(!(me.done && me.once)){
+        // If it is done and it has to run once, we dont update
+        if (!(me.done && me.once)) {
             ctx.drawImage(rd.utils.resources.get(me.url),
                           x, y,
                           me.size[0], me.size[1],
@@ -211,11 +241,19 @@ rd.define('utils.sprite', function(cfg) {
     },
 
 
+    /**
+     * Update the frames of a sprite
+     * @param {array} newFrames
+     */
     setFrames = function(newFrames) {
         me.frames = newFrames;
     },
 
 
+    /**
+     * Update the positions within a sprite (e.g. for an animation)
+     * @param {[type]} newPos [description]
+     */
     setPos = function(newPos) {
         me.pos = newPos;
     };
@@ -246,8 +284,7 @@ rd.define('utils.sprite', function(cfg) {
 
 });
 /**
- * Unit
- * @namespace rd.game.unit
+ * Unit instance
  */
 rd.define('game.unit', function(cfg) {
 
@@ -257,6 +294,9 @@ rd.define('game.unit', function(cfg) {
     var me = this,
 
 
+    /**
+     * Stop animations
+     */
     stop = function() {
         me.skin.setPos([0, 128]);
         me.skin.setFrames([0]);
@@ -269,6 +309,9 @@ rd.define('game.unit', function(cfg) {
     },
 
 
+    /**
+     * Play the walk animation cycle
+     */
     walk = function() {
         me.skin.setPos([0, 0]);
         me.skin.setFrames([0, 1, 2, 3]);
@@ -281,6 +324,9 @@ rd.define('game.unit', function(cfg) {
     },
 
 
+    /**
+     * Play the attack animation
+     */
     attack = function() {
         me.skin.setPos([0, 128]);
         me.skin.setFrames([0, 1, 2]);
@@ -293,9 +339,14 @@ rd.define('game.unit', function(cfg) {
     },
 
 
+    /**
+     * Get the unit object
+     * @return {object}
+     */
     get = function() {
         return me;
     };
+
 
     me.name = cfg.name;
     me.skin = cfg.skin;
@@ -324,12 +375,11 @@ rd.define('game.unit', function(cfg) {
 });
 /**
  * Combat controller
- * @namespace rd.game.combat
  */
 rd.define('game.combat', (function() {
 
     /**
-     * Variables
+     * Just testing stuff ...
      */
     var fight = function(attacker, defender) {
         var attackerStats = attacker.get(),
@@ -385,7 +435,6 @@ rd.define('game.combat', (function() {
 })());
 /**
  * Units controller
- * @namespace rd.game.units
  */
 rd.define('game.units', (function() {
 
@@ -394,16 +443,29 @@ rd.define('game.units', (function() {
      */
     var units = [],
 
+
+    /**
+     * Add a new unit
+     * @param {object} newUnit
+     */
     add = function(newUnit) {
         units.push(new rd.game.unit(newUnit));
     },
 
     
+    /**
+     * Get a list of all units
+     * @return {array}
+     */
     get = function() {
         return units;
     },
 
 
+    /**
+     * Get a list of all unit and their stats
+     * @return {array}
+     */
     getStats = function() {
         var returnArray = [];
         for (var i=0; i<units.length; i++) {
@@ -413,7 +475,11 @@ rd.define('game.units', (function() {
     },
 
 
+    /**
+     * Initialization
+     */
     init = function() {
+        // data should be in an external file/database
         add({
             name: 'Nico',
             pos: [0, 0],
@@ -508,7 +574,6 @@ rd.define('game.units', (function() {
 })());
 /**
  * Combat controller
- * @namespace rd.game.map
  */
 rd.define('game.map', (function() {
 
@@ -530,16 +595,23 @@ rd.define('game.map', (function() {
         currentPath,
 
 
+    /**
+     * Register the event listener
+     */
     eventListener = function() {
         canvas.addEventListener('click', canvasClick);
     },
 
 
+    /**
+     * Handle a canvas click event
+     * @param {object} e Event
+     */
     canvasClick = function(e) {
-        var x;
-        var y;
+        var x,
+            y;
 
-        // grab html page coords
+        // Grab html page coords
         if (e.pageX !== undefined && e.pageY !== undefined) {
             x = e.pageX;
             y = e.pageY;
@@ -550,29 +622,36 @@ rd.define('game.map', (function() {
             document.documentElement.scrollTop;
         }
 
-        // make them relative to the canvas only
+        // Make them relative to the canvas only
         x -= canvas.offsetLeft;
         y -= canvas.offsetTop;
 
-        // return tile x,y that we clicked
+        // Return tile x,y that we clicked
         var cell = [
             Math.floor(x/tileSize),
             Math.floor(y/tileSize)
         ];
 
-        // now we know while tile we clicked
+        // Now we know which tile we clicked and can calculate a path
         currentPath = findPath(map, [0,0], [cell[0],cell[1]]);
 
+        // Highlight the tiles
         for (var i=0; i<currentPath.length; i++) {
-            rd.game.canvas.drawMovable(2, '0,200,0', 1, currentPath[i][0] * tileSize, currentPath[i][1] * tileSize);
+            rd.game.canvas.drawMovable({
+                lineWidth: 2,
+                rgbColor: '0,200,0',
+                opacity: 1,
+                x: currentPath[i][0] * tileSize,
+                y: currentPath[i][1] * tileSize
+            });
         }
-
-        // calculate path
-        //currentPath = findPath(world,pathStart,pathEnd);
-        //redraw();
     },
 
 
+    /**
+     * Get the map array
+     * @return {array}
+     */
     getMap = function() {
         return map;
     },
@@ -580,17 +659,15 @@ rd.define('game.map', (function() {
 
     /**
      * Find a path using the A * algorithm
+     * http://buildnewgames.com/astar/
      * @param  {array} world
      * @param  {array} pathStart
      * @param  {array} pathEnd
      * @return {array}
      */
-    findPath = function(world, pathStart, pathEnd){
-        // shortcuts for speed
+    findPath = function(world, pathStart, pathEnd) {
+        // Shortcuts for speed
         var abs = Math.abs;
-        var max = Math.max;
-        var pow = Math.pow;
-        var sqrt = Math.sqrt;
 
         // the world data are integers:
         // anything higher than this number is considered blocked
@@ -611,46 +688,11 @@ rd.define('game.map', (function() {
         var distanceFunction = ManhattanDistance;
         var findNeighbours = function(){}; // empty
 
-        /*
-
-        // alternate heuristics, depending on your game:
-
-        // diagonals allowed but no sqeezing through cracks:
-        var distanceFunction = DiagonalDistance;
-        var findNeighbours = DiagonalNeighbours;
-
-        // diagonals and squeezing through cracks allowed:
-        var distanceFunction = DiagonalDistance;
-        var findNeighbours = DiagonalNeighboursFree;
-
-        // euclidean but no squeezing through cracks:
-        var distanceFunction = EuclideanDistance;
-        var findNeighbours = DiagonalNeighbours;
-
-        // euclidean and squeezing through cracks allowed:
-        var distanceFunction = EuclideanDistance;
-        var findNeighbours = DiagonalNeighboursFree;
-
-        */
-
         // distanceFunction functions
         // these return how far away a point is to another
-
-        function ManhattanDistance(Point, Goal){
+        function ManhattanDistance(Point, Goal) {
             // linear movement - no diagonals - just cardinal directions (NSEW)
             return abs(Point.x - Goal.x) + abs(Point.y - Goal.y);
-        }
-
-        function DiagonalDistance(Point, Goal){
-            // diagonal movement - assumes diag dist is 1, same as cardinals
-            return max(abs(Point.x - Goal.x), abs(Point.y - Goal.y));
-        }
-
-        function EuclideanDistance(Point, Goal){
-            // diagonals are considered a little farther than cardinal directions
-            // diagonal movement using Euclide (AC = sqrt(AB^2 + BC^2))
-            // where AB = x2 - x1 and BC = y2 - y1 and AC will be [x3, y3]
-            return sqrt(pow(Point.x - Goal.x, 2) + pow(Point.y - Goal.y, 2));
         }
 
         // Neighbours functions, used by findNeighbours function
@@ -659,7 +701,7 @@ rd.define('game.map', (function() {
         // Returns every available North, South, East or West
         // cell that is empty. No diagonals,
         // unless distanceFunction function is not Manhattan
-        function Neighbours(x, y){
+        function Neighbours(x, y) {
             var N = y - 1,
             S = y + 1,
             E = x + 1,
@@ -681,60 +723,16 @@ rd.define('game.map', (function() {
             return result;
         }
 
-        // returns every available North East, South East,
-        // South West or North West cell - no squeezing through
-        // "cracks" between two diagonals
-        function DiagonalNeighbours(myN, myS, myE, myW, N, S, E, W, result){
-            if(myN)
-            {
-                if(myE && canWalkHere(E, N))
-                result.push({x:E, y:N});
-                if(myW && canWalkHere(W, N))
-                result.push({x:W, y:N});
-            }
-            if(myS)
-            {
-                if(myE && canWalkHere(E, S))
-                result.push({x:E, y:S});
-                if(myW && canWalkHere(W, S))
-                result.push({x:W, y:S});
-            }
-        }
-
-        // returns every available North East, South East,
-        // South West or North West cell including the times that
-        // you would be squeezing through a "crack"
-        function DiagonalNeighboursFree(myN, myS, myE, myW, N, S, E, W, result){
-            myN = N > -1;
-            myS = S < worldHeight;
-            myE = E < worldWidth;
-            myW = W > -1;
-            if(myE)
-            {
-                if(myN && canWalkHere(E, N))
-                result.push({x:E, y:N});
-                if(myS && canWalkHere(E, S))
-                result.push({x:E, y:S});
-            }
-            if(myW)
-            {
-                if(myN && canWalkHere(W, N))
-                result.push({x:W, y:N});
-                if(myS && canWalkHere(W, S))
-                result.push({x:W, y:S});
-            }
-        }
-
         // returns boolean value (world cell is available and open)
-        function canWalkHere(x, y){
-            return ((world[x] != null) &&
-                (world[x][y] != null) &&
+        function canWalkHere(y, x) {
+            return ((world[x] !== null) &&
+                (world[x][y] !== null) &&
                 (world[x][y] <= maxWalkableTileNum));
         }
 
         // Node function, returns a new object with Node properties
         // Used in the calculatePath function to store route costs, etc.
-        function Node(Parent, Point){
+        function Node(Parent, Point) {
             var newNode = {
                 // pointer to another Node object
                 Parent:Parent,
@@ -755,7 +753,7 @@ rd.define('game.map', (function() {
         }
 
         // Path function, executes AStar algorithm operations
-        function calculatePath(){
+        function calculatePath() {
             // create Nodes from the Start and End x,y coordinates
             var mypathStart = Node(null, {x:pathStart[0], y:pathStart[1]});
             var mypathEnd = Node(null, {x:pathEnd[0], y:pathEnd[1]});
@@ -776,12 +774,10 @@ rd.define('game.map', (function() {
             // temp integer variables used in the calculations
             var length, max, min, i, j;
             // iterate through the open list until none are left
-            while(length = Open.length)
-            {
+            while (length = Open.length) {
                 max = worldSize;
                 min = -1;
-                for(i = 0; i < length; i++)
-                {
+                for (i = 0; i < length; i++) {
                     if(Open[i].f < max)
                     {
                         max = Open[i].f;
@@ -791,11 +787,9 @@ rd.define('game.map', (function() {
                 // grab the next node and remove it from Open array
                 myNode = Open.splice(min, 1)[0];
                 // is it the destination node?
-                if(myNode.value === mypathEnd.value)
-                {
+                if (myNode.value === mypathEnd.value) {
                     myPath = Closed[Closed.push(myNode) - 1];
-                    do
-                    {
+                    do {
                         result.push([myPath.x, myPath.y]);
                     }
                     while (myPath = myPath.Parent);
@@ -804,16 +798,13 @@ rd.define('game.map', (function() {
                     // we want to return start to finish
                     result.reverse();
                 }
-                else // not the destination
-                {
+                else { // not the destination
                     // find which nearby nodes are walkable
                     myNeighbours = Neighbours(myNode.x, myNode.y);
                     // test each one that hasn't been tried already
-                    for(i = 0, j = myNeighbours.length; i < j; i++)
-                    {
+                    for (i = 0, j = myNeighbours.length; i < j; i++) {
                         myPath = Node(myNode, myNeighbours[i]);
-                        if (!AStar[myPath.value])
-                        {
+                        if (!AStar[myPath.value]) {
                             // estimated cost of this particular route so far
                             myPath.g = myNode.g + distanceFunction(myNeighbours[i], myNode);
                             // estimated cost of entire guessed route to the destination
@@ -838,6 +829,9 @@ rd.define('game.map', (function() {
     },
 
 
+    /**
+     * Initialization
+     */
     init = function() {
         eventListener();
     };
@@ -854,7 +848,6 @@ rd.define('game.map', (function() {
 })());
 /**
  * Canvas controller
- * @namespace game.canvas
  */
 rd.define('game.canvas', (function() {
 
@@ -865,6 +858,7 @@ rd.define('game.canvas', (function() {
         canvasAnim = document.getElementById('canvas-anim'),
         ctxGround1 = canvasGround1.getContext('2d'),
         ctxAnim = canvasAnim.getContext('2d'),
+        // should be in an external file ...
         ground1 = [[126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
                     [142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],
                     [126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
@@ -895,60 +889,76 @@ rd.define('game.canvas', (function() {
         map,
 
 
-    drawImage = function() {
+    /**
+     * Draw the images of a sprite onto the canvas
+     * @param {object} ctx Canvas context
+     */
+    drawImage = function(ctx) {
+        // Each row
         for (var r = 0; r < rowTileCount; r++) {
-            
+            // Each column
             for (var c = 0; c < colTileCount; c++) {
                 var tile = ground1[ r ][ c ],
                     tileRow = (tile / imageNumTiles) | 0,
                     tileCol = (tile % imageNumTiles) | 0;
 
-                ctxGround1.drawImage(tilesetImage, (tileCol * tileSize), (tileRow * tileSize), tileSize, tileSize, (c * tileSize), (r * tileSize), tileSize, tileSize);
+                ctx.drawImage(tilesetImage, (tileCol * tileSize), (tileRow * tileSize), tileSize, tileSize, (c * tileSize), (r * tileSize), tileSize, tileSize);
             }
         }
     },
 
 
-    drawLine = function(lineWidth, lineColor, x1, y1, x2, y2) {
-        ctxGround1.fillStyle = lineColor;
-        ctxGround1.strokeStyle = lineColor;
+    /**
+     * Draw a single line
+     * @param {object} cfg Configuration
+     */
+    drawLine = function(cfg) {
+        ctxGround1.fillStyle = cfg.lineColor;
+        ctxGround1.strokeStyle = cfg.lineColor;
         ctxGround1.beginPath();
-        ctxGround1.moveTo(x1, y1);
-        ctxGround1.lineTo(x2, y2);
-        ctxGround1.lineWidth = lineWidth;
+        ctxGround1.moveTo(cfg.x1, cfg.y1);
+        ctxGround1.lineTo(cfg.x2, cfg.y2);
+        ctxGround1.lineWidth = cfg.lineWidth;
         ctxGround1.stroke();
         ctxGround1.closePath();
     },
 
 
-    drawMovable = function(lineWidth, rgbColor, opacity, x1, y1) {
-        ctxGround1.strokeStyle = 'rgba(' + rgbColor + ',' + opacity + ')';
-        ctxGround1.fillStyle = 'rgba(' + rgbColor + ',' + (opacity >= 0.8 ? opacity - 0.8 : 0) + ')';
+    /**
+     * Draw the 'movable' custom shape
+     * @param {object} cfg Configuration
+     */
+    drawMovable = function(cfg) {
+        var x = cfg.x,
+            y = cfg.y;
+
+        ctxGround1.strokeStyle = 'rgba(' + cfg.rgbColor + ',' + cfg.opacity + ')';
+        ctxGround1.fillStyle = 'rgba(' + cfg.rgbColor + ',' + (cfg.opacity >= 0.8 ? cfg.opacity - 0.8 : 0) + ')';
         ctxGround1.beginPath();
-        ctxGround1.moveTo(x1 + 8, y1 + 8);
+        ctxGround1.moveTo(x + 8, y + 8);
 
-        ctxGround1.lineTo(x1 + 27, y1 + 8);
-        ctxGround1.lineTo(x1 + 32, y1 + 3);
-        ctxGround1.lineTo(x1 + 37, y1 + 8);
-        ctxGround1.lineTo(x1 + 56, y1 + 8);
+        ctxGround1.lineTo(x + 27, y + 8);
+        ctxGround1.lineTo(x + 32, y + 3);
+        ctxGround1.lineTo(x + 37, y + 8);
+        ctxGround1.lineTo(x + 56, y + 8);
 
-        ctxGround1.lineTo(x1 + 56, y1 + 27);
-        ctxGround1.lineTo(x1 + 61, y1 + 32);
-        ctxGround1.lineTo(x1 + 56, y1 + 37);
-        ctxGround1.lineTo(x1 + 56, y1 + 56);
+        ctxGround1.lineTo(x + 56, y + 27);
+        ctxGround1.lineTo(x + 61, y + 32);
+        ctxGround1.lineTo(x + 56, y + 37);
+        ctxGround1.lineTo(x + 56, y + 56);
 
-        ctxGround1.lineTo(x1 + 37, y1 + 56);
-        ctxGround1.lineTo(x1 + 32, y1 + 61);
-        ctxGround1.lineTo(x1 + 27, y1 + 56);
-        ctxGround1.lineTo(x1 + 8, y1 + 56);
+        ctxGround1.lineTo(x + 37, y + 56);
+        ctxGround1.lineTo(x + 32, y + 61);
+        ctxGround1.lineTo(x + 27, y + 56);
+        ctxGround1.lineTo(x + 8, y + 56);
 
-        ctxGround1.lineTo(x1 + 8, y1 + 37);
-        ctxGround1.lineTo(x1 + 3, y1 + 32);
-        ctxGround1.lineTo(x1 + 8, y1 + 27);
-        ctxGround1.lineTo(x1 + 8, y1 + 8);
+        ctxGround1.lineTo(x + 8, y + 37);
+        ctxGround1.lineTo(x + 3, y + 32);
+        ctxGround1.lineTo(x + 8, y + 27);
+        ctxGround1.lineTo(x + 8, y + 8);
         
         ctxGround1.closePath();
-        ctxGround1.lineWidth = lineWidth;
+        ctxGround1.lineWidth = cfg.lineWidth;
         ctxGround1.stroke();
         ctxGround1.fill();
     },
@@ -964,13 +974,20 @@ rd.define('game.canvas', (function() {
     },
 
     
+    /**
+     * Go through the list of entities
+     * @param {array} list
+     */
     renderEntities = function(list) {
-        for(var i=0; i<list.length; i++) {
+        for (var i=0; i<list.length; i++) {
             renderEntity(list[i], list[i].skin, list[i].gear.torso, list[i].gear.head);
         }    
     },
 
     
+    /**
+     * Render a single entity
+     */
     renderEntity = function() {
         ctxAnim.save();
         ctxAnim.translate(arguments[0].pos[0], arguments[0].pos[1]);
@@ -982,6 +999,9 @@ rd.define('game.canvas', (function() {
     },
 
 
+    /**
+     * WIP
+     */
     renderMoveRange = function(unit) {
         var moveRange = unit.attributes.moveRange,
             availableFields = [],
@@ -989,8 +1009,6 @@ rd.define('game.canvas', (function() {
             previousField = unit.pos;
 
         //console.log(moveRange);
-
-        map = rd.game.map.getMap();
 
         availableFields.push(previousField);
 
@@ -1017,6 +1035,9 @@ rd.define('game.canvas', (function() {
     },
 
 
+    /**
+     * WIP
+     */
     getSurroundingFields = function(field) {
         var fields = [];
 
@@ -1057,24 +1078,36 @@ rd.define('game.canvas', (function() {
     },
 
 
+    /**
+     * Highlight movable tiles
+     */
+    highlightMovableTiles = function() {
+        for (var i=0; i<colTileCount/2; i++) {
+            for (var j=0; j<rowTileCount/2; j++) {
+                // Only movable tiles
+                if (map[j][i] === 0) {
+                    drawMovable({
+                        lineWidth: 2,
+                        rgbColor: '255,255,255',
+                        opacity: 0.2,
+                        x: fieldWidth * i,
+                        y: fieldWidth * j
+                    });
+                }
+            }
+        }
+    },
+
+
+    /**
+     * Canvas initialization
+     */
     init = function() {
         tilesetImage = rd.utils.resources.get('img/tileset.png');
         unitStats = rd.game.units.getStats();
-        drawImage();
-
-        for (var i=0; i<colTileCount/2; i++) {
-            for (var j=0; j<rowTileCount/2; j++) {
-                drawMovable(2, '255,255,255', '0.2', fieldWidth * i, fieldWidth * j);
-            }
-        }
-
-        // for (var i=1; i<colTileCount/2; i++) {
-        //     drawLine(1, 'rgba(255,255,255,0.3)', fieldWidth * i, 0, fieldWidth * i, tileSize * rowTileCount);
-        // }
-
-        // for (var j=1; j<rowTileCount/2; j++) {
-        //     drawLine(1, 'rgba(255,255,255,0.3)', 0, fieldWidth * j, tileSize * colTileCount, fieldWidth * j);
-        // }
+        drawImage(ctxGround1);
+        map = rd.game.map.getMap();
+        highlightMovableTiles();
     };
 
 
@@ -1092,7 +1125,6 @@ rd.define('game.canvas', (function() {
 })());
 /**
  * Main game controller
- * @namespace game.main
  */
 rd.define('game.main', (function(canvas) {
 
@@ -1136,7 +1168,7 @@ rd.define('game.main', (function(canvas) {
 
 	/**
 	 * Update all the entities
-	 * @param  {[type]} dt [description]
+	 * @param {object} delta
 	 */
 	update = function(delta) {
 	    gameTime += delta;
@@ -1145,8 +1177,11 @@ rd.define('game.main', (function(canvas) {
 	},
 
 
+	/**
+	 * Update all the entities (e.g. sprite positions)
+	 * @param {object} delta
+	 */
 	updateEntities = function(delta) {
-        // Update all the enemies
         for( var i=0; i<unitStats.length; i++ ){
             unitStats[i].skin.update(delta);
             unitStats[i].gear.head.update(delta);

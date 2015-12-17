@@ -1,6 +1,5 @@
 /**
  * Resources controller
- * @namespace utils.resources
  */
 rd.define('utils.resources', (function() {
 
@@ -13,21 +12,27 @@ rd.define('utils.resources', (function() {
 
     /**
      * Load an image url or an array of image urls
-     * @param  {[type]} urlOrArr [description]
+     * @param {string|array} urlOrArr
      */
     load = function(urlOrArr) {
         if(urlOrArr instanceof Array) {
             urlOrArr.forEach(function(url) {
-                _load(url);
+                loadImage(url);
             });
         }
         else {
-            _load(urlOrArr);
+            loadImage(urlOrArr);
         }
     },
 
-    _load = function(url) {
-        if(resourceCache[url]) {
+
+    /**
+     * Load a single image from an url
+     * @param  {string} url [description]
+     * @return {image}
+     */
+    loadImage = function(url) {
+        if (resourceCache[url]) {
             return resourceCache[url];
         }
         else {
@@ -46,10 +51,21 @@ rd.define('utils.resources', (function() {
         }
     },
 
+
+    /**
+     * Get an image by url
+     * @param  {string} url
+     * @return {image}
+     */
     get = function(url) {
         return resourceCache[url];
     },
 
+
+    /**
+     * Check if the resource has been loaded
+     * @return {boolean}
+     */
     isReady = function() {
         var ready = true;
         for(var k in resourceCache) {
@@ -61,6 +77,11 @@ rd.define('utils.resources', (function() {
         return ready;
     },
 
+
+    /**
+     * Ready callback function
+     * @param  {function} func
+     */
     onReady = function(func) {
         readyCallbacks.push(func);
     };

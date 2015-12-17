@@ -1,11 +1,10 @@
 /**
  * Combat controller
- * @namespace rd.game.combat
  */
 rd.define('game.combat', (function() {
 
     /**
-     * Variables
+     * Just testing stuff ...
      */
     var fight = function(attacker, defender) {
         var attackerStats = attacker.get(),

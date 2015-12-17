@@ -1,6 +1,5 @@
 /**
  * Canvas controller
- * @namespace game.canvas
  */
 rd.define('game.canvas', (function() {
 
@@ -11,6 +10,7 @@ rd.define('game.canvas', (function() {
         canvasAnim = document.getElementById('canvas-anim'),
         ctxGround1 = canvasGround1.getContext('2d'),
         ctxAnim = canvasAnim.getContext('2d'),
+        // should be in an external file ...
         ground1 = [[126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
                     [142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],
                     [126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
@@ -41,60 +41,76 @@ rd.define('game.canvas', (function() {
         map,
 
 
-    drawImage = function() {
+    /**
+     * Draw the images of a sprite onto the canvas
+     * @param {object} ctx Canvas context
+     */
+    drawImage = function(ctx) {
+        // Each row
         for (var r = 0; r < rowTileCount; r++) {
-            
+            // Each column
             for (var c = 0; c < colTileCount; c++) {
                 var tile = ground1[ r ][ c ],
                     tileRow = (tile / imageNumTiles) | 0,
                     tileCol = (tile % imageNumTiles) | 0;
 
-                ctxGround1.drawImage(tilesetImage, (tileCol * tileSize), (tileRow * tileSize), tileSize, tileSize, (c * tileSize), (r * tileSize), tileSize, tileSize);
+                ctx.drawImage(tilesetImage, (tileCol * tileSize), (tileRow * tileSize), tileSize, tileSize, (c * tileSize), (r * tileSize), tileSize, tileSize);
             }
         }
     },
 
 
-    drawLine = function(lineWidth, lineColor, x1, y1, x2, y2) {
-        ctxGround1.fillStyle = lineColor;
-        ctxGround1.strokeStyle = lineColor;
+    /**
+     * Draw a single line
+     * @param {object} cfg Configuration
+     */
+    drawLine = function(cfg) {
+        ctxGround1.fillStyle = cfg.lineColor;
+        ctxGround1.strokeStyle = cfg.lineColor;
         ctxGround1.beginPath();
-        ctxGround1.moveTo(x1, y1);
-        ctxGround1.lineTo(x2, y2);
-        ctxGround1.lineWidth = lineWidth;
+        ctxGround1.moveTo(cfg.x1, cfg.y1);
+        ctxGround1.lineTo(cfg.x2, cfg.y2);
+        ctxGround1.lineWidth = cfg.lineWidth;
         ctxGround1.stroke();
         ctxGround1.closePath();
     },
 
 
-    drawMovable = function(lineWidth, rgbColor, opacity, x1, y1) {
-        ctxGround1.strokeStyle = 'rgba(' + rgbColor + ',' + opacity + ')';
-        ctxGround1.fillStyle = 'rgba(' + rgbColor + ',' + (opacity >= 0.8 ? opacity - 0.8 : 0) + ')';
+    /**
+     * Draw the 'movable' custom shape
+     * @param {object} cfg Configuration
+     */
+    drawMovable = function(cfg) {
+        var x = cfg.x,
+            y = cfg.y;
+
+        ctxGround1.strokeStyle = 'rgba(' + cfg.rgbColor + ',' + cfg.opacity + ')';
+        ctxGround1.fillStyle = 'rgba(' + cfg.rgbColor + ',' + (cfg.opacity >= 0.8 ? cfg.opacity - 0.8 : 0) + ')';
         ctxGround1.beginPath();
-        ctxGround1.moveTo(x1 + 8, y1 + 8);
+        ctxGround1.moveTo(x + 8, y + 8);
 
-        ctxGround1.lineTo(x1 + 27, y1 + 8);
-        ctxGround1.lineTo(x1 + 32, y1 + 3);
-        ctxGround1.lineTo(x1 + 37, y1 + 8);
-        ctxGround1.lineTo(x1 + 56, y1 + 8);
+        ctxGround1.lineTo(x + 27, y + 8);
+        ctxGround1.lineTo(x + 32, y + 3);
+        ctxGround1.lineTo(x + 37, y + 8);
+        ctxGround1.lineTo(x + 56, y + 8);
 
-        ctxGround1.lineTo(x1 + 56, y1 + 27);
-        ctxGround1.lineTo(x1 + 61, y1 + 32);
-        ctxGround1.lineTo(x1 + 56, y1 + 37);
-        ctxGround1.lineTo(x1 + 56, y1 + 56);
+        ctxGround1.lineTo(x + 56, y + 27);
+        ctxGround1.lineTo(x + 61, y + 32);
+        ctxGround1.lineTo(x + 56, y + 37);
+        ctxGround1.lineTo(x + 56, y + 56);
 
-        ctxGround1.lineTo(x1 + 37, y1 + 56);
-        ctxGround1.lineTo(x1 + 32, y1 + 61);
-        ctxGround1.lineTo(x1 + 27, y1 + 56);
-        ctxGround1.lineTo(x1 + 8, y1 + 56);
+        ctxGround1.lineTo(x + 37, y + 56);
+        ctxGround1.lineTo(x + 32, y + 61);
+        ctxGround1.lineTo(x + 27, y + 56);
+        ctxGround1.lineTo(x + 8, y + 56);
 
-        ctxGround1.lineTo(x1 + 8, y1 + 37);
-        ctxGround1.lineTo(x1 + 3, y1 + 32);
-        ctxGround1.lineTo(x1 + 8, y1 + 27);
-        ctxGround1.lineTo(x1 + 8, y1 + 8);
+        ctxGround1.lineTo(x + 8, y + 37);
+        ctxGround1.lineTo(x + 3, y + 32);
+        ctxGround1.lineTo(x + 8, y + 27);
+        ctxGround1.lineTo(x + 8, y + 8);
         
         ctxGround1.closePath();
-        ctxGround1.lineWidth = lineWidth;
+        ctxGround1.lineWidth = cfg.lineWidth;
         ctxGround1.stroke();
         ctxGround1.fill();
     },
@@ -110,13 +126,20 @@ rd.define('game.canvas', (function() {
     },
 
     
+    /**
+     * Go through the list of entities
+     * @param {array} list
+     */
     renderEntities = function(list) {
-        for(var i=0; i<list.length; i++) {
+        for (var i=0; i<list.length; i++) {
             renderEntity(list[i], list[i].skin, list[i].gear.torso, list[i].gear.head);
         }    
     },
 
     
+    /**
+     * Render a single entity
+     */
     renderEntity = function() {
         ctxAnim.save();
         ctxAnim.translate(arguments[0].pos[0], arguments[0].pos[1]);
@@ -128,6 +151,9 @@ rd.define('game.canvas', (function() {
     },
 
 
+    /**
+     * WIP
+     */
     renderMoveRange = function(unit) {
         var moveRange = unit.attributes.moveRange,
             availableFields = [],
@@ -135,8 +161,6 @@ rd.define('game.canvas', (function() {
             previousField = unit.pos;
 
         //console.log(moveRange);
-
-        map = rd.game.map.getMap();
 
         availableFields.push(previousField);
 
@@ -163,6 +187,9 @@ rd.define('game.canvas', (function() {
     },
 
 
+    /**
+     * WIP
+     */
     getSurroundingFields = function(field) {
         var fields = [];
 
@@ -203,24 +230,36 @@ rd.define('game.canvas', (function() {
     },
 
 
+    /**
+     * Highlight movable tiles
+     */
+    highlightMovableTiles = function() {
+        for (var i=0; i<colTileCount/2; i++) {
+            for (var j=0; j<rowTileCount/2; j++) {
+                // Only movable tiles
+                if (map[j][i] === 0) {
+                    drawMovable({
+                        lineWidth: 2,
+                        rgbColor: '255,255,255',
+                        opacity: 0.2,
+                        x: fieldWidth * i,
+                        y: fieldWidth * j
+                    });
+                }
+            }
+        }
+    },
+
+
+    /**
+     * Canvas initialization
+     */
     init = function() {
         tilesetImage = rd.utils.resources.get('img/tileset.png');
         unitStats = rd.game.units.getStats();
-        drawImage();
-
-        for (var i=0; i<colTileCount/2; i++) {
-            for (var j=0; j<rowTileCount/2; j++) {
-                drawMovable(2, '255,255,255', '0.2', fieldWidth * i, fieldWidth * j);
-            }
-        }
-
-        // for (var i=1; i<colTileCount/2; i++) {
-        //     drawLine(1, 'rgba(255,255,255,0.3)', fieldWidth * i, 0, fieldWidth * i, tileSize * rowTileCount);
-        // }
-
-        // for (var j=1; j<rowTileCount/2; j++) {
-        //     drawLine(1, 'rgba(255,255,255,0.3)', 0, fieldWidth * j, tileSize * colTileCount, fieldWidth * j);
-        // }
+        drawImage(ctxGround1);
+        map = rd.game.map.getMap();
+        highlightMovableTiles();
     };
 
 

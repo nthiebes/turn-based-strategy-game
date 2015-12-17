@@ -1,6 +1,5 @@
 /**
  * Main game controller
- * @namespace game.main
  */
 rd.define('game.main', (function(canvas) {
 
@@ -44,7 +43,7 @@ rd.define('game.main', (function(canvas) {
 
 	/**
 	 * Update all the entities
-	 * @param  {[type]} dt [description]
+	 * @param {object} delta
 	 */
 	update = function(delta) {
 	    gameTime += delta;
@@ -53,8 +52,11 @@ rd.define('game.main', (function(canvas) {
 	},
 
 
+	/**
+	 * Update all the entities (e.g. sprite positions)
+	 * @param {object} delta
+	 */
 	updateEntities = function(delta) {
-        // Update all the enemies
         for( var i=0; i<unitStats.length; i++ ){
             unitStats[i].skin.update(delta);
             unitStats[i].gear.head.update(delta);
