@@ -1,5 +1,6 @@
 /**
  * Unit instance
+ * @namespace rd.game.unit
  */
 rd.define('game.unit', function(cfg) {
 
@@ -11,6 +12,7 @@ rd.define('game.unit', function(cfg) {
 
     /**
      * Stop animations
+     * @memberOf rd.game.unit
      */
     stop = function() {
         me.skin.setPos([0, 128]);
@@ -26,6 +28,7 @@ rd.define('game.unit', function(cfg) {
 
     /**
      * Play the walk animation cycle
+     * @memberOf rd.game.unit
      */
     walk = function() {
         me.skin.setPos([0, 0]);
@@ -41,6 +44,7 @@ rd.define('game.unit', function(cfg) {
 
     /**
      * Play the attack animation
+     * @memberOf rd.game.unit
      */
     attack = function() {
         me.skin.setPos([0, 128]);
@@ -56,6 +60,7 @@ rd.define('game.unit', function(cfg) {
 
     /**
      * Get the unit object
+     * @memberOf rd.game.unit
      * @return {object}
      */
     get = function() {

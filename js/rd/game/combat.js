@@ -1,5 +1,6 @@
 /**
  * Combat controller
+ * @namespace rd.game.combat
  */
 rd.define('game.combat', (function() {
 

@@ -1,12 +1,17 @@
+/**
+ * Game namespace
+ * @namespace rd
+ */
 var rd = {};
 
 
 /**
  * Defines a namespace
+ * @namespace rd.define
  * @param {string}   namespace Namespace chain as string
  * @param {function} logic     
  */
-rd.define = function( namespace, logic ){
+rd.define = function(namespace, logic){
 	var parts = namespace.split('.'),
 		root = this,
 		length = parts.length,
@@ -42,10 +47,11 @@ var requestAnimFrame = (function(){
 
 /**
  * Behaves the same as setTimeout except uses requestAnimationFrame() where possible for better performance
- * @param {function} 	fn 		The callback function
- * @param {int} 		delay 	The delay in milliseconds
+ * @global
+ * @param {function} fn    The callback function
+ * @param {int} 	 delay The delay in milliseconds
  */
-window.requestTimeout = function(fn, delay){
+window.requestTimeout = function(fn, delay) {
     if( !window.requestAnimationFrame       && 
         !window.webkitRequestAnimationFrame && 
         !(window.mozRequestAnimationFrame && window.mozCancelRequestAnimationFrame) && // Firefox 5 ships without cancel support
@@ -56,7 +62,7 @@ window.requestTimeout = function(fn, delay){
     var start = new Date().getTime(),
         handle = new Object();
         
-    function loop(){
+    function loop() {
         var current = new Date().getTime(),
             delta = current - start;
             
@@ -66,8 +72,19 @@ window.requestTimeout = function(fn, delay){
     handle.value = requestAnimFrame(loop);
     return handle;
 };
+
+
+/**
+ * @namespace rd.utils
+ */
+
+
+/**
+ * @namespace rd.game
+ */
 /**
  * Resources controller
+ * @namespace rd.utils.resources
  */
 rd.define('utils.resources', (function() {
 
@@ -80,6 +97,7 @@ rd.define('utils.resources', (function() {
 
     /**
      * Load an image url or an array of image urls
+     * @memberOf rd.utils.resources
      * @param {string|array} urlOrArr
      */
     load = function(urlOrArr) {
@@ -96,7 +114,7 @@ rd.define('utils.resources', (function() {
 
     /**
      * Load a single image from an url
-     * @param  {string} url [description]
+     * @param  {string} url
      * @return {image}
      */
     loadImage = function(url) {
@@ -122,6 +140,7 @@ rd.define('utils.resources', (function() {
 
     /**
      * Get an image by url
+     * @memberOf rd.utils.resources
      * @param  {string} url
      * @return {image}
      */
@@ -132,6 +151,7 @@ rd.define('utils.resources', (function() {
 
     /**
      * Check if the resource has been loaded
+     * @memberOf rd.utils.resources
      * @return {boolean}
      */
     isReady = function() {
@@ -148,6 +168,7 @@ rd.define('utils.resources', (function() {
 
     /**
      * Ready callback function
+     * @memberOf rd.utils.resources
      * @param  {function} func
      */
     onReady = function(func) {
@@ -168,6 +189,7 @@ rd.define('utils.resources', (function() {
 })());
 /**
  * Sprite controller
+ * @namespace rd.utils.sprite
  */
 rd.define('utils.sprite', function(cfg) {
 
@@ -179,7 +201,8 @@ rd.define('utils.sprite', function(cfg) {
 
     /**
      * Update the sprite (e.g. speed)
-     * @param  {int} delta
+     * @memberOf rd.utils.sprite
+     * @param {int} delta
      */
     update = function(delta) {
         // Stay not yet working correct
@@ -195,6 +218,7 @@ rd.define('utils.sprite', function(cfg) {
 
     /**
      * Render the sprite onto the canvas
+     * @memberOf rd.utils.sprite
      * @param {object} ctx
      */
     render = function(ctx) {
@@ -243,6 +267,7 @@ rd.define('utils.sprite', function(cfg) {
 
     /**
      * Update the frames of a sprite
+     * @memberOf rd.utils.sprite
      * @param {array} newFrames
      */
     setFrames = function(newFrames) {
@@ -252,7 +277,8 @@ rd.define('utils.sprite', function(cfg) {
 
     /**
      * Update the positions within a sprite (e.g. for an animation)
-     * @param {[type]} newPos [description]
+     * @memberOf rd.utils.sprite
+     * @param {array} newPos
      */
     setPos = function(newPos) {
         me.pos = newPos;
@@ -285,6 +311,7 @@ rd.define('utils.sprite', function(cfg) {
 });
 /**
  * Unit instance
+ * @namespace rd.game.unit
  */
 rd.define('game.unit', function(cfg) {
 
@@ -296,6 +323,7 @@ rd.define('game.unit', function(cfg) {
 
     /**
      * Stop animations
+     * @memberOf rd.game.unit
      */
     stop = function() {
         me.skin.setPos([0, 128]);
@@ -311,6 +339,7 @@ rd.define('game.unit', function(cfg) {
 
     /**
      * Play the walk animation cycle
+     * @memberOf rd.game.unit
      */
     walk = function() {
         me.skin.setPos([0, 0]);
@@ -326,6 +355,7 @@ rd.define('game.unit', function(cfg) {
 
     /**
      * Play the attack animation
+     * @memberOf rd.game.unit
      */
     attack = function() {
         me.skin.setPos([0, 128]);
@@ -341,6 +371,7 @@ rd.define('game.unit', function(cfg) {
 
     /**
      * Get the unit object
+     * @memberOf rd.game.unit
      * @return {object}
      */
     get = function() {
@@ -375,6 +406,7 @@ rd.define('game.unit', function(cfg) {
 });
 /**
  * Combat controller
+ * @namespace rd.game.combat
  */
 rd.define('game.combat', (function() {
 
@@ -435,6 +467,7 @@ rd.define('game.combat', (function() {
 })());
 /**
  * Units controller
+ * @namespace rd.game.units
  */
 rd.define('game.units', (function() {
 
@@ -446,6 +479,7 @@ rd.define('game.units', (function() {
 
     /**
      * Add a new unit
+     * @memberOf rd.game.units
      * @param {object} newUnit
      */
     add = function(newUnit) {
@@ -455,6 +489,7 @@ rd.define('game.units', (function() {
     
     /**
      * Get a list of all units
+     * @memberOf rd.game.units
      * @return {array}
      */
     get = function() {
@@ -464,6 +499,7 @@ rd.define('game.units', (function() {
 
     /**
      * Get a list of all unit and their stats
+     * @memberOf rd.game.units
      * @return {array}
      */
     getStats = function() {
@@ -477,6 +513,7 @@ rd.define('game.units', (function() {
 
     /**
      * Initialization
+     * @memberOf rd.game.units
      */
     init = function() {
         // data should be in an external file/database
@@ -574,6 +611,7 @@ rd.define('game.units', (function() {
 })());
 /**
  * Combat controller
+ * @namespace rd.game.map
  */
 rd.define('game.map', (function() {
 
@@ -650,6 +688,7 @@ rd.define('game.map', (function() {
 
     /**
      * Get the map array
+     * @memberOf rd.game.map
      * @return {array}
      */
     getMap = function() {
@@ -831,6 +870,7 @@ rd.define('game.map', (function() {
 
     /**
      * Initialization
+     * @memberOf rd.game.map
      */
     init = function() {
         eventListener();
@@ -848,6 +888,7 @@ rd.define('game.map', (function() {
 })());
 /**
  * Canvas controller
+ * @namespace rd.game.canvas
  */
 rd.define('game.canvas', (function() {
 
@@ -910,6 +951,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * Draw a single line
+     * @memberOf rd.game.canvas
      * @param {object} cfg Configuration
      */
     drawLine = function(cfg) {
@@ -926,6 +968,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * Draw the 'movable' custom shape
+     * @memberOf rd.game.canvas
      * @param {object} cfg Configuration
      */
     drawMovable = function(cfg) {
@@ -966,6 +1009,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * Render the canvas
+     * @memberOf rd.game.canvas
      */
     render = function() {
         // Clear canvas hack
@@ -1001,6 +1045,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * WIP
+     * @memberOf rd.game.canvas
      */
     renderMoveRange = function(unit) {
         var moveRange = unit.attributes.moveRange,
@@ -1101,6 +1146,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * Canvas initialization
+     * @memberOf rd.game.canvas
      */
     init = function() {
         tilesetImage = rd.utils.resources.get('img/tileset.png');
@@ -1125,6 +1171,7 @@ rd.define('game.canvas', (function() {
 })());
 /**
  * Main game controller
+ * @namespace rd.game.main
  */
 rd.define('game.main', (function(canvas) {
 
@@ -1192,6 +1239,7 @@ rd.define('game.main', (function(canvas) {
 
 	/**
 	 * Initialization
+	 * @memberOf rd.game.main
 	 */
 	init = function(){
 		rd.utils.resources.load([

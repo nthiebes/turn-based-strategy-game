@@ -1,12 +1,17 @@
+/**
+ * Game namespace
+ * @namespace rd
+ */
 var rd = {};
 
 
 /**
  * Defines a namespace
+ * @namespace rd.define
  * @param {string}   namespace Namespace chain as string
  * @param {function} logic     
  */
-rd.define = function( namespace, logic ){
+rd.define = function(namespace, logic){
 	var parts = namespace.split('.'),
 		root = this,
 		length = parts.length,
@@ -42,10 +47,11 @@ var requestAnimFrame = (function(){
 
 /**
  * Behaves the same as setTimeout except uses requestAnimationFrame() where possible for better performance
- * @param {function} 	fn 		The callback function
- * @param {int} 		delay 	The delay in milliseconds
+ * @global
+ * @param {function} fn    The callback function
+ * @param {int} 	 delay The delay in milliseconds
  */
-window.requestTimeout = function(fn, delay){
+window.requestTimeout = function(fn, delay) {
     if( !window.requestAnimationFrame       && 
         !window.webkitRequestAnimationFrame && 
         !(window.mozRequestAnimationFrame && window.mozCancelRequestAnimationFrame) && // Firefox 5 ships without cancel support
@@ -56,7 +62,7 @@ window.requestTimeout = function(fn, delay){
     var start = new Date().getTime(),
         handle = new Object();
         
-    function loop(){
+    function loop() {
         var current = new Date().getTime(),
             delta = current - start;
             
@@ -66,3 +72,13 @@ window.requestTimeout = function(fn, delay){
     handle.value = requestAnimFrame(loop);
     return handle;
 };
+
+
+/**
+ * @namespace rd.utils
+ */
+
+
+/**
+ * @namespace rd.game
+ */

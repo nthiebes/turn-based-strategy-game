@@ -7,6 +7,7 @@
     "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-sass": "*",
     "grunt-contrib-watch": "*",
+    "grunt-jsdoc": "^1.1.0",
     "grunt-newer": "*",
     "jshint": "^2.8.0"
   },
