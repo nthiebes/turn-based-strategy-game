@@ -146,7 +146,7 @@ rd.define('game.canvas', (function() {
      */
     renderEntity = function() {
         ctxAnim.save();
-        ctxAnim.translate(arguments[0].pos[0], arguments[0].pos[1]);
+        ctxAnim.translate(arguments[0].pos[0] * fieldWidth, arguments[0].pos[1] * fieldWidth);
 
         for (var i=1; i<arguments.length; i++) {
             arguments[i].render(ctxAnim);

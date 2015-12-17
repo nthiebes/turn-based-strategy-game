@@ -22,7 +22,8 @@
       "requestTimeout",
       "location",
       "requestAnimFrame",
-      "Image"
+      "Image",
+      "XMLHttpRequest"
     ]
   }
 }

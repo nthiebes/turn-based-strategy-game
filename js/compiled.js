@@ -75,13 +75,42 @@ window.requestTimeout = function(fn, delay) {
 
 
 /**
- * @namespace rd.utils
- */
-
-
-/**
  * @namespace rd.game
  */
+ /**
+ * Some useful functions
+ * @namespace rd.utils
+ */
+rd.define('utils', (function() {
+
+    /**
+     * Load a json file from an url
+     * @memberOf rd.utils
+     * @param {string}   url
+     * @param {function} callback
+     */
+    var loadJSON = function(url, callback) {   
+        var xobj = new XMLHttpRequest();
+        xobj.overrideMimeType('application/json');
+        xobj.open('GET', url, true);
+        xobj.onreadystatechange = function() {
+            if (xobj.readyState === 4 && xobj.status === 200) {
+                // Required use of an anonymous callback as .open will NOT return a value but simply returns undefined in asynchronous mode
+                callback(JSON.parse(xobj.responseText));
+            }
+        };
+        xobj.send(null);
+    };
+
+
+    /**
+     * Return public functions
+     */
+    return {
+        loadJSON: loadJSON
+    };
+
+})());
 /**
  * Resources controller
  * @namespace rd.utils.resources
@@ -284,7 +313,7 @@ rd.define('utils.sprite', function(cfg) {
         me.pos = newPos;
     };
 
-    
+
     me.pos = cfg.pos;
     me.size = cfg.size;
     me.speed = typeof cfg.speed === 'number' ? cfg.speed : 0;
@@ -475,6 +504,7 @@ rd.define('game.units', (function() {
      * Variables
      */
     var units = [],
+        unitsCfg,
 
 
     /**
@@ -482,7 +512,11 @@ rd.define('game.units', (function() {
      * @memberOf rd.game.units
      * @param {object} newUnit
      */
-    add = function(newUnit) {
+    add = function(key) {
+        var newUnit = unitsCfg[key];
+        newUnit.skin = new rd.utils.sprite(newUnit.skin);
+        newUnit.gear.head = new rd.utils.sprite(newUnit.gear.head);
+        newUnit.gear.torso = new rd.utils.sprite(newUnit.gear.torso);
         units.push(new rd.game.unit(newUnit));
     },
 
@@ -515,86 +549,13 @@ rd.define('game.units', (function() {
      * Initialization
      * @memberOf rd.game.units
      */
-    init = function() {
-        // data should be in an external file/database
-        add({
-            name: 'Nico',
-            pos: [0, 0],
-            skin: new rd.utils.sprite({
-                url: 'img/units/skin1.png',
-                pos: [0, 128],
-                size: [64, 64],
-                speed: 4,
-                frames: [0]
-            }),
-            gear: {
-                head: new rd.utils.sprite({
-                    url: 'img/units/head1.png',
-                    pos: [0, 128],
-                    size: [64, 64],
-                    speed: 4,
-                    frames: [0]
-                }),
-                torso: new rd.utils.sprite({
-                    url: 'img/units/torso1.png',
-                    pos: [0, 128],
-                    size: [64, 64],
-                    speed: 4,
-                    frames: [0]
-                }),
-                legs: 0
-            },
-            count: 10,
-            weapons: {
-                primary: 0,
-                secondary: 0
-            },
-            attributes: {
-                attack: 5,
-                defense: 5,
-                attackRange: 1,
-                moveRange: 5
-            }
-        });
+    init = function(callback) {
+        rd.utils.loadJSON('cfg/units.json', function(json) {
+            unitsCfg = json;
 
-        add({
-            name: 'Nico Klon',
-            pos: [64, 64],
-            skin: new rd.utils.sprite({
-                url: 'img/units/skin4.png',
-                pos: [0, 192],
-                size: [64, 64],
-                speed: 4,
-                frames: [0]
-            }),
-            gear: {
-                head: new rd.utils.sprite({
-                    url: 'img/units/head2.png',
-                    pos: [0, 192],
-                    size: [64, 64],
-                    speed: 4,
-                    frames: [0]
-                }),
-                torso: new rd.utils.sprite({
-                    url: 'img/units/torso0.png',
-                    pos: [0, 192],
-                    size: [64, 64],
-                    speed: 4,
-                    frames: [0]
-                }),
-                legs: 0
-            },
-            count: 10,
-            weapons: {
-                primary: 0,
-                secondary: 0
-            },
-            attributes: {
-                attack: 5,
-                defense: 5,
-                attackRange: 6,
-                moveRange: 4
-            }
+            add('nico');
+            add('nicoclone');
+            callback();
         });
     };
 
@@ -1034,7 +995,7 @@ rd.define('game.canvas', (function() {
      */
     renderEntity = function() {
         ctxAnim.save();
-        ctxAnim.translate(arguments[0].pos[0], arguments[0].pos[1]);
+        ctxAnim.translate(arguments[0].pos[0] * fieldWidth, arguments[0].pos[1] * fieldWidth);
 
         for (var i=1; i<arguments.length; i++) {
             arguments[i].render(ctxAnim);
@@ -1261,19 +1222,19 @@ rd.define('game.main', (function(canvas) {
 		/** Initialize if all ressources are loaded */
         rd.utils.resources.onReady(function() {
         	// Units
-        	rd.game.units.init();
-
-        	// Game
-        	lastTime = Date.now();
-			unitStats = rd.game.units.getStats();
-			units = rd.game.units.get();
-			rd.game.canvas.init();
-			rd.game.map.init();
-			main();
+        	rd.game.units.init(function() {
+        		// Game
+	        	lastTime = Date.now();
+				unitStats = rd.game.units.getStats();
+				units = rd.game.units.get();
+				rd.game.canvas.init();
+				rd.game.map.init();
+				main();
+        	});
 
 			//rd.game.combat.fight(units[0], units[1]);
 			
-			rd.game.canvas.renderMoveRange(unitStats[0]);
+			// rd.game.canvas.renderMoveRange(unitStats[0]);
         });
 	};
 

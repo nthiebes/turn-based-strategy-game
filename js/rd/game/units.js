@@ -8,6 +8,7 @@ rd.define('game.units', (function() {
      * Variables
      */
     var units = [],
+        unitsCfg,
 
 
     /**
@@ -15,7 +16,11 @@ rd.define('game.units', (function() {
      * @memberOf rd.game.units
      * @param {object} newUnit
      */
-    add = function(newUnit) {
+    add = function(key) {
+        var newUnit = unitsCfg[key];
+        newUnit.skin = new rd.utils.sprite(newUnit.skin);
+        newUnit.gear.head = new rd.utils.sprite(newUnit.gear.head);
+        newUnit.gear.torso = new rd.utils.sprite(newUnit.gear.torso);
         units.push(new rd.game.unit(newUnit));
     },
 
@@ -48,86 +53,13 @@ rd.define('game.units', (function() {
      * Initialization
      * @memberOf rd.game.units
      */
-    init = function() {
-        // data should be in an external file/database
-        add({
-            name: 'Nico',
-            pos: [0, 0],
-            skin: new rd.utils.sprite({
-                url: 'img/units/skin1.png',
-                pos: [0, 128],
-                size: [64, 64],
-                speed: 4,
-                frames: [0]
-            }),
-            gear: {
-                head: new rd.utils.sprite({
-                    url: 'img/units/head1.png',
-                    pos: [0, 128],
-                    size: [64, 64],
-                    speed: 4,
-                    frames: [0]
-                }),
-                torso: new rd.utils.sprite({
-                    url: 'img/units/torso1.png',
-                    pos: [0, 128],
-                    size: [64, 64],
-                    speed: 4,
-                    frames: [0]
-                }),
-                legs: 0
-            },
-            count: 10,
-            weapons: {
-                primary: 0,
-                secondary: 0
-            },
-            attributes: {
-                attack: 5,
-                defense: 5,
-                attackRange: 1,
-                moveRange: 5
-            }
-        });
+    init = function(callback) {
+        rd.utils.loadJSON('cfg/units.json', function(json) {
+            unitsCfg = json;
 
-        add({
-            name: 'Nico Klon',
-            pos: [64, 64],
-            skin: new rd.utils.sprite({
-                url: 'img/units/skin4.png',
-                pos: [0, 192],
-                size: [64, 64],
-                speed: 4,
-                frames: [0]
-            }),
-            gear: {
-                head: new rd.utils.sprite({
-                    url: 'img/units/head2.png',
-                    pos: [0, 192],
-                    size: [64, 64],
-                    speed: 4,
-                    frames: [0]
-                }),
-                torso: new rd.utils.sprite({
-                    url: 'img/units/torso0.png',
-                    pos: [0, 192],
-                    size: [64, 64],
-                    speed: 4,
-                    frames: [0]
-                }),
-                legs: 0
-            },
-            count: 10,
-            weapons: {
-                primary: 0,
-                secondary: 0
-            },
-            attributes: {
-                attack: 5,
-                defense: 5,
-                attackRange: 6,
-                moveRange: 4
-            }
+            add('nico');
+            add('nicoclone');
+            callback();
         });
     };
 

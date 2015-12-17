@@ -95,7 +95,7 @@ rd.define('utils.sprite', function(cfg) {
         me.pos = newPos;
     };
 
-    
+
     me.pos = cfg.pos;
     me.size = cfg.size;
     me.speed = typeof cfg.speed === 'number' ? cfg.speed : 0;

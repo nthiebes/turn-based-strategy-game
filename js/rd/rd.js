@@ -75,10 +75,5 @@ window.requestTimeout = function(fn, delay) {
 
 
 /**
- * @namespace rd.utils
- */
-
-
-/**
  * @namespace rd.game
  */
