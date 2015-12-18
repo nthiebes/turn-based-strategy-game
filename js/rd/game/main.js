@@ -14,6 +14,7 @@ rd.define('game.main', (function(canvas) {
 		unitStats,
 		fps,
 		fpsLimiter = 0,
+		currentUnit = 0,
 		elmFps = document.getElementById('fps'),
 
 
@@ -97,12 +98,11 @@ rd.define('game.main', (function(canvas) {
 				units = rd.game.units.get();
 				rd.game.canvas.init();
 				rd.game.map.init();
+				rd.game.canvas.renderMoveRange(unitStats[currentUnit]);
 				main();
         	});
 
 			//rd.game.combat.fight(units[0], units[1]);
-			
-			// rd.game.canvas.renderMoveRange(unitStats[0]);
         });
 	};
 

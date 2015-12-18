@@ -1011,76 +1011,106 @@ rd.define('game.canvas', (function() {
     renderMoveRange = function(unit) {
         var moveRange = unit.attributes.moveRange,
             availableFields = [],
-            newFields,
-            previousField = unit.pos;
+            newFields;
 
-        //console.log(moveRange);
+        moveRange = 5;
 
-        availableFields.push(previousField);
+        availableFields.push(unit.pos);
 
-        newFields = getSurroundingFields(previousField);
+        function test() {
+            newFields = [];
+            for (var j=0; j<availableFields.length; j++) {
+                newFields = newFields.concat( getSurroundingFields(availableFields[j]) );
+            }
 
-        for (var i=0; i<newFields.length; i++) {
-            availableFields.push( newFields[i] );
+            availableFields = uniq(availableFields.concat(newFields));
         }
 
+        function uniq(a) {
+            var seen = {};
+            return a.filter(function(item) {
+                return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+            });
+        }
+
+        for (var i=1; i<=moveRange; i++) {
+            test();
+        }
+
+        for (var i=0; i<availableFields.length; i++) {
+            drawMovable({
+                lineWidth: 2,
+                rgbColor: '0,200,0',
+                opacity: 0.8,
+                x: fieldWidth * availableFields[i][0],
+                y: fieldWidth * availableFields[i][1]
+            });
+        }
 
         console.log('availableFields', availableFields);
-
-
-        // for (var i=1; i<=moveRange; i++) {
-            
-
-        //     for (var j=0; j<availableFields.length; j++) {
-        //         console.log( availableFields[j] );
-        //         availableFields.push( getSurroundingFields(availableFields[j]) );
-        //     }
-        // }
-
-        // console.log('availableFields', availableFields);
     },
 
 
     /**
-     * WIP
+     * Get all surrounding fields
+     * @param  {array} field
+     * @return {array}
      */
     getSurroundingFields = function(field) {
-        var fields = [];
-
-        console.log('field', field);
-
-        var fieldType = map[ field[0] ][ field[1] ],
-            top = [],
-            right = []
-            bottom = []
-            left = [];
+        var fields = [],
+            newField = [];
 
         // Nothing in our way
-        if (fieldType === 0) {
+        if (isMovableField(field)) {
             // Top
             if (field[1] > 0) {
-                fields.push( [field[0], field[1] - 1] );
+                newField = [field[0], field[1] - 1];
+                if (isMovableField(newField)) {
+                    fields.push( newField );
+                }
             }
 
             // Right
             if (field[0] < map[0].length) {
-                fields.push( [field[0] + 1, field[1]] );
+                newField = [field[0] + 1, field[1]];
+                if (isMovableField(newField)) {
+                    fields.push( newField );
+                }
             }
 
             // Bottom
             if (field[1] < map.length) {
-                fields.push( [field[0], field[1] + 1] );
+                newField = [field[0], field[1] + 1];
+                if (isMovableField(newField)) {
+                    fields.push( newField );
+                }
             }
 
             // Left
             if (field[0] > 0) {
-                fields.push( [field[0] - 1, field[1]] );
+                newField = [field[0] - 1, field[1]];
+                if (isMovableField(newField)) {
+                    fields.push( newField );
+                }
             }
         }
-
-        console.log( 'fields', fields );
-
+        
         return fields;
+    },
+
+
+    /**
+     * Check if the unit can move onto that field
+     * @param  {array}  field
+     * @return {boolean}
+     */
+    isMovableField = function(field) {
+        //console.log( field, map[ field[0] ][ field[1] ] );
+        if (map[ field[1] ][ field[0] ] === 0) {
+            return true;
+        } else {
+            return false;
+        }
     },
 
 
@@ -1146,6 +1176,7 @@ rd.define('game.main', (function(canvas) {
 		unitStats,
 		fps,
 		fpsLimiter = 0,
+		currentUnit = 0,
 		elmFps = document.getElementById('fps'),
 
 
@@ -1229,12 +1260,11 @@ rd.define('game.main', (function(canvas) {
 				units = rd.game.units.get();
 				rd.game.canvas.init();
 				rd.game.map.init();
+				rd.game.canvas.renderMoveRange(unitStats[currentUnit]);
 				main();
         	});
 
 			//rd.game.combat.fight(units[0], units[1]);
-			
-			// rd.game.canvas.renderMoveRange(unitStats[0]);
         });
 	};
 
