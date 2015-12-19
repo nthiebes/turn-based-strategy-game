@@ -3,8 +3,19 @@
   margin: 0;
   border: 0 none; }
 
+html {
+  height: 100%;
+  width: 100%; }
+
 body {
-  background-color: #333; }
+  background-color: #333;
+  cursor: url("../img/cursors/default.png"), auto;
+  height: 100%;
+  width: 100%; }
+  body.cursor-help {
+    cursor: url("../img/cursors/help.png"), auto; }
+  body.cursor-move {
+    cursor: url("../img/cursors/move.png"), auto; }
 
 canvas {
   width: 768px;
@@ -16,5 +27,8 @@ canvas {
   margin-left: -397px;
   left: 50%;
   border: 3px solid #000; }
+
+.preload {
+  display: none; }
 
 /*# sourceMappingURL=style.css.map */

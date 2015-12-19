@@ -67,6 +67,15 @@ rd.define('game.main', (function(canvas) {
     },
 
 
+    /**
+	 * Get the stats of the current unit
+	 * @memberOf rd.game.main
+	 */
+    getCurrentUnit = function() {
+    	return unitStats[currentUnit];
+    },
+
+
 	/**
 	 * Initialization
 	 * @memberOf rd.game.main
@@ -100,9 +109,16 @@ rd.define('game.main', (function(canvas) {
 				rd.game.map.init();
 				rd.game.canvas.renderMoveRange(unitStats[currentUnit]);
 				main();
+				
+				// Default movable
+		        rd.game.canvas.drawMovable({
+		            lineWidth: 2,
+		            rgbColor: '0,200,0',
+		            opacity: 1,
+		            x: unitStats[currentUnit].pos[0] * 32,
+		            y: unitStats[currentUnit].pos[1] * 32
+		        });
         	});
-
-			//rd.game.combat.fight(units[0], units[1]);
         });
 	};
 
@@ -111,7 +127,8 @@ rd.define('game.main', (function(canvas) {
 	 * Return public functions
 	 */
 	return {
-		init: init
+		init: init,
+		getCurrentUnit: getCurrentUnit
 	};
 
 })(rd.game.canvas));

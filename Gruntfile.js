@@ -10,7 +10,7 @@ module.exports = function(grunt) {
 		},
 		concat: {
 			dist: {
-				src: ['js/rd/rd.js', 'js/rd/utils/utils.js', 'js/rd/utils/resources.js', 'js/rd/utils/sprite.js', 'js/rd/game/unit.js', 'js/rd/game/combat.js', 'js/rd/game/units.js', 'js/rd/game/map.js', 'js/rd/game/canvas.js', 'js/rd/game/main.js'],
+				src: ['js/rd/rd.js', 'js/rd/utils/utils.js', 'js/rd/utils/resources.js', 'js/rd/utils/sprite.js', 'js/rd/game/unit.js', 'js/rd/game/combat.js', 'js/rd/game/units.js', 'js/rd/game/canvas.js', 'js/rd/game/map.js', 'js/rd/game/main.js'],
 				dest: 'js/compiled.js',
 			}
 		},

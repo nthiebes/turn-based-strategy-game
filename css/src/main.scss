@@ -4,8 +4,24 @@
 	border: 0 none;
 }
 
+html {
+	height: 100%;
+	width: 100%;
+}
+
 body {
     background-color: #333;
+    cursor: url("../img/cursors/default.png"), auto;
+    height: 100%;
+	width: 100%;
+
+	&.cursor-help {
+		cursor: url("../img/cursors/help.png"), auto;
+	}
+
+	&.cursor-move {
+		cursor: url("../img/cursors/move.png"), auto;
+	}
 }
 
 canvas {
@@ -18,4 +34,8 @@ canvas {
 	margin-left: -397px;
 	left: 50%;
 	border: 3px solid #000;
+}
+
+.preload {
+	display: none;
 }

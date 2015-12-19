@@ -7,10 +7,12 @@ rd.define('game.canvas', (function() {
     /**
      * Variables
      */
-    var canvasGround1 = document.getElementById('canvas-ground-layer'),
+    var canvasGround1 = document.getElementById('canvas-ground'),
         canvasAnim = document.getElementById('canvas-anim'),
+        canvasUtils = document.getElementById('canvas-utils'),
         ctxGround1 = canvasGround1.getContext('2d'),
         ctxAnim = canvasAnim.getContext('2d'),
+        ctxUtils = canvasUtils.getContext('2d'),
         // should be in an external file ...
         ground1 = [[126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
                     [142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],
@@ -67,14 +69,14 @@ rd.define('game.canvas', (function() {
      * @param {object} cfg Configuration
      */
     drawLine = function(cfg) {
-        ctxGround1.fillStyle = cfg.lineColor;
-        ctxGround1.strokeStyle = cfg.lineColor;
-        ctxGround1.beginPath();
-        ctxGround1.moveTo(cfg.x1, cfg.y1);
-        ctxGround1.lineTo(cfg.x2, cfg.y2);
-        ctxGround1.lineWidth = cfg.lineWidth;
-        ctxGround1.stroke();
-        ctxGround1.closePath();
+        ctxUtils.fillStyle = cfg.lineColor;
+        ctxUtils.strokeStyle = cfg.lineColor;
+        ctxUtils.beginPath();
+        ctxUtils.moveTo(cfg.x1, cfg.y1);
+        ctxUtils.lineTo(cfg.x2, cfg.y2);
+        ctxUtils.lineWidth = cfg.lineWidth;
+        ctxUtils.stroke();
+        ctxUtils.closePath();
     },
 
 
@@ -86,36 +88,38 @@ rd.define('game.canvas', (function() {
     drawMovable = function(cfg) {
         var x = cfg.x,
             y = cfg.y;
-
-        ctxGround1.strokeStyle = 'rgba(' + cfg.rgbColor + ',' + cfg.opacity + ')';
-        ctxGround1.fillStyle = 'rgba(' + cfg.rgbColor + ',' + (cfg.opacity >= 0.8 ? cfg.opacity - 0.8 : 0) + ')';
-        ctxGround1.beginPath();
-        ctxGround1.moveTo(x + 8, y + 8);
-
-        ctxGround1.lineTo(x + 27, y + 8);
-        ctxGround1.lineTo(x + 32, y + 3);
-        ctxGround1.lineTo(x + 37, y + 8);
-        ctxGround1.lineTo(x + 56, y + 8);
-
-        ctxGround1.lineTo(x + 56, y + 27);
-        ctxGround1.lineTo(x + 61, y + 32);
-        ctxGround1.lineTo(x + 56, y + 37);
-        ctxGround1.lineTo(x + 56, y + 56);
-
-        ctxGround1.lineTo(x + 37, y + 56);
-        ctxGround1.lineTo(x + 32, y + 61);
-        ctxGround1.lineTo(x + 27, y + 56);
-        ctxGround1.lineTo(x + 8, y + 56);
-
-        ctxGround1.lineTo(x + 8, y + 37);
-        ctxGround1.lineTo(x + 3, y + 32);
-        ctxGround1.lineTo(x + 8, y + 27);
-        ctxGround1.lineTo(x + 8, y + 8);
         
-        ctxGround1.closePath();
-        ctxGround1.lineWidth = cfg.lineWidth;
-        ctxGround1.stroke();
-        ctxGround1.fill();
+        ctxUtils.clearRect(x, y, fieldWidth, fieldWidth);
+
+        ctxUtils.strokeStyle = 'rgba(' + cfg.rgbColor + ',' + cfg.opacity + ')';
+        ctxUtils.fillStyle = 'rgba(' + cfg.rgbColor + ',' + (cfg.opacity >= 0.8 ? cfg.opacity - 0.8 : 0) + ')';
+        ctxUtils.beginPath();
+        ctxUtils.moveTo(x + 8, y + 8);
+
+        ctxUtils.lineTo(x + 27, y + 8);
+        ctxUtils.lineTo(x + 32, y + 3);
+        ctxUtils.lineTo(x + 37, y + 8);
+        ctxUtils.lineTo(x + 56, y + 8);
+
+        ctxUtils.lineTo(x + 56, y + 27);
+        ctxUtils.lineTo(x + 61, y + 32);
+        ctxUtils.lineTo(x + 56, y + 37);
+        ctxUtils.lineTo(x + 56, y + 56);
+
+        ctxUtils.lineTo(x + 37, y + 56);
+        ctxUtils.lineTo(x + 32, y + 61);
+        ctxUtils.lineTo(x + 27, y + 56);
+        ctxUtils.lineTo(x + 8, y + 56);
+
+        ctxUtils.lineTo(x + 8, y + 37);
+        ctxUtils.lineTo(x + 3, y + 32);
+        ctxUtils.lineTo(x + 8, y + 27);
+        ctxUtils.lineTo(x + 8, y + 8);
+        
+        ctxUtils.closePath();
+        ctxUtils.lineWidth = cfg.lineWidth;
+        ctxUtils.stroke();
+        ctxUtils.fill();
     },
 
 
@@ -156,7 +160,7 @@ rd.define('game.canvas', (function() {
 
 
     /**
-     * WIP
+     * Show the move range
      * @memberOf rd.game.canvas
      */
     renderMoveRange = function(unit) {
@@ -164,11 +168,10 @@ rd.define('game.canvas', (function() {
             availableFields = [],
             newFields;
 
-        moveRange = 5;
-
         availableFields.push(unit.pos);
 
-        function test() {
+        // Get and concat movable fields
+        function getFields() {
             newFields = [];
             for (var j=0; j<availableFields.length; j++) {
                 newFields = newFields.concat( getSurroundingFields(availableFields[j]) );
@@ -177,17 +180,12 @@ rd.define('game.canvas', (function() {
             availableFields = uniq(availableFields.concat(newFields));
         }
 
-        function uniq(a) {
-            var seen = {};
-            return a.filter(function(item) {
-                return seen.hasOwnProperty(item) ? false : (seen[item] = true);
-            });
-        }
-
+        // Highlight fields for each move range
         for (var i=1; i<=moveRange; i++) {
-            test();
+            getFields();
         }
 
+        // Highlight all movable fields
         for (var i=0; i<availableFields.length; i++) {
             drawMovable({
                 lineWidth: 2,
@@ -197,8 +195,19 @@ rd.define('game.canvas', (function() {
                 y: fieldWidth * availableFields[i][1]
             });
         }
+    },
 
-        console.log('availableFields', availableFields);
+
+    /**
+     * Removes duplicates from array
+     * @param  {array} a
+     * @return {array}
+     */
+    uniq = function(a) {
+        var seen = {};
+        return a.filter(function(item) {
+            return seen.hasOwnProperty(item) ? false : (seen[item] = true);
+        });
     },
 
 
@@ -256,7 +265,6 @@ rd.define('game.canvas', (function() {
      * @return {boolean}
      */
     isMovableField = function(field) {
-        //console.log( field, map[ field[0] ][ field[1] ] );
         if (map[ field[1] ][ field[0] ] === 0) {
             return true;
         } else {
@@ -267,6 +275,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * Highlight movable tiles
+     * @memberOf rd.game.canvas
      */
     highlightMovableTiles = function() {
         for (var i=0; i<colTileCount/2; i++) {
@@ -306,6 +315,7 @@ rd.define('game.canvas', (function() {
         render: render,
         drawLine : drawLine,
         renderMoveRange: renderMoveRange,
+        highlightMovableTiles: highlightMovableTiles,
         drawMovable: drawMovable,
         init: init
     };
