@@ -9,6 +9,7 @@ rd.define('game.units', (function() {
      */
     var units = [],
         unitsCfg,
+        unitCount = 0,
 
 
     /**
@@ -17,12 +18,14 @@ rd.define('game.units', (function() {
      * @param {object} newUnit
      */
     add = function(key, pos) {
-        var newUnit = unitsCfg[key];
+        var newUnit = JSON.parse(JSON.stringify(unitsCfg[key])); // Copy object
         newUnit.pos = pos;
         newUnit.skin = new rd.utils.sprite(newUnit.skin);
         newUnit.gear.head = new rd.utils.sprite(newUnit.gear.head);
         newUnit.gear.torso = new rd.utils.sprite(newUnit.gear.torso);
         units.push(new rd.game.unit(newUnit));
+        rd.game.map.updateMap(pos[0], pos[1], 'id-' + unitCount);
+        unitCount++;
     },
 
     
@@ -59,7 +62,7 @@ rd.define('game.units', (function() {
             unitsCfg = json;
 
             add('nico', [0, 4]);
-            //add('nico', [0, 6]);
+            add('nico', [0, 6]);
             add('nicoclone', [11, 5]);
             callback();
         });

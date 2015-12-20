@@ -506,6 +506,7 @@ rd.define('game.units', (function() {
      */
     var units = [],
         unitsCfg,
+        unitCount = 0,
 
 
     /**
@@ -514,12 +515,14 @@ rd.define('game.units', (function() {
      * @param {object} newUnit
      */
     add = function(key, pos) {
-        var newUnit = unitsCfg[key];
+        var newUnit = JSON.parse(JSON.stringify(unitsCfg[key])); // Copy object
         newUnit.pos = pos;
         newUnit.skin = new rd.utils.sprite(newUnit.skin);
         newUnit.gear.head = new rd.utils.sprite(newUnit.gear.head);
         newUnit.gear.torso = new rd.utils.sprite(newUnit.gear.torso);
         units.push(new rd.game.unit(newUnit));
+        rd.game.map.updateMap(pos[0], pos[1], 'id-' + unitCount);
+        unitCount++;
     },
 
     
@@ -556,7 +559,7 @@ rd.define('game.units', (function() {
             unitsCfg = json;
 
             add('nico', [0, 4]);
-            //add('nico', [0, 6]);
+            add('nico', [0, 6]);
             add('nicoclone', [11, 5]);
             callback();
         });
@@ -802,7 +805,7 @@ rd.define('game.canvas', (function() {
             newField = [];
 
         // Nothing in our way
-        if (isMovableField(field)) {
+        if (isMovableField(field) || (field[0] === rd.game.main.getCurrentUnit().pos[0] && field[1] === rd.game.main.getCurrentUnit().pos[1])) {
             // Top
             if (field[1] > 0) {
                 newField = [field[0], field[1] - 1];
@@ -846,7 +849,7 @@ rd.define('game.canvas', (function() {
      * @return {boolean}
      */
     isMovableField = function(field) {
-        if (map[ field[1] ] && map[ field[0] ] && map[ field[1] ][ field[0] ] === 0) {
+        if (map[ field[1] ] !== undefined && map[ field[1] ][ field[0] ] !== undefined && map[ field[1] ][ field[0] ] === 0) {
             return true;
         } else {
             return false;
@@ -898,6 +901,7 @@ rd.define('game.canvas', (function() {
         renderMoveRange: renderMoveRange,
         highlightMovableTiles: highlightMovableTiles,
         drawMovable: drawMovable,
+        isMovableField: isMovableField,
         init: init
     };
 
@@ -932,7 +936,7 @@ rd.define('game.map', (function(canvas) {
      * Register the event listener
      */
     eventListener = function() {
-        //canvasAnim.addEventListener('click', canvasClick);
+        canvasAnim.addEventListener('click', canvasClick);
         canvasAnim.addEventListener('mousemove', canvasMove);
         canvasAnim.addEventListener('mouseleave', canvasLeave);
     },
@@ -956,7 +960,8 @@ rd.define('game.map', (function(canvas) {
     canvasMove = function(e) {
         var x,
             y,
-            type;
+            type,
+            cellType;
 
         // Grab html page coords
         if (e.pageX !== undefined && e.pageY !== undefined) {
@@ -982,6 +987,10 @@ rd.define('game.map', (function(canvas) {
         // Draw path only after entering a new cell
         if ((currentCell[0] !== cell[0] || currentCell[1] !== cell[1]) && cell[0] < 12) {
             currentCell = cell;
+
+            cellType = map[ cell[1] ][ cell[0] ];
+
+            console.log(cellType);
 
             // Now we know which tile we clicked and can calculate a path
             currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]]);
@@ -1060,17 +1069,11 @@ rd.define('game.map', (function(canvas) {
         ];
 
         // Now we know which tile we clicked and can calculate a path
-        currentPath = findPath(map, [0,0], [cell[0],cell[1]]);
+        currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]]);
 
-        // Highlight the tiles
-        for (var i=0; i<currentPath.length; i++) {
-            canvas.drawMovable({
-                lineWidth: 2,
-                rgbColor: '0,200,0',
-                opacity: 1,
-                x: currentPath[i][0] * tileSize,
-                y: currentPath[i][1] * tileSize
-            });
+        // Check if player can move to that field
+        if (currentPath.length <= rd.game.main.getCurrentUnit().attributes.moveRange + 1 && rd.game.canvas.isMovableField(cell)) {
+            console.log(cell);
         }
     },
 
@@ -1102,6 +1105,17 @@ rd.define('game.map', (function(canvas) {
      */
     getMap = function() {
         return map;
+    },
+
+
+    /**
+     * Update the value of a map tile
+     * @param {integer} x
+     * @param {integer} y
+     * @param {integer} value
+     */
+    updateMap = function(x, y, value) {
+        map[y][x] = value;
     },
 
 
@@ -1291,7 +1305,8 @@ rd.define('game.map', (function(canvas) {
      */
     return {
         init: init,
-        getMap: getMap
+        getMap: getMap,
+        updateMap: updateMap
     };
 
 })(rd.game.canvas));

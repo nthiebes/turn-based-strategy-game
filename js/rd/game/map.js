@@ -28,7 +28,7 @@ rd.define('game.map', (function(canvas) {
      * Register the event listener
      */
     eventListener = function() {
-        //canvasAnim.addEventListener('click', canvasClick);
+        canvasAnim.addEventListener('click', canvasClick);
         canvasAnim.addEventListener('mousemove', canvasMove);
         canvasAnim.addEventListener('mouseleave', canvasLeave);
     },
@@ -52,7 +52,8 @@ rd.define('game.map', (function(canvas) {
     canvasMove = function(e) {
         var x,
             y,
-            type;
+            type,
+            cellType;
 
         // Grab html page coords
         if (e.pageX !== undefined && e.pageY !== undefined) {
@@ -78,6 +79,10 @@ rd.define('game.map', (function(canvas) {
         // Draw path only after entering a new cell
         if ((currentCell[0] !== cell[0] || currentCell[1] !== cell[1]) && cell[0] < 12) {
             currentCell = cell;
+
+            cellType = map[ cell[1] ][ cell[0] ];
+
+            console.log(cellType);
 
             // Now we know which tile we clicked and can calculate a path
             currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]]);
@@ -156,17 +161,11 @@ rd.define('game.map', (function(canvas) {
         ];
 
         // Now we know which tile we clicked and can calculate a path
-        currentPath = findPath(map, [0,0], [cell[0],cell[1]]);
+        currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]]);
 
-        // Highlight the tiles
-        for (var i=0; i<currentPath.length; i++) {
-            canvas.drawMovable({
-                lineWidth: 2,
-                rgbColor: '0,200,0',
-                opacity: 1,
-                x: currentPath[i][0] * tileSize,
-                y: currentPath[i][1] * tileSize
-            });
+        // Check if player can move to that field
+        if (currentPath.length <= rd.game.main.getCurrentUnit().attributes.moveRange + 1 && rd.game.canvas.isMovableField(cell)) {
+            console.log(cell);
         }
     },
 
@@ -198,6 +197,17 @@ rd.define('game.map', (function(canvas) {
      */
     getMap = function() {
         return map;
+    },
+
+
+    /**
+     * Update the value of a map tile
+     * @param {integer} x
+     * @param {integer} y
+     * @param {integer} value
+     */
+    updateMap = function(x, y, value) {
+        map[y][x] = value;
     },
 
 
@@ -387,7 +397,8 @@ rd.define('game.map', (function(canvas) {
      */
     return {
         init: init,
-        getMap: getMap
+        getMap: getMap,
+        updateMap: updateMap
     };
 
 })(rd.game.canvas));

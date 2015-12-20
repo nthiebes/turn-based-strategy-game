@@ -227,7 +227,7 @@ rd.define('game.canvas', (function() {
             newField = [];
 
         // Nothing in our way
-        if (isMovableField(field)) {
+        if (isMovableField(field) || (field[0] === rd.game.main.getCurrentUnit().pos[0] && field[1] === rd.game.main.getCurrentUnit().pos[1])) {
             // Top
             if (field[1] > 0) {
                 newField = [field[0], field[1] - 1];
@@ -271,7 +271,7 @@ rd.define('game.canvas', (function() {
      * @return {boolean}
      */
     isMovableField = function(field) {
-        if (map[ field[1] ] && map[ field[0] ] && map[ field[1] ][ field[0] ] === 0) {
+        if (map[ field[1] ] !== undefined && map[ field[1] ][ field[0] ] !== undefined && map[ field[1] ][ field[0] ] === 0) {
             return true;
         } else {
             return false;
@@ -323,6 +323,7 @@ rd.define('game.canvas', (function() {
         renderMoveRange: renderMoveRange,
         highlightMovableTiles: highlightMovableTiles,
         drawMovable: drawMovable,
+        isMovableField: isMovableField,
         init: init
     };
 
