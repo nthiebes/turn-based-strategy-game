@@ -88,6 +88,12 @@ rd.define('game.canvas', (function() {
     drawMovable = function(cfg) {
         var x = cfg.x,
             y = cfg.y;
+
+        if (cfg.rgbColor === 'move') {
+            cfg.rgbColor = '0,200,0';
+        } else if (cfg.rgbColor === 'current') {
+            cfg.rgbColor = '255,255,50';
+        }
         
         ctxUtils.clearRect(x, y, fieldWidth, fieldWidth);
 
@@ -150,7 +156,7 @@ rd.define('game.canvas', (function() {
      */
     renderEntity = function() {
         ctxAnim.save();
-        ctxAnim.translate(arguments[0].pos[0] * fieldWidth, arguments[0].pos[1] * fieldWidth);
+        ctxAnim.translate(arguments[0].pos[0] * fieldWidth, arguments[0].pos[1] * fieldWidth + arguments[0].posOffset);
 
         for (var i=1; i<arguments.length; i++) {
             arguments[i].render(ctxAnim);
@@ -189,7 +195,7 @@ rd.define('game.canvas', (function() {
         for (var i=0; i<availableFields.length; i++) {
             drawMovable({
                 lineWidth: 2,
-                rgbColor: '0,200,0',
+                rgbColor: 'move',
                 opacity: 0.8,
                 x: fieldWidth * availableFields[i][0],
                 y: fieldWidth * availableFields[i][1]
@@ -265,7 +271,7 @@ rd.define('game.canvas', (function() {
      * @return {boolean}
      */
     isMovableField = function(field) {
-        if (map[ field[1] ][ field[0] ] === 0) {
+        if (map[ field[1] ] && map[ field[0] ] && map[ field[1] ][ field[0] ] === 0) {
             return true;
         } else {
             return false;

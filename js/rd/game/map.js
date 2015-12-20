@@ -33,28 +33,26 @@ rd.define('game.map', (function(canvas) {
         canvasAnim.addEventListener('mouseleave', canvasLeave);
     },
 
+
+    /**
+     * Handle the mouseleave event
+     */
     canvasLeave = function() {
         // Redraw base tiles
-        canvas.highlightMovableTiles();
-        canvas.renderMoveRange(rd.game.main.getCurrentUnit());
-
-        currentPath = rd.game.main.getCurrentUnit().pos;
-        canvas.drawMovable({
-            lineWidth: 2,
-            rgbColor: '0,200,0',
-            opacity: 1,
-            x: currentPath[0] * tileSize,
-            y: currentPath[1] * tileSize
-        });
+        redrawUtils();
 
         currentCell = [];
-        body.className = 'default';
     },
 
 
+    /**
+     * Handle mousemove over the canvas
+     * @param  {object} e Event
+     */
     canvasMove = function(e) {
         var x,
-            y;
+            y,
+            type;
 
         // Grab html page coords
         if (e.pageX !== undefined && e.pageY !== undefined) {
@@ -78,11 +76,11 @@ rd.define('game.map', (function(canvas) {
         ];
 
         // Draw path only after entering a new cell
-        if (currentCell[0] !== cell[0] || currentCell[1] !== cell[1]) {
+        if ((currentCell[0] !== cell[0] || currentCell[1] !== cell[1]) && cell[0] < 12) {
             currentCell = cell;
 
             // Now we know which tile we clicked and can calculate a path
-            currentPath = findPath(map, [0,0], [cell[0],cell[1]]);
+            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]]);
 
             // Add the current cell if there is no path
             if (currentPath.length === 0) {
@@ -98,9 +96,15 @@ rd.define('game.map', (function(canvas) {
 
                 // Highlight the path tiles
                 for (var i=0; i<currentPath.length; i++) {
+                    if (i === 0 || i === currentPath.length-1) {
+                        type = 'current';
+                    } else {
+                        type = 'move';
+                    }
+
                     canvas.drawMovable({
                         lineWidth: 2,
-                        rgbColor: '0,200,0',
+                        rgbColor: type,
                         opacity: 1,
                         x: currentPath[i][0] * tileSize,
                         y: currentPath[i][1] * tileSize
@@ -116,19 +120,7 @@ rd.define('game.map', (function(canvas) {
 
             } else {
                 // Redraw base tiles
-                canvas.highlightMovableTiles();
-                canvas.renderMoveRange(rd.game.main.getCurrentUnit());
-
-                currentPath = rd.game.main.getCurrentUnit().pos;
-                canvas.drawMovable({
-                    lineWidth: 2,
-                    rgbColor: '0,200,0',
-                    opacity: 1,
-                    x: currentPath[0] * tileSize,
-                    y: currentPath[1] * tileSize
-                });
-
-                body.className = 'default';
+                redrawUtils();
             }
         }
     },
@@ -176,6 +168,26 @@ rd.define('game.map', (function(canvas) {
                 y: currentPath[i][1] * tileSize
             });
         }
+    },
+
+
+    /**
+     * Redraw all utils
+     */
+    redrawUtils = function() {
+        canvas.highlightMovableTiles();
+        canvas.renderMoveRange(rd.game.main.getCurrentUnit());
+
+        currentPath = rd.game.main.getCurrentUnit().pos;
+        canvas.drawMovable({
+            lineWidth: 2,
+            rgbColor: 'current',
+            opacity: 1,
+            x: currentPath[0] * tileSize,
+            y: currentPath[1] * tileSize
+        });
+
+        body.className = 'default';
     },
 
 

@@ -59,7 +59,7 @@ rd.define('game.main', (function(canvas) {
 	 * @param {object} delta
 	 */
 	updateEntities = function(delta) {
-        for( var i=0; i<unitStats.length; i++ ){
+        for (var i=0; i<unitStats.length; i++) {
             unitStats[i].skin.update(delta);
             unitStats[i].gear.head.update(delta);
             unitStats[i].gear.torso.update(delta);
@@ -109,14 +109,14 @@ rd.define('game.main', (function(canvas) {
 				rd.game.map.init();
 				rd.game.canvas.renderMoveRange(unitStats[currentUnit]);
 				main();
-				
+
 				// Default movable
 		        rd.game.canvas.drawMovable({
 		            lineWidth: 2,
-		            rgbColor: '0,200,0',
+		            rgbColor: 'current',
 		            opacity: 1,
-		            x: unitStats[currentUnit].pos[0] * 32,
-		            y: unitStats[currentUnit].pos[1] * 32
+		            x: unitStats[currentUnit].pos[0] * 64,
+		            y: unitStats[currentUnit].pos[1] * 64
 		        });
         	});
         });

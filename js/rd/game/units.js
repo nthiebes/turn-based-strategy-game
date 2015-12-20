@@ -16,8 +16,9 @@ rd.define('game.units', (function() {
      * @memberOf rd.game.units
      * @param {object} newUnit
      */
-    add = function(key) {
+    add = function(key, pos) {
         var newUnit = unitsCfg[key];
+        newUnit.pos = pos;
         newUnit.skin = new rd.utils.sprite(newUnit.skin);
         newUnit.gear.head = new rd.utils.sprite(newUnit.gear.head);
         newUnit.gear.torso = new rd.utils.sprite(newUnit.gear.torso);
@@ -57,8 +58,9 @@ rd.define('game.units', (function() {
         rd.utils.loadJSON('cfg/units.json', function(json) {
             unitsCfg = json;
 
-            add('nico');
-            add('nicoclone');
+            add('nico', [0, 4]);
+            //add('nico', [0, 6]);
+            add('nicoclone', [11, 5]);
             callback();
         });
     };

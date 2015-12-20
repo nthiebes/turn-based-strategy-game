@@ -1,7 +1,7 @@
 {
 	"nico": {
         "name": "Nico",
-        "pos": [0, 0],
+        "posOffset": -6,
         "skin": {
             "url": "img/units/skin1.png",
             "pos": [0, 128],
@@ -41,7 +41,7 @@
 
     "nicoclone": {
         "name": "Nico clone",
-        "pos": [6, 2],
+        "posOffset": -6,
         "skin": {
             "url": "img/units/skin4.png",
             "pos": [0, 192],

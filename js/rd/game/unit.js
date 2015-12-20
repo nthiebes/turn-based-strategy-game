@@ -77,6 +77,7 @@ rd.define('game.unit', function(cfg) {
     me.visible = cfg.visible || true;
     me.wounded = cfg.wounded;
     me.count = cfg.count;
+    me.posOffset = cfg.posOffset;
     me.weapon = cfg.weapon;
     me.health = cfg.health || 0;
     me.attributes = cfg.attributes;
