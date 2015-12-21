@@ -40,6 +40,7 @@ rd.define('game.canvas', (function() {
         tileSize = 32,
         fieldWidth = tileSize * 2,
         tilesetImage,
+        utilsDisabled = false,
         unitStats,
         map,
         curentMoveRange,
@@ -344,7 +345,7 @@ rd.define('game.canvas', (function() {
                 // Only movable tiles
                 if (map[j][i] === 0 || typeof map[j][i] === 'string') {
                     var opacity= 0.2;
-                    if (typeof map[j][i] === 'string') {
+                    if (typeof map[j][i] === 'string' || utilsDisabled) {
                         opacity = 0;
                     }
                     drawMovable({
@@ -358,6 +359,33 @@ rd.define('game.canvas', (function() {
                 }
             }
         }
+    },
+
+
+    /**
+     * Disable the utils
+     */
+    disableUtils = function() {
+        utilsDisabled = true;
+        highlightMovableTiles();
+    },
+
+
+    /**
+     * Disable the utils
+     */
+    enableUtils = function() {
+        utilsDisabled = false;
+        rd.game.map.redrawUtils();
+    },
+
+
+    /**
+     * Get the utilsDisabled value
+     * @return {boolean}
+     */
+    areUtilsDisabled = function() {
+        return utilsDisabled;
     },
 
 
@@ -384,6 +412,9 @@ rd.define('game.canvas', (function() {
         highlightMovableTiles: highlightMovableTiles,
         drawMovable: drawMovable,
         isMovableField: isMovableField,
+        disableUtils: disableUtils,
+        enableUtils: enableUtils,
+        areUtilsDisabled: areUtilsDisabled,
         init: init
     };
 

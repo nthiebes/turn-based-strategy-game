@@ -39,6 +39,11 @@ rd.define('game.map', (function(canvas) {
      * Handle the mouseleave event
      */
     canvasLeave = function() {
+        // Stop if utils are disabled
+        if (rd.game.canvas.areUtilsDisabled()) {
+            return false;
+        }
+
         // Redraw base tiles
         redrawUtils();
 
@@ -54,6 +59,11 @@ rd.define('game.map', (function(canvas) {
         var x,
             y,
             cellType;
+
+        // Stop if utils are disabled
+        if (rd.game.canvas.areUtilsDisabled()) {
+            return false;
+        }
 
         // Grab html page coords
         if (e.pageX !== undefined && e.pageY !== undefined) {
@@ -177,6 +187,11 @@ rd.define('game.map', (function(canvas) {
         var x,
             y;
 
+        // Stop if utils are disabled
+        if (rd.game.canvas.areUtilsDisabled()) {
+            return false;
+        }
+
         // Grab html page coords
         if (e.pageX !== undefined && e.pageY !== undefined) {
             x = e.pageX;
@@ -203,7 +218,14 @@ rd.define('game.map', (function(canvas) {
 
         // Check if player can move to that field
         if (currentPath.length <= rd.game.main.getCurrentUnit().attributes.moveRange + 1 && rd.game.canvas.isMovableField(cell)) {
-            console.log(cell);
+            var currentUnit = rd.game.units.get()[rd.game.main.getCurrentUnitId()];
+            
+            // Walk animation
+            currentUnit.walk({
+                path: currentPath
+            });
+
+            rd.game.canvas.disableUtils();
         }
     },
 
@@ -437,7 +459,8 @@ rd.define('game.map', (function(canvas) {
     return {
         init: init,
         getMap: getMap,
-        updateMap: updateMap
+        updateMap: updateMap,
+        redrawUtils: redrawUtils
     };
 
 })(rd.game.canvas));

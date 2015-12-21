@@ -15,6 +15,7 @@ rd.define('game.main', (function(canvas) {
 		fps,
 		fpsLimiter = 0,
 		currentUnit = 0,
+		tileCounter = 0,
 		elmFps = document.getElementById('fps'),
 
 
@@ -59,10 +60,65 @@ rd.define('game.main', (function(canvas) {
 	 * @param {object} delta
 	 */
 	updateEntities = function(delta) {
+		var unit,
+			path;
+
         for (var i=0; i<unitStats.length; i++) {
-            unitStats[i].skin.update(delta);
-            unitStats[i].gear.head.update(delta);
-            unitStats[i].gear.torso.update(delta);
+        	unit = unitStats[i];
+
+            unit.skin.update(delta);
+            unit.gear.head.update(delta);
+            unit.gear.torso.update(delta);
+
+            if (unit.path.length > 0) {
+	            path = unit.path;
+	            
+	            // Vertical movement
+	            if (unitStats[i].nextTile[0] === path[0][0]) {
+
+					// Move top if next tile is above current
+					if (unit.nextTile[1] > path[0][1]) {
+						unit.pos[1] = path[0][1] + ((1 / unit.steps) * unit.currentStep);
+						
+					// Move bottom if next tile is below current
+					} else if (unit.nextTile[1] < path[0][1]){
+						unit.pos[1] = path[0][1] - ((1 / unit.steps) * unit.currentStep);
+					}
+
+				// Horizontal movement
+				} else {
+
+					// Move left if next tile is on the left side of the current
+					if (unit.nextTile[0] > path[0][0]) {
+						unit.pos[0] = path[0][0] + ((1 / unit.steps) * unit.currentStep);
+						unit.skin.setPos([0, 64]);
+						unit.gear.head.setPos([0, 64]);
+						unit.gear.torso.setPos([0, 64]);
+						
+					// Move right if next tile is on the right side of the current
+					} else if (unit.nextTile[0] < path[0][0]) {
+						unit.pos[0] = path[0][0] - ((1 / unit.steps) * unit.currentStep);
+						unit.skin.setPos([0, 0]);
+						unit.gear.head.setPos([0, 0]);
+						unit.gear.torso.setPos([0, 0]);
+					}
+				}
+
+				// End of an animation from tile to tile
+				if (unit.currentStep === 1) {
+					unit.nextTile = path[0];
+
+					// Remove the first tile in the array
+					path.splice(0,1);
+
+					// Reset to start animation for next tile 
+					unit.currentStep = unit.steps;
+
+					tileCounter++;
+				}
+
+				unit.currentStep--;
+	        }
         }
     },
 
@@ -76,6 +132,10 @@ rd.define('game.main', (function(canvas) {
     },
 
 
+    /**
+     * Get the ID of the current unit
+     * @return {integer}
+     */
     getCurrentUnitId = function() {
     	return currentUnit;
     },

@@ -370,7 +370,7 @@ rd.define('game.unit', function(cfg) {
      * Play the walk animation cycle
      * @memberOf rd.game.unit
      */
-    walk = function() {
+    walk = function(cfg) {
         me.skin.setPos([0, 0]);
         me.skin.setFrames([0, 1, 2, 3]);
 
@@ -379,6 +379,11 @@ rd.define('game.unit', function(cfg) {
 
         me.gear.torso.setPos([0, 0]);
         me.gear.torso.setFrames([0, 1, 2, 3]);
+
+        me.path = cfg.path.splice(1,cfg.path.length);
+
+        // Define the next tile for the animation
+        me.nextTile = cfg.path[0];
     },
 
 
@@ -422,6 +427,9 @@ rd.define('game.unit', function(cfg) {
     me.weapon = cfg.weapon;
     me.health = cfg.health || 0;
     me.attributes = cfg.attributes;
+    me.path = [];
+    me.steps = 20;
+    me.currentStep = 20;
 
 
     /**
@@ -632,6 +640,7 @@ rd.define('game.canvas', (function() {
         tileSize = 32,
         fieldWidth = tileSize * 2,
         tilesetImage,
+        utilsDisabled = false,
         unitStats,
         map,
         curentMoveRange,
@@ -936,7 +945,7 @@ rd.define('game.canvas', (function() {
                 // Only movable tiles
                 if (map[j][i] === 0 || typeof map[j][i] === 'string') {
                     var opacity= 0.2;
-                    if (typeof map[j][i] === 'string') {
+                    if (typeof map[j][i] === 'string' || utilsDisabled) {
                         opacity = 0;
                     }
                     drawMovable({
@@ -950,6 +959,33 @@ rd.define('game.canvas', (function() {
                 }
             }
         }
+    },
+
+
+    /**
+     * Disable the utils
+     */
+    disableUtils = function() {
+        utilsDisabled = true;
+        highlightMovableTiles();
+    },
+
+
+    /**
+     * Disable the utils
+     */
+    enableUtils = function() {
+        utilsDisabled = false;
+        rd.game.map.redrawUtils();
+    },
+
+
+    /**
+     * Get the utilsDisabled value
+     * @return {boolean}
+     */
+    areUtilsDisabled = function() {
+        return utilsDisabled;
     },
 
 
@@ -976,6 +1012,9 @@ rd.define('game.canvas', (function() {
         highlightMovableTiles: highlightMovableTiles,
         drawMovable: drawMovable,
         isMovableField: isMovableField,
+        disableUtils: disableUtils,
+        enableUtils: enableUtils,
+        areUtilsDisabled: areUtilsDisabled,
         init: init
     };
 
@@ -1021,6 +1060,11 @@ rd.define('game.map', (function(canvas) {
      * Handle the mouseleave event
      */
     canvasLeave = function() {
+        // Stop if utils are disabled
+        if (rd.game.canvas.areUtilsDisabled()) {
+            return false;
+        }
+
         // Redraw base tiles
         redrawUtils();
 
@@ -1036,6 +1080,11 @@ rd.define('game.map', (function(canvas) {
         var x,
             y,
             cellType;
+
+        // Stop if utils are disabled
+        if (rd.game.canvas.areUtilsDisabled()) {
+            return false;
+        }
 
         // Grab html page coords
         if (e.pageX !== undefined && e.pageY !== undefined) {
@@ -1159,6 +1208,11 @@ rd.define('game.map', (function(canvas) {
         var x,
             y;
 
+        // Stop if utils are disabled
+        if (rd.game.canvas.areUtilsDisabled()) {
+            return false;
+        }
+
         // Grab html page coords
         if (e.pageX !== undefined && e.pageY !== undefined) {
             x = e.pageX;
@@ -1185,7 +1239,14 @@ rd.define('game.map', (function(canvas) {
 
         // Check if player can move to that field
         if (currentPath.length <= rd.game.main.getCurrentUnit().attributes.moveRange + 1 && rd.game.canvas.isMovableField(cell)) {
-            console.log(cell);
+            var currentUnit = rd.game.units.get()[rd.game.main.getCurrentUnitId()];
+            
+            // Walk animation
+            currentUnit.walk({
+                path: currentPath
+            });
+
+            rd.game.canvas.disableUtils();
         }
     },
 
@@ -1419,7 +1480,8 @@ rd.define('game.map', (function(canvas) {
     return {
         init: init,
         getMap: getMap,
-        updateMap: updateMap
+        updateMap: updateMap,
+        redrawUtils: redrawUtils
     };
 
 })(rd.game.canvas));
@@ -1440,6 +1502,7 @@ rd.define('game.main', (function(canvas) {
 		fps,
 		fpsLimiter = 0,
 		currentUnit = 0,
+		tileCounter = 0,
 		elmFps = document.getElementById('fps'),
 
 
@@ -1484,10 +1547,65 @@ rd.define('game.main', (function(canvas) {
 	 * @param {object} delta
 	 */
 	updateEntities = function(delta) {
+		var unit,
+			path;
+
         for (var i=0; i<unitStats.length; i++) {
-            unitStats[i].skin.update(delta);
-            unitStats[i].gear.head.update(delta);
-            unitStats[i].gear.torso.update(delta);
+        	unit = unitStats[i];
+
+            unit.skin.update(delta);
+            unit.gear.head.update(delta);
+            unit.gear.torso.update(delta);
+
+            if (unit.path.length > 0) {
+	            path = unit.path;
+	            
+	            // Vertical movement
+	            if (unitStats[i].nextTile[0] === path[0][0]) {
+
+					// Move top if next tile is above current
+					if (unit.nextTile[1] > path[0][1]) {
+						unit.pos[1] = path[0][1] + ((1 / unit.steps) * unit.currentStep);
+						
+					// Move bottom if next tile is below current
+					} else if (unit.nextTile[1] < path[0][1]){
+						unit.pos[1] = path[0][1] - ((1 / unit.steps) * unit.currentStep);
+					}
+
+				// Horizontal movement
+				} else {
+
+					// Move left if next tile is on the left side of the current
+					if (unit.nextTile[0] > path[0][0]) {
+						unit.pos[0] = path[0][0] + ((1 / unit.steps) * unit.currentStep);
+						unit.skin.setPos([0, 64]);
+						unit.gear.head.setPos([0, 64]);
+						unit.gear.torso.setPos([0, 64]);
+						
+					// Move right if next tile is on the right side of the current
+					} else if (unit.nextTile[0] < path[0][0]) {
+						unit.pos[0] = path[0][0] - ((1 / unit.steps) * unit.currentStep);
+						unit.skin.setPos([0, 0]);
+						unit.gear.head.setPos([0, 0]);
+						unit.gear.torso.setPos([0, 0]);
+					}
+				}
+
+				// End of an animation from tile to tile
+				if (unit.currentStep === 1) {
+					unit.nextTile = path[0];
+
+					// Remove the first tile in the array
+					path.splice(0,1);
+
+					// Reset to start animation for next tile 
+					unit.currentStep = unit.steps;
+
+					tileCounter++;
+				}
+
+				unit.currentStep--;
+	        }
         }
     },
 
@@ -1501,6 +1619,10 @@ rd.define('game.main', (function(canvas) {
     },
 
 
+    /**
+     * Get the ID of the current unit
+     * @return {integer}
+     */
     getCurrentUnitId = function() {
     	return currentUnit;
     },

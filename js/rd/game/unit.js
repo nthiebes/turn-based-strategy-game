@@ -30,7 +30,7 @@ rd.define('game.unit', function(cfg) {
      * Play the walk animation cycle
      * @memberOf rd.game.unit
      */
-    walk = function() {
+    walk = function(cfg) {
         me.skin.setPos([0, 0]);
         me.skin.setFrames([0, 1, 2, 3]);
 
@@ -39,6 +39,11 @@ rd.define('game.unit', function(cfg) {
 
         me.gear.torso.setPos([0, 0]);
         me.gear.torso.setFrames([0, 1, 2, 3]);
+
+        me.path = cfg.path.splice(1,cfg.path.length);
+
+        // Define the next tile for the animation
+        me.nextTile = cfg.path[0];
     },
 
 
@@ -82,6 +87,9 @@ rd.define('game.unit', function(cfg) {
     me.weapon = cfg.weapon;
     me.health = cfg.health || 0;
     me.attributes = cfg.attributes;
+    me.path = [];
+    me.steps = 20;
+    me.currentStep = 20;
 
 
     /**
