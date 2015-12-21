@@ -71,6 +71,7 @@ rd.define('game.unit', function(cfg) {
     me.name = cfg.name;
     me.skin = cfg.skin;
     me.pos = cfg.pos;
+    me.team = cfg.team;
     me.gear = cfg.gear;
     me.skills = cfg.skills;
     me.dead = cfg.dead;

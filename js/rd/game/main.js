@@ -76,6 +76,11 @@ rd.define('game.main', (function(canvas) {
     },
 
 
+    getCurrentUnitId = function() {
+    	return currentUnit;
+    },
+
+
 	/**
 	 * Initialization
 	 * @memberOf rd.game.main
@@ -113,7 +118,8 @@ rd.define('game.main', (function(canvas) {
 				// Default movable
 		        rd.game.canvas.drawMovable({
 		            lineWidth: 2,
-		            rgbColor: 'current',
+		            lineRgbColor: 'current',
+		            fillRgbColor: 'current',
 		            opacity: 1,
 		            x: unitStats[currentUnit].pos[0] * 64,
 		            y: unitStats[currentUnit].pos[1] * 64
@@ -128,7 +134,8 @@ rd.define('game.main', (function(canvas) {
 	 */
 	return {
 		init: init,
-		getCurrentUnit: getCurrentUnit
+		getCurrentUnit: getCurrentUnit,
+		getCurrentUnitId: getCurrentUnitId
 	};
 
 })(rd.game.canvas));

@@ -411,6 +411,7 @@ rd.define('game.unit', function(cfg) {
     me.name = cfg.name;
     me.skin = cfg.skin;
     me.pos = cfg.pos;
+    me.team = cfg.team;
     me.gear = cfg.gear;
     me.skills = cfg.skills;
     me.dead = cfg.dead;
@@ -514,14 +515,15 @@ rd.define('game.units', (function() {
      * @memberOf rd.game.units
      * @param {object} newUnit
      */
-    add = function(key, pos) {
-        var newUnit = JSON.parse(JSON.stringify(unitsCfg[key])); // Copy object
-        newUnit.pos = pos;
+    add = function(cfg) {
+        var newUnit = JSON.parse(JSON.stringify(unitsCfg[cfg.key])); // Copy object
+        newUnit.pos = cfg.pos;
+        newUnit.team = cfg.team;
         newUnit.skin = new rd.utils.sprite(newUnit.skin);
         newUnit.gear.head = new rd.utils.sprite(newUnit.gear.head);
         newUnit.gear.torso = new rd.utils.sprite(newUnit.gear.torso);
         units.push(new rd.game.unit(newUnit));
-        rd.game.map.updateMap(pos[0], pos[1], 'id-' + unitCount);
+        rd.game.map.updateMap(cfg.pos[0], cfg.pos[1], 'id-' + unitCount);
         unitCount++;
     },
 
@@ -558,9 +560,21 @@ rd.define('game.units', (function() {
         rd.utils.loadJSON('cfg/units.json', function(json) {
             unitsCfg = json;
 
-            add('nico', [0, 4]);
-            add('nico', [0, 6]);
-            add('nicoclone', [11, 5]);
+            add({
+                key: 'nico',
+                pos: [0, 4],
+                team: 1
+            });
+            add({
+                key: 'nico',
+                pos: [0, 6],
+                team: 1
+            });
+            add({
+                key: 'nicoclone',
+                pos: [11, 5],
+                team: 2
+            });
             callback();
         });
     };
@@ -620,6 +634,7 @@ rd.define('game.canvas', (function() {
         tilesetImage,
         unitStats,
         map,
+        curentMoveRange,
 
 
     /**
@@ -667,16 +682,34 @@ rd.define('game.canvas', (function() {
         var x = cfg.x,
             y = cfg.y;
 
-        if (cfg.rgbColor === 'move') {
-            cfg.rgbColor = '0,200,0';
-        } else if (cfg.rgbColor === 'current') {
-            cfg.rgbColor = '255,255,50';
+        if (cfg.lineRgbColor === 'move') {
+            cfg.lineRgbColor = '0,200,0';
+        } else if (cfg.lineRgbColor === 'current') {
+            cfg.lineRgbColor = '255,255,50';
+        } else if (cfg.lineRgbColor === 'hover') {
+            cfg.lineRgbColor = '50,50,50';
+        } else if (cfg.lineRgbColor === 'team1') {
+            cfg.lineRgbColor = '200,200,200';
+        } else if (cfg.lineRgbColor === 'team2') {
+            cfg.lineRgbColor = '255,150,0';
+        }
+
+        if (cfg.fillRgbColor === 'move') {
+            cfg.fillRgbColor = '0,200,0';
+        } else if (cfg.fillRgbColor === 'current') {
+            cfg.fillRgbColor = '255,255,50';
+        } else if (cfg.fillRgbColor === 'hover') {
+            cfg.fillRgbColor = '20,20,20';
+        } else if (cfg.fillRgbColor === 'team1') {
+            cfg.fillRgbColor = '200,200,200';
+        } else if (cfg.fillRgbColor === 'team2') {
+            cfg.fillRgbColor = '255,150,0';
         }
         
         ctxUtils.clearRect(x, y, fieldWidth, fieldWidth);
 
-        ctxUtils.strokeStyle = 'rgba(' + cfg.rgbColor + ',' + cfg.opacity + ')';
-        ctxUtils.fillStyle = 'rgba(' + cfg.rgbColor + ',' + (cfg.opacity >= 0.8 ? cfg.opacity - 0.8 : 0) + ')';
+        ctxUtils.strokeStyle = 'rgba(' + cfg.lineRgbColor + ',' + cfg.opacity + ')';
+        ctxUtils.fillStyle = 'rgba(' + cfg.fillRgbColor + ',' + (cfg.opacity >= 0.8 ? cfg.opacity - 0.8 : 0) + ')';
         ctxUtils.beginPath();
         ctxUtils.moveTo(x + 8, y + 8);
 
@@ -747,7 +780,7 @@ rd.define('game.canvas', (function() {
      * Show the move range
      * @memberOf rd.game.canvas
      */
-    renderMoveRange = function(unit) {
+    renderMoveRange = function(unit, hover) {
         var moveRange = unit.attributes.moveRange,
             availableFields = [],
             newFields;
@@ -758,7 +791,7 @@ rd.define('game.canvas', (function() {
         function getFields() {
             newFields = [];
             for (var j=0; j<availableFields.length; j++) {
-                newFields = newFields.concat( getSurroundingFields(availableFields[j]) );
+                newFields = newFields.concat( getSurroundingFields(availableFields[j], hover) );
             }
 
             availableFields = uniq(availableFields.concat(newFields));
@@ -769,15 +802,49 @@ rd.define('game.canvas', (function() {
             getFields();
         }
 
+        // Save move range so that we can compare it when hovering over another unit
+        if (!hover) {
+            curentMoveRange = availableFields;
+        }
+
         // Highlight all movable fields
         for (var i=0; i<availableFields.length; i++) {
-            drawMovable({
-                lineWidth: 2,
-                rgbColor: 'move',
-                opacity: 0.8,
-                x: fieldWidth * availableFields[i][0],
-                y: fieldWidth * availableFields[i][1]
-            });
+            var lineRgbColor = 'move',
+                fillRgbColor = 'move';
+
+            if (hover) {
+                var overlap = false;
+                fillRgbColor = 'hover';
+                
+                // Check if the field is also highlighted for the current move range
+                for (var j=0; j<curentMoveRange.length; j++) {
+                    if (fieldWidth * curentMoveRange[j][0] === fieldWidth * availableFields[i][0] &&
+                        fieldWidth * curentMoveRange[j][1] === fieldWidth * availableFields[i][1]) {
+                        overlap = true;
+                    }
+                }
+
+                // Define colors
+                if (overlap) {
+                    lineRgbColor = 'move';
+                } else {
+                    lineRgbColor = 'hover';
+                }
+            }
+
+            // Draw the thing
+            if (hover && i === 0) {
+
+            } else {
+                drawMovable({
+                    lineWidth: 2,
+                    lineRgbColor: lineRgbColor,
+                    fillRgbColor: fillRgbColor,
+                    opacity: hover ? 1 : 0.8,
+                    x: fieldWidth * availableFields[i][0],
+                    y: fieldWidth * availableFields[i][1]
+                });
+            }
         }
     },
 
@@ -800,12 +867,14 @@ rd.define('game.canvas', (function() {
      * @param  {array} field
      * @return {array}
      */
-    getSurroundingFields = function(field) {
+    getSurroundingFields = function(field, hover) {
         var fields = [],
             newField = [];
 
         // Nothing in our way
-        if (isMovableField(field) || (field[0] === rd.game.main.getCurrentUnit().pos[0] && field[1] === rd.game.main.getCurrentUnit().pos[1])) {
+        if (isMovableField(field) ||
+            (field[0] === rd.game.main.getCurrentUnit().pos[0] && field[1] === rd.game.main.getCurrentUnit().pos[1]) ||
+            hover) {
             // Top
             if (field[1] > 0) {
                 newField = [field[0], field[1] - 1];
@@ -865,11 +934,16 @@ rd.define('game.canvas', (function() {
         for (var i=0; i<colTileCount/2; i++) {
             for (var j=0; j<rowTileCount/2; j++) {
                 // Only movable tiles
-                if (map[j][i] === 0) {
+                if (map[j][i] === 0 || typeof map[j][i] === 'string') {
+                    var opacity= 0.2;
+                    if (typeof map[j][i] === 'string') {
+                        opacity = 0;
+                    }
                     drawMovable({
                         lineWidth: 2,
-                        rgbColor: '255,255,255',
-                        opacity: 0.2,
+                        lineRgbColor: '255,255,255',
+                        fillRgbColor: '255,255,255',
+                        opacity: opacity,
                         x: fieldWidth * i,
                         y: fieldWidth * j
                     });
@@ -930,6 +1004,7 @@ rd.define('game.map', (function(canvas) {
         tileSize = 64,
         currentPath,
         currentCell = [],
+        unitStats,
 
 
     /**
@@ -960,7 +1035,6 @@ rd.define('game.map', (function(canvas) {
     canvasMove = function(e) {
         var x,
             y,
-            type,
             cellType;
 
         // Grab html page coords
@@ -985,56 +1059,94 @@ rd.define('game.map', (function(canvas) {
         ];
 
         // Draw path only after entering a new cell
-        if ((currentCell[0] !== cell[0] || currentCell[1] !== cell[1]) && cell[0] < 12) {
+        if ((currentCell[0] !== cell[0] || currentCell[1] !== cell[1]) && cell[0] < 12 && cell[1] < 10) {
             currentCell = cell;
-
             cellType = map[ cell[1] ][ cell[0] ];
 
-            console.log(cellType);
+            // Unit hover
+            if (typeof cellType === 'string') {
+                var hoverUnitId = parseInt(cellType.replace('id-', '')),
+                    team;
+                unitStats = rd.game.units.getStats();
+                team = team = unitStats[hoverUnitId].team;
 
-            // Now we know which tile we clicked and can calculate a path
-            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]]);
-
-            // Add the current cell if there is no path
-            if (currentPath.length === 0) {
-                currentPath.push(rd.game.main.getCurrentUnit().pos);
-                body.className = 'default';
-            }
-
-            // Show path if it is below the move range
-            if (currentPath.length <= rd.game.main.getCurrentUnit().attributes.moveRange + 1) {
-                // Redraw base tiles
-                canvas.highlightMovableTiles();
-                canvas.renderMoveRange(rd.game.main.getCurrentUnit());
-
-                // Highlight the path tiles
-                for (var i=0; i<currentPath.length; i++) {
-                    if (i === 0 || i === currentPath.length-1) {
-                        type = 'current';
-                    } else {
-                        type = 'move';
-                    }
+                // Hover effect
+                if (rd.game.main.getCurrentUnitId() !== hoverUnitId) {
+                    rd.game.canvas.renderMoveRange(unitStats[hoverUnitId], true);
+                    body.className = 'cursor-help';
 
                     canvas.drawMovable({
                         lineWidth: 2,
-                        rgbColor: type,
+                        lineRgbColor: 'team' + team,
+                        fillRgbColor: 'team' + team,
                         opacity: 1,
-                        x: currentPath[i][0] * tileSize,
-                        y: currentPath[i][1] * tileSize
+                        x: unitStats[hoverUnitId].pos[0] * tileSize,
+                        y: unitStats[hoverUnitId].pos[1] * tileSize
                     });
-                }
 
-                // Cursors
-                if (currentPath.length === 1) {
-                    body.className = 'default';
+                // Current unit
                 } else {
-                    body.className = 'cursor-move';
+                    drawPath(cell);
+                }
+            
+            // Field hover
+            } else {
+                drawPath(cell);
+            }
+        }
+    },
+
+
+    /**
+     * Draw a moveable path
+     * @param {array} cell
+     */
+    drawPath = function(cell) {
+        var type;
+
+        // Now we know which tile we clicked and can calculate a path
+        currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]]);
+
+        // Add the current cell if there is no path
+        if (currentPath.length === 0) {
+            currentPath.push(rd.game.main.getCurrentUnit().pos);
+            body.className = 'default';
+        }
+
+        // Show path if it is below the move range
+        if (currentPath.length <= rd.game.main.getCurrentUnit().attributes.moveRange + 1) {
+            // Redraw base tiles
+            canvas.highlightMovableTiles();
+            canvas.renderMoveRange(rd.game.main.getCurrentUnit());
+
+            // Highlight the path tiles
+            for (var i=0; i<currentPath.length; i++) {
+                if (i === 0 || i === currentPath.length-1) {
+                    type = 'current';
+                } else {
+                    type = 'move';
                 }
 
-            } else {
-                // Redraw base tiles
-                redrawUtils();
+                canvas.drawMovable({
+                    lineWidth: 2,
+                    lineRgbColor: type,
+                    fillRgbColor: type,
+                    opacity: 1,
+                    x: currentPath[i][0] * tileSize,
+                    y: currentPath[i][1] * tileSize
+                });
             }
+
+            // Cursors
+            if (currentPath.length === 1) {
+                body.className = 'default';
+            } else {
+                body.className = 'cursor-move';
+            }
+
+        } else {
+            // Redraw base tiles
+            redrawUtils();
         }
     },
 
@@ -1088,7 +1200,8 @@ rd.define('game.map', (function(canvas) {
         currentPath = rd.game.main.getCurrentUnit().pos;
         canvas.drawMovable({
             lineWidth: 2,
-            rgbColor: 'current',
+            lineRgbColor: 'current',
+            fillRgbColor: 'current',
             opacity: 1,
             x: currentPath[0] * tileSize,
             y: currentPath[1] * tileSize
@@ -1388,6 +1501,11 @@ rd.define('game.main', (function(canvas) {
     },
 
 
+    getCurrentUnitId = function() {
+    	return currentUnit;
+    },
+
+
 	/**
 	 * Initialization
 	 * @memberOf rd.game.main
@@ -1425,7 +1543,8 @@ rd.define('game.main', (function(canvas) {
 				// Default movable
 		        rd.game.canvas.drawMovable({
 		            lineWidth: 2,
-		            rgbColor: 'current',
+		            lineRgbColor: 'current',
+		            fillRgbColor: 'current',
 		            opacity: 1,
 		            x: unitStats[currentUnit].pos[0] * 64,
 		            y: unitStats[currentUnit].pos[1] * 64
@@ -1440,7 +1559,8 @@ rd.define('game.main', (function(canvas) {
 	 */
 	return {
 		init: init,
-		getCurrentUnit: getCurrentUnit
+		getCurrentUnit: getCurrentUnit,
+		getCurrentUnitId: getCurrentUnitId
 	};
 
 })(rd.game.canvas));

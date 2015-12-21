@@ -42,6 +42,7 @@ rd.define('game.canvas', (function() {
         tilesetImage,
         unitStats,
         map,
+        curentMoveRange,
 
 
     /**
@@ -89,16 +90,34 @@ rd.define('game.canvas', (function() {
         var x = cfg.x,
             y = cfg.y;
 
-        if (cfg.rgbColor === 'move') {
-            cfg.rgbColor = '0,200,0';
-        } else if (cfg.rgbColor === 'current') {
-            cfg.rgbColor = '255,255,50';
+        if (cfg.lineRgbColor === 'move') {
+            cfg.lineRgbColor = '0,200,0';
+        } else if (cfg.lineRgbColor === 'current') {
+            cfg.lineRgbColor = '255,255,50';
+        } else if (cfg.lineRgbColor === 'hover') {
+            cfg.lineRgbColor = '50,50,50';
+        } else if (cfg.lineRgbColor === 'team1') {
+            cfg.lineRgbColor = '200,200,200';
+        } else if (cfg.lineRgbColor === 'team2') {
+            cfg.lineRgbColor = '255,150,0';
+        }
+
+        if (cfg.fillRgbColor === 'move') {
+            cfg.fillRgbColor = '0,200,0';
+        } else if (cfg.fillRgbColor === 'current') {
+            cfg.fillRgbColor = '255,255,50';
+        } else if (cfg.fillRgbColor === 'hover') {
+            cfg.fillRgbColor = '20,20,20';
+        } else if (cfg.fillRgbColor === 'team1') {
+            cfg.fillRgbColor = '200,200,200';
+        } else if (cfg.fillRgbColor === 'team2') {
+            cfg.fillRgbColor = '255,150,0';
         }
         
         ctxUtils.clearRect(x, y, fieldWidth, fieldWidth);
 
-        ctxUtils.strokeStyle = 'rgba(' + cfg.rgbColor + ',' + cfg.opacity + ')';
-        ctxUtils.fillStyle = 'rgba(' + cfg.rgbColor + ',' + (cfg.opacity >= 0.8 ? cfg.opacity - 0.8 : 0) + ')';
+        ctxUtils.strokeStyle = 'rgba(' + cfg.lineRgbColor + ',' + cfg.opacity + ')';
+        ctxUtils.fillStyle = 'rgba(' + cfg.fillRgbColor + ',' + (cfg.opacity >= 0.8 ? cfg.opacity - 0.8 : 0) + ')';
         ctxUtils.beginPath();
         ctxUtils.moveTo(x + 8, y + 8);
 
@@ -169,7 +188,7 @@ rd.define('game.canvas', (function() {
      * Show the move range
      * @memberOf rd.game.canvas
      */
-    renderMoveRange = function(unit) {
+    renderMoveRange = function(unit, hover) {
         var moveRange = unit.attributes.moveRange,
             availableFields = [],
             newFields;
@@ -180,7 +199,7 @@ rd.define('game.canvas', (function() {
         function getFields() {
             newFields = [];
             for (var j=0; j<availableFields.length; j++) {
-                newFields = newFields.concat( getSurroundingFields(availableFields[j]) );
+                newFields = newFields.concat( getSurroundingFields(availableFields[j], hover) );
             }
 
             availableFields = uniq(availableFields.concat(newFields));
@@ -191,15 +210,49 @@ rd.define('game.canvas', (function() {
             getFields();
         }
 
+        // Save move range so that we can compare it when hovering over another unit
+        if (!hover) {
+            curentMoveRange = availableFields;
+        }
+
         // Highlight all movable fields
         for (var i=0; i<availableFields.length; i++) {
-            drawMovable({
-                lineWidth: 2,
-                rgbColor: 'move',
-                opacity: 0.8,
-                x: fieldWidth * availableFields[i][0],
-                y: fieldWidth * availableFields[i][1]
-            });
+            var lineRgbColor = 'move',
+                fillRgbColor = 'move';
+
+            if (hover) {
+                var overlap = false;
+                fillRgbColor = 'hover';
+                
+                // Check if the field is also highlighted for the current move range
+                for (var j=0; j<curentMoveRange.length; j++) {
+                    if (fieldWidth * curentMoveRange[j][0] === fieldWidth * availableFields[i][0] &&
+                        fieldWidth * curentMoveRange[j][1] === fieldWidth * availableFields[i][1]) {
+                        overlap = true;
+                    }
+                }
+
+                // Define colors
+                if (overlap) {
+                    lineRgbColor = 'move';
+                } else {
+                    lineRgbColor = 'hover';
+                }
+            }
+
+            // Draw the thing
+            if (hover && i === 0) {
+
+            } else {
+                drawMovable({
+                    lineWidth: 2,
+                    lineRgbColor: lineRgbColor,
+                    fillRgbColor: fillRgbColor,
+                    opacity: hover ? 1 : 0.8,
+                    x: fieldWidth * availableFields[i][0],
+                    y: fieldWidth * availableFields[i][1]
+                });
+            }
         }
     },
 
@@ -222,12 +275,14 @@ rd.define('game.canvas', (function() {
      * @param  {array} field
      * @return {array}
      */
-    getSurroundingFields = function(field) {
+    getSurroundingFields = function(field, hover) {
         var fields = [],
             newField = [];
 
         // Nothing in our way
-        if (isMovableField(field) || (field[0] === rd.game.main.getCurrentUnit().pos[0] && field[1] === rd.game.main.getCurrentUnit().pos[1])) {
+        if (isMovableField(field) ||
+            (field[0] === rd.game.main.getCurrentUnit().pos[0] && field[1] === rd.game.main.getCurrentUnit().pos[1]) ||
+            hover) {
             // Top
             if (field[1] > 0) {
                 newField = [field[0], field[1] - 1];
@@ -287,11 +342,16 @@ rd.define('game.canvas', (function() {
         for (var i=0; i<colTileCount/2; i++) {
             for (var j=0; j<rowTileCount/2; j++) {
                 // Only movable tiles
-                if (map[j][i] === 0) {
+                if (map[j][i] === 0 || typeof map[j][i] === 'string') {
+                    var opacity= 0.2;
+                    if (typeof map[j][i] === 'string') {
+                        opacity = 0;
+                    }
                     drawMovable({
                         lineWidth: 2,
-                        rgbColor: '255,255,255',
-                        opacity: 0.2,
+                        lineRgbColor: '255,255,255',
+                        fillRgbColor: '255,255,255',
+                        opacity: opacity,
                         x: fieldWidth * i,
                         y: fieldWidth * j
                     });

@@ -17,14 +17,15 @@ rd.define('game.units', (function() {
      * @memberOf rd.game.units
      * @param {object} newUnit
      */
-    add = function(key, pos) {
-        var newUnit = JSON.parse(JSON.stringify(unitsCfg[key])); // Copy object
-        newUnit.pos = pos;
+    add = function(cfg) {
+        var newUnit = JSON.parse(JSON.stringify(unitsCfg[cfg.key])); // Copy object
+        newUnit.pos = cfg.pos;
+        newUnit.team = cfg.team;
         newUnit.skin = new rd.utils.sprite(newUnit.skin);
         newUnit.gear.head = new rd.utils.sprite(newUnit.gear.head);
         newUnit.gear.torso = new rd.utils.sprite(newUnit.gear.torso);
         units.push(new rd.game.unit(newUnit));
-        rd.game.map.updateMap(pos[0], pos[1], 'id-' + unitCount);
+        rd.game.map.updateMap(cfg.pos[0], cfg.pos[1], 'id-' + unitCount);
         unitCount++;
     },
 
@@ -61,9 +62,21 @@ rd.define('game.units', (function() {
         rd.utils.loadJSON('cfg/units.json', function(json) {
             unitsCfg = json;
 
-            add('nico', [0, 4]);
-            add('nico', [0, 6]);
-            add('nicoclone', [11, 5]);
+            add({
+                key: 'nico',
+                pos: [0, 4],
+                team: 1
+            });
+            add({
+                key: 'nico',
+                pos: [0, 6],
+                team: 1
+            });
+            add({
+                key: 'nicoclone',
+                pos: [11, 5],
+                team: 2
+            });
             callback();
         });
     };
