@@ -23,6 +23,13 @@ rd.define('game.unit', function(cfg) {
 
         me.gear.torso.setPos([0, 128]);
         me.gear.torso.setFrames([0]);
+
+        me.gear.leg.setPos([0, 128]);
+        me.gear.leg.setFrames([0]);
+
+        // Round new position
+        me.pos[0] = Math.round(me.pos[0]);
+        me.pos[1] = Math.round(me.pos[1]);
     },
 
 
@@ -40,10 +47,15 @@ rd.define('game.unit', function(cfg) {
         me.gear.torso.setPos([0, 0]);
         me.gear.torso.setFrames([0, 1, 2, 3]);
 
+        me.gear.leg.setPos([0, 0]);
+        me.gear.leg.setFrames([0, 1, 2, 3]);
+
         me.path = cfg.path.splice(1,cfg.path.length);
 
         // Define the next tile for the animation
         me.nextTile = cfg.path[0];
+
+        me.currentMoveRange = me.currentMoveRange - me.path.length;
     },
 
 
@@ -60,6 +72,9 @@ rd.define('game.unit', function(cfg) {
 
         me.gear.torso.setPos([0, 128]);
         me.gear.torso.setFrames([0, 1, 2]);
+
+        me.gear.leg.setPos([0, 128]);
+        me.gear.leg.setFrames([0, 1, 2]);
     },
 
 
@@ -78,6 +93,7 @@ rd.define('game.unit', function(cfg) {
     me.pos = cfg.pos;
     me.team = cfg.team;
     me.gear = cfg.gear;
+    me.moving = false;
     me.skills = cfg.skills;
     me.dead = cfg.dead;
     me.visible = cfg.visible || true;
@@ -88,6 +104,7 @@ rd.define('game.unit', function(cfg) {
     me.health = cfg.health || 0;
     me.attributes = cfg.attributes;
     me.path = [];
+    me.currentMoveRange = cfg.attributes.moveRange;
     me.steps = 20;
     me.currentStep = 20;
 

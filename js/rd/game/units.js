@@ -24,6 +24,7 @@ rd.define('game.units', (function() {
         newUnit.skin = new rd.utils.sprite(newUnit.skin);
         newUnit.gear.head = new rd.utils.sprite(newUnit.gear.head);
         newUnit.gear.torso = new rd.utils.sprite(newUnit.gear.torso);
+        newUnit.gear.leg = new rd.utils.sprite(newUnit.gear.leg);
         units.push(new rd.game.unit(newUnit));
         rd.game.map.updateMap(cfg.pos[0], cfg.pos[1], 'id-' + unitCount);
         unitCount++;
@@ -77,6 +78,12 @@ rd.define('game.units', (function() {
                 pos: [11, 5],
                 team: 2
             });
+            add({
+                key: 'nicoclone',
+                pos: [2, 4],
+                team: 2
+            });
+
             callback();
         });
     };

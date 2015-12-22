@@ -24,7 +24,13 @@
                 "speed": 4,
                 "frames": [0]
             },
-            "legs": 0
+            "leg": {
+                "url": "img/units/leg1.png",
+                "pos": [0, 128],
+                "size": [64, 64],
+                "speed": 4,
+                "frames": [0]
+            }
         },
         "count": 10,
         "weapons": {
@@ -64,7 +70,13 @@
                 "speed": 4,
                 "frames": [0]
             },
-            "legs": 0
+            "leg": {
+                "url": "img/units/leg0.png",
+                "pos": [0, 192],
+                "size": [64, 64],
+                "speed": 4,
+                "frames": [0]
+            }
         },
         "count": 10,
         "weapons": {

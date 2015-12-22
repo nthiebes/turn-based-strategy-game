@@ -102,6 +102,42 @@ rd.define('game.map', (function(canvas) {
                 if (rd.game.main.getCurrentUnitId() !== hoverUnitId) {
                     rd.game.canvas.renderMoveRange(unitStats[hoverUnitId], true);
                     body.className = 'cursor-help';
+                    var currentUnit = unitStats[rd.game.main.getCurrentUnitId()];
+
+                    // Check if it is an enemy
+                    if (team !== currentUnit.team) {
+                        currentPath = null;
+
+                        // Mouse over from left
+                        if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + 16 &&
+                            y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48) {
+                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0]-1,cell[1]]);
+                        drawPath([cell[0]-1,cell[1]]);
+
+                        // Mouse over from right
+                        } else if (x >= cell[0] * tileSize + 48 && x <= cell[0] * tileSize + 64 &&
+                                    y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48) {
+                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0]+1,cell[1]]);
+                            drawPath([cell[0]+1,cell[1]]);
+
+                        // Mouse over from top
+                        } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
+                                    y >= cell[1] * tileSize && y <= cell[1] * tileSize + 16) {
+                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]-1]);
+                            drawPath([cell[0],cell[1]-1]);
+
+                        // Mouse over from bottom
+                        } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
+                                    y >= cell[1] * tileSize + 48 && y <= cell[1] * tileSize + 64) {
+                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]+1]);
+                            drawPath([cell[0],cell[1]+1]);
+                        }
+
+                        // If a path is possible
+                        if (currentPath) {
+
+                        }
+                    }
 
                     canvas.drawMovable({
                         lineWidth: 2,
@@ -142,7 +178,7 @@ rd.define('game.map', (function(canvas) {
         }
 
         // Show path if it is below the move range
-        if (currentPath.length <= rd.game.main.getCurrentUnit().attributes.moveRange + 1) {
+        if (currentPath.length <= rd.game.main.getCurrentUnit().currentMoveRange + 1) {
             // Redraw base tiles
             canvas.highlightMovableTiles();
             canvas.renderMoveRange(rd.game.main.getCurrentUnit());
@@ -217,7 +253,7 @@ rd.define('game.map', (function(canvas) {
         currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]]);
 
         // Check if player can move to that field
-        if (currentPath.length <= rd.game.main.getCurrentUnit().attributes.moveRange + 1 && rd.game.canvas.isMovableField(cell)) {
+        if (currentPath.length <= rd.game.main.getCurrentUnit().currentMoveRange + 1 && rd.game.canvas.isMovableField(cell)) {
             var currentUnit = rd.game.units.get()[rd.game.main.getCurrentUnitId()];
             
             // Walk animation

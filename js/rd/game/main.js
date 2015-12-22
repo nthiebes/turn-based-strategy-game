@@ -69,8 +69,10 @@ rd.define('game.main', (function(canvas) {
             unit.skin.update(delta);
             unit.gear.head.update(delta);
             unit.gear.torso.update(delta);
+            unit.gear.leg.update(delta);
 
             if (unit.path.length > 0) {
+            	unit.moving = true;
 	            path = unit.path;
 	            
 	            // Vertical movement
@@ -94,6 +96,7 @@ rd.define('game.main', (function(canvas) {
 						unit.skin.setPos([0, 64]);
 						unit.gear.head.setPos([0, 64]);
 						unit.gear.torso.setPos([0, 64]);
+						unit.gear.leg.setPos([0, 64]);
 						
 					// Move right if next tile is on the right side of the current
 					} else if (unit.nextTile[0] < path[0][0]) {
@@ -101,6 +104,7 @@ rd.define('game.main', (function(canvas) {
 						unit.skin.setPos([0, 0]);
 						unit.gear.head.setPos([0, 0]);
 						unit.gear.torso.setPos([0, 0]);
+						unit.gear.leg.setPos([0, 0]);
 					}
 				}
 
@@ -118,8 +122,36 @@ rd.define('game.main', (function(canvas) {
 				}
 
 				unit.currentStep--;
+	        } else {
+	        	if (unit.moving) {
+	        		stopWalking(unit, i);
+	        	}
 	        }
         }
+    },
+
+
+    /**
+     * Stop the walk animation and show hud
+     */
+    stopWalking = function(unit, id) {
+    	unit.moving = false;
+		units[id].stop();
+    	
+    	if (unit.currentMoveRange === 0) {
+        	endTurn();
+        }
+        
+		rd.game.canvas.enableUtils();
+
+		canvas.drawMovable({
+            lineWidth: 2,
+            lineRgbColor: 'current',
+            fillRgbColor: 'current',
+            opacity: 1,
+            x: unitStats[currentUnit].pos[0] * 64,
+            y: unitStats[currentUnit].pos[1] * 64
+        });
     },
 
 
@@ -141,6 +173,14 @@ rd.define('game.main', (function(canvas) {
     },
 
 
+    /**
+     * Ende the current turn
+     */
+    endTurn = function() {
+    	currentUnit++;
+    },
+
+
 	/**
 	 * Initialization
 	 * @memberOf rd.game.main
@@ -159,6 +199,8 @@ rd.define('game.main', (function(canvas) {
 			'img/units/head2.png',
 			'img/units/torso0.png',
 			'img/units/torso1.png',
+			'img/units/leg0.png',
+			'img/units/leg1.png',
             'img/tileset.png'
         ]);
 
@@ -195,7 +237,8 @@ rd.define('game.main', (function(canvas) {
 	return {
 		init: init,
 		getCurrentUnit: getCurrentUnit,
-		getCurrentUnitId: getCurrentUnitId
+		getCurrentUnitId: getCurrentUnitId,
+		endTurn: endTurn
 	};
 
 })(rd.game.canvas));

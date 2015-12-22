@@ -363,6 +363,13 @@ rd.define('game.unit', function(cfg) {
 
         me.gear.torso.setPos([0, 128]);
         me.gear.torso.setFrames([0]);
+
+        me.gear.leg.setPos([0, 128]);
+        me.gear.leg.setFrames([0]);
+
+        // Round new position
+        me.pos[0] = Math.round(me.pos[0]);
+        me.pos[1] = Math.round(me.pos[1]);
     },
 
 
@@ -380,10 +387,15 @@ rd.define('game.unit', function(cfg) {
         me.gear.torso.setPos([0, 0]);
         me.gear.torso.setFrames([0, 1, 2, 3]);
 
+        me.gear.leg.setPos([0, 0]);
+        me.gear.leg.setFrames([0, 1, 2, 3]);
+
         me.path = cfg.path.splice(1,cfg.path.length);
 
         // Define the next tile for the animation
         me.nextTile = cfg.path[0];
+
+        me.currentMoveRange = me.currentMoveRange - me.path.length;
     },
 
 
@@ -400,6 +412,9 @@ rd.define('game.unit', function(cfg) {
 
         me.gear.torso.setPos([0, 128]);
         me.gear.torso.setFrames([0, 1, 2]);
+
+        me.gear.leg.setPos([0, 128]);
+        me.gear.leg.setFrames([0, 1, 2]);
     },
 
 
@@ -418,6 +433,7 @@ rd.define('game.unit', function(cfg) {
     me.pos = cfg.pos;
     me.team = cfg.team;
     me.gear = cfg.gear;
+    me.moving = false;
     me.skills = cfg.skills;
     me.dead = cfg.dead;
     me.visible = cfg.visible || true;
@@ -428,6 +444,7 @@ rd.define('game.unit', function(cfg) {
     me.health = cfg.health || 0;
     me.attributes = cfg.attributes;
     me.path = [];
+    me.currentMoveRange = cfg.attributes.moveRange;
     me.steps = 20;
     me.currentStep = 20;
 
@@ -530,6 +547,7 @@ rd.define('game.units', (function() {
         newUnit.skin = new rd.utils.sprite(newUnit.skin);
         newUnit.gear.head = new rd.utils.sprite(newUnit.gear.head);
         newUnit.gear.torso = new rd.utils.sprite(newUnit.gear.torso);
+        newUnit.gear.leg = new rd.utils.sprite(newUnit.gear.leg);
         units.push(new rd.game.unit(newUnit));
         rd.game.map.updateMap(cfg.pos[0], cfg.pos[1], 'id-' + unitCount);
         unitCount++;
@@ -583,6 +601,12 @@ rd.define('game.units', (function() {
                 pos: [11, 5],
                 team: 2
             });
+            add({
+                key: 'nicoclone',
+                pos: [2, 4],
+                team: 2
+            });
+
             callback();
         });
     };
@@ -766,7 +790,7 @@ rd.define('game.canvas', (function() {
      */
     renderEntities = function(list) {
         for (var i=0; i<list.length; i++) {
-            renderEntity(list[i], list[i].skin, list[i].gear.torso, list[i].gear.head);
+            renderEntity(list[i], list[i].skin, list[i].gear.leg, list[i].gear.torso, list[i].gear.head);
         }    
     },
 
@@ -790,7 +814,7 @@ rd.define('game.canvas', (function() {
      * @memberOf rd.game.canvas
      */
     renderMoveRange = function(unit, hover) {
-        var moveRange = unit.attributes.moveRange,
+        var moveRange = unit.currentMoveRange,
             availableFields = [],
             newFields;
 
@@ -977,6 +1001,7 @@ rd.define('game.canvas', (function() {
     enableUtils = function() {
         utilsDisabled = false;
         rd.game.map.redrawUtils();
+        rd.game.canvas.renderMoveRange(rd.game.main.getCurrentUnit());
     },
 
 
@@ -1123,6 +1148,42 @@ rd.define('game.map', (function(canvas) {
                 if (rd.game.main.getCurrentUnitId() !== hoverUnitId) {
                     rd.game.canvas.renderMoveRange(unitStats[hoverUnitId], true);
                     body.className = 'cursor-help';
+                    var currentUnit = unitStats[rd.game.main.getCurrentUnitId()];
+
+                    // Check if it is an enemy
+                    if (team !== currentUnit.team) {
+                        currentPath = null;
+
+                        // Mouse over from left
+                        if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + 16 &&
+                            y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48) {
+                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0]-1,cell[1]]);
+                        drawPath([cell[0]-1,cell[1]]);
+
+                        // Mouse over from right
+                        } else if (x >= cell[0] * tileSize + 48 && x <= cell[0] * tileSize + 64 &&
+                                    y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48) {
+                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0]+1,cell[1]]);
+                            drawPath([cell[0]+1,cell[1]]);
+
+                        // Mouse over from top
+                        } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
+                                    y >= cell[1] * tileSize && y <= cell[1] * tileSize + 16) {
+                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]-1]);
+                            drawPath([cell[0],cell[1]-1]);
+
+                        // Mouse over from bottom
+                        } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
+                                    y >= cell[1] * tileSize + 48 && y <= cell[1] * tileSize + 64) {
+                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]+1]);
+                            drawPath([cell[0],cell[1]+1]);
+                        }
+
+                        // If a path is possible
+                        if (currentPath) {
+
+                        }
+                    }
 
                     canvas.drawMovable({
                         lineWidth: 2,
@@ -1163,7 +1224,7 @@ rd.define('game.map', (function(canvas) {
         }
 
         // Show path if it is below the move range
-        if (currentPath.length <= rd.game.main.getCurrentUnit().attributes.moveRange + 1) {
+        if (currentPath.length <= rd.game.main.getCurrentUnit().currentMoveRange + 1) {
             // Redraw base tiles
             canvas.highlightMovableTiles();
             canvas.renderMoveRange(rd.game.main.getCurrentUnit());
@@ -1238,7 +1299,7 @@ rd.define('game.map', (function(canvas) {
         currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]]);
 
         // Check if player can move to that field
-        if (currentPath.length <= rd.game.main.getCurrentUnit().attributes.moveRange + 1 && rd.game.canvas.isMovableField(cell)) {
+        if (currentPath.length <= rd.game.main.getCurrentUnit().currentMoveRange + 1 && rd.game.canvas.isMovableField(cell)) {
             var currentUnit = rd.game.units.get()[rd.game.main.getCurrentUnitId()];
             
             // Walk animation
@@ -1556,8 +1617,10 @@ rd.define('game.main', (function(canvas) {
             unit.skin.update(delta);
             unit.gear.head.update(delta);
             unit.gear.torso.update(delta);
+            unit.gear.leg.update(delta);
 
             if (unit.path.length > 0) {
+            	unit.moving = true;
 	            path = unit.path;
 	            
 	            // Vertical movement
@@ -1581,6 +1644,7 @@ rd.define('game.main', (function(canvas) {
 						unit.skin.setPos([0, 64]);
 						unit.gear.head.setPos([0, 64]);
 						unit.gear.torso.setPos([0, 64]);
+						unit.gear.leg.setPos([0, 64]);
 						
 					// Move right if next tile is on the right side of the current
 					} else if (unit.nextTile[0] < path[0][0]) {
@@ -1588,6 +1652,7 @@ rd.define('game.main', (function(canvas) {
 						unit.skin.setPos([0, 0]);
 						unit.gear.head.setPos([0, 0]);
 						unit.gear.torso.setPos([0, 0]);
+						unit.gear.leg.setPos([0, 0]);
 					}
 				}
 
@@ -1605,8 +1670,36 @@ rd.define('game.main', (function(canvas) {
 				}
 
 				unit.currentStep--;
+	        } else {
+	        	if (unit.moving) {
+	        		stopWalking(unit, i);
+	        	}
 	        }
         }
+    },
+
+
+    /**
+     * Stop the walk animation and show hud
+     */
+    stopWalking = function(unit, id) {
+    	unit.moving = false;
+		units[id].stop();
+    	
+    	if (unit.currentMoveRange === 0) {
+        	endTurn();
+        }
+        
+		rd.game.canvas.enableUtils();
+
+		canvas.drawMovable({
+            lineWidth: 2,
+            lineRgbColor: 'current',
+            fillRgbColor: 'current',
+            opacity: 1,
+            x: unitStats[currentUnit].pos[0] * 64,
+            y: unitStats[currentUnit].pos[1] * 64
+        });
     },
 
 
@@ -1628,6 +1721,14 @@ rd.define('game.main', (function(canvas) {
     },
 
 
+    /**
+     * Ende the current turn
+     */
+    endTurn = function() {
+    	currentUnit++;
+    },
+
+
 	/**
 	 * Initialization
 	 * @memberOf rd.game.main
@@ -1646,6 +1747,8 @@ rd.define('game.main', (function(canvas) {
 			'img/units/head2.png',
 			'img/units/torso0.png',
 			'img/units/torso1.png',
+			'img/units/leg0.png',
+			'img/units/leg1.png',
             'img/tileset.png'
         ]);
 
@@ -1682,7 +1785,8 @@ rd.define('game.main', (function(canvas) {
 	return {
 		init: init,
 		getCurrentUnit: getCurrentUnit,
-		getCurrentUnitId: getCurrentUnitId
+		getCurrentUnitId: getCurrentUnitId,
+		endTurn: endTurn
 	};
 
 })(rd.game.canvas));

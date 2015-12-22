@@ -166,7 +166,7 @@ rd.define('game.canvas', (function() {
      */
     renderEntities = function(list) {
         for (var i=0; i<list.length; i++) {
-            renderEntity(list[i], list[i].skin, list[i].gear.torso, list[i].gear.head);
+            renderEntity(list[i], list[i].skin, list[i].gear.leg, list[i].gear.torso, list[i].gear.head);
         }    
     },
 
@@ -190,7 +190,7 @@ rd.define('game.canvas', (function() {
      * @memberOf rd.game.canvas
      */
     renderMoveRange = function(unit, hover) {
-        var moveRange = unit.attributes.moveRange,
+        var moveRange = unit.currentMoveRange,
             availableFields = [],
             newFields;
 
@@ -377,6 +377,7 @@ rd.define('game.canvas', (function() {
     enableUtils = function() {
         utilsDisabled = false;
         rd.game.map.redrawUtils();
+        rd.game.canvas.renderMoveRange(rd.game.main.getCurrentUnit());
     },
 
 
