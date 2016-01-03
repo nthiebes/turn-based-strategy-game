@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Unit Tester</title>
+	<link rel="stylesheet" type="text/css" href="builder.css">
+</head>
+<body>
+	<canvas id="builder-canvas" width="100" height="100"></canvas>
+
+	<h3>Skin / Race</h3>
+	<div id="builder-skin">
+		<button data-skin="0" data-race="human">Human 0</button>
+		<button data-skin="1" data-race="human">Human 1</button>
+		<button data-skin="2" data-race="human">Human 2</button>
+		<button data-skin="3" data-race="human">Human 3</button>
+		<button data-skin="4" data-race="human">Human 4</button>
+		<button data-skin="5" data-race="human">Human 5</button>
+		<button data-skin="6" data-race="human">Human 6</button>
+		<button data-skin="0" data-race="ghost">Ghost 0</button>
+		<button data-skin="0" data-race="vampire">Vampire 0</button>
+		<button data-skin="0" data-race="elf">Elf 0</button>
+		<button data-skin="0" data-race="orc">Orc 0</button>
+		<button data-skin="1" data-race="orc">Orc 1</button>
+		<button data-skin="2" data-race="orc">Orc 2</button>
+		<button data-skin="3" data-race="orc">Orc 3</button>
+		<button data-skin="0" data-race="zombie">Zombie 0</button>
+		<button data-skin="1" data-race="zombie">Zombie 1</button>
+		<button data-skin="2" data-race="zombie">Zombie 2</button>
+		<button data-skin="3" data-race="zombie">Zombie 3</button>
+		<button data-skin="4" data-race="zombie">Zombie 4</button>
+		<button data-skin="5" data-race="zombie">Zombie 5</button>
+		<button data-skin="6" data-race="zombie">Zombie 6</button>
+	</div>
+
+	<h3>Armor</h3>
+	<div id="builder-head">
+		<button data-head="0">None</button>
+		<button data-head="1">Head 1</button>
+		<button data-head="2">Head 2</button>
+	</div>
+
+	<div id="builder-torso">
+		<button data-torso="0">None</button>
+		<button data-torso="1">Torso 1</button>
+	</div>
+
+	<div id="builder-leg">
+		<button data-leg="0">None</button>
+		<button data-leg="1">Leg 1</button>
+	</div>
+
+	<h3>Weapon</h3>
+	<div id="builder-weapon-primary">
+		<button data-weapon="0">None</button>
+		<button data-weapon="1">Sword 1</button>
+		<button data-weapon="2">Speer 1</button>
+		<button data-weapon="3">Axe 1</button>
+	</div>
+
+	<div id="builder-weapon-secondary">
+		<button data-weapon="0">None</button>
+		<button data-weapon="1">Shield 1</button>
+	</div>
+
+	<h3>Animation</h3>
+	<div id="builder-animation">
+		<button id="builder-idle">Idle</button>
+		<button id="builder-walk">Walk</button>
+		<button id="builder-attack">Fight</button>
+	</div>
+
+	<h3>Misc</h3>
+	<div id="builder-side">
+		<button id="builder-left">Left</button>
+		<button id="builder-right">Right</button>
+	</div>
+	<div id="builder-zoom">
+		<button id="builder-500">500px</button>
+		<button id="builder-auto">auto</button>
+	</div>
+
+	<!-- <div id="fps"></div> -->
+
+	<script type="text/javascript" src="jquery.js"></script>
+	<script type="text/javascript" src="sprite.js"></script>
+	<script type="text/javascript" src="resources.js"></script>
+	<script type="text/javascript" src="unit.js"></script>
+	<script type="text/javascript" src="builder.js"></script>
+</body>
+</html>

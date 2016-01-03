@@ -1,0 +1,37 @@
+{
+	"human": {
+		"attack": 3,
+		"defense": 3,
+		"moveRange": 4
+	},
+
+	"orc": {
+		"attack": 3,
+		"defense": 4,
+		"moveRange": 3
+	},
+
+	"elf": {
+		"attack": 3,
+		"defense": 2,
+		"moveRange": 5
+	},
+
+	"vampire": {
+		"attack": 4,
+		"defense": 2,
+		"moveRange": 4
+	},
+
+	"ghost": {
+		"attack": 3,
+		"defense": 3,
+		"moveRange": 4
+	},
+
+	"zombie": {
+		"attack": 2,
+		"defense": 2,
+		"moveRange": 2
+	}
+}

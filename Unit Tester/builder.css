@@ -1,0 +1,25 @@
+body {
+	background-color: grey;
+}
+
+canvas {
+	display: block;
+	height: 500px;
+	width: 500px;
+}
+
+canvas.auto {
+	height: auto;
+	width: auto;
+}
+
+#builder-canvas {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate3d(0, -50%, 0);
+}
+
+div {
+    width: 50%;
+}

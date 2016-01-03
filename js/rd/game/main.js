@@ -143,6 +143,8 @@ rd.define('game.main', (function(canvas) {
         }
         
 		rd.game.canvas.enableUtils();
+        rd.game.canvas.highlightMovableTiles();
+        rd.game.canvas.renderMoveRange(unitStats[currentUnit]);
 
 		canvas.drawMovable({
             lineWidth: 2,
@@ -187,13 +189,27 @@ rd.define('game.main', (function(canvas) {
 	 */
 	init = function(){
 		rd.utils.resources.load([
-			'img/units/skin0.png',
-			'img/units/skin1.png',
-			'img/units/skin2.png',
-			'img/units/skin3.png',
-			'img/units/skin4.png',
-			'img/units/skin5.png',
-			'img/units/skin6.png',
+			'img/units/human0.png',
+			'img/units/human1.png',
+			'img/units/human2.png',
+			'img/units/human3.png',
+			'img/units/human4.png',
+			'img/units/human5.png',
+			'img/units/human6.png',
+			'img/units/zombie0.png',
+			'img/units/zombie1.png',
+			'img/units/zombie2.png',
+			'img/units/zombie3.png',
+			'img/units/zombie4.png',
+			'img/units/zombie5.png',
+			'img/units/zombie6.png',
+			'img/units/orc0.png',
+			'img/units/orc1.png',
+			'img/units/orc2.png',
+			'img/units/orc3.png',
+			'img/units/vampire0.png',
+			'img/units/ghost0.png',
+			'img/units/elf0.png',
 			'img/units/head0.png',
 			'img/units/head1.png',
 			'img/units/head2.png',

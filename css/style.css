@@ -16,6 +16,14 @@ body {
     cursor: url("../img/cursors/help.png"), auto; }
   body.cursor-move {
     cursor: url("../img/cursors/move.png"), auto; }
+  body.cursor-left {
+    cursor: url("../img/cursors/left.png"), auto; }
+  body.cursor-right {
+    cursor: url("../img/cursors/right.png"), auto; }
+  body.cursor-top {
+    cursor: url("../img/cursors/top.png"), auto; }
+  body.cursor-bottom {
+    cursor: url("../img/cursors/bottom.png"), auto; }
 
 canvas {
   width: 768px;

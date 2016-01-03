@@ -1,0 +1,31 @@
+{
+	"skin": {
+		"defense": 0,
+		"moveRange": 4
+	},
+
+	"cloth": {
+		"defense": 1,
+		"moveRange": 3
+	},
+
+	"leather": {
+		"defense": 2,
+		"moveRange": 2
+	},
+
+	"iron": {
+		"defense": 3,
+		"moveRange": 1
+	},
+
+	"steel": {
+		"defense": 4,
+		"moveRange": 0
+	},
+
+	"plate": {
+		"defense": 5,
+		"moveRange": 0
+	}
+}

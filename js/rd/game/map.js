@@ -58,7 +58,9 @@ rd.define('game.map', (function(canvas) {
     canvasMove = function(e) {
         var x,
             y,
-            cellType;
+            cellType,
+            hoverUnitId,
+            team;
 
         // Stop if utils are disabled
         if (rd.game.canvas.areUtilsDisabled()) {
@@ -86,76 +88,85 @@ rd.define('game.map', (function(canvas) {
             Math.floor(y/tileSize)
         ];
 
+        cellType = map[ cell[1] ][ cell[0] ];
+
         // Draw path only after entering a new cell
         if ((currentCell[0] !== cell[0] || currentCell[1] !== cell[1]) && cell[0] < 12 && cell[1] < 10) {
             currentCell = cell;
-            cellType = map[ cell[1] ][ cell[0] ];
 
             // Unit hover
             if (typeof cellType === 'string') {
-                var hoverUnitId = parseInt(cellType.replace('id-', '')),
-                    team;
-                unitStats = rd.game.units.getStats();
-                team = team = unitStats[hoverUnitId].team;
-
-                // Hover effect
-                if (rd.game.main.getCurrentUnitId() !== hoverUnitId) {
-                    rd.game.canvas.renderMoveRange(unitStats[hoverUnitId], true);
-                    body.className = 'cursor-help';
-                    var currentUnit = unitStats[rd.game.main.getCurrentUnitId()];
-
-                    // Check if it is an enemy
-                    if (team !== currentUnit.team) {
-                        currentPath = null;
-
-                        // Mouse over from left
-                        if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + 16 &&
-                            y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48) {
-                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0]-1,cell[1]]);
-                        drawPath([cell[0]-1,cell[1]]);
-
-                        // Mouse over from right
-                        } else if (x >= cell[0] * tileSize + 48 && x <= cell[0] * tileSize + 64 &&
-                                    y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48) {
-                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0]+1,cell[1]]);
-                            drawPath([cell[0]+1,cell[1]]);
-
-                        // Mouse over from top
-                        } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
-                                    y >= cell[1] * tileSize && y <= cell[1] * tileSize + 16) {
-                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]-1]);
-                            drawPath([cell[0],cell[1]-1]);
-
-                        // Mouse over from bottom
-                        } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
-                                    y >= cell[1] * tileSize + 48 && y <= cell[1] * tileSize + 64) {
-                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]+1]);
-                            drawPath([cell[0],cell[1]+1]);
-                        }
-
-                        // If a path is possible
-                        if (currentPath) {
-
-                        }
-                    }
-
-                    canvas.drawMovable({
-                        lineWidth: 2,
-                        lineRgbColor: 'team' + team,
-                        fillRgbColor: 'team' + team,
-                        opacity: 1,
-                        x: unitStats[hoverUnitId].pos[0] * tileSize,
-                        y: unitStats[hoverUnitId].pos[1] * tileSize
-                    });
+                hoverUnitId = parseInt(cellType.replace('id-', ''));
 
                 // Current unit
-                } else {
+                if (rd.game.main.getCurrentUnitId() === hoverUnitId) {
                     drawPath(cell);
                 }
             
             // Field hover
             } else {
                 drawPath(cell);
+            }
+
+        // Unit hover
+        } else if (typeof cellType === 'string') {
+            hoverUnitId = parseInt(cellType.replace('id-', ''));
+            unitStats = rd.game.units.getStats();
+            team = team = unitStats[hoverUnitId].team;
+
+            // Hover effect
+            if (rd.game.main.getCurrentUnitId() !== hoverUnitId) {
+                rd.game.canvas.renderMoveRange(unitStats[hoverUnitId], true);
+                body.className = 'cursor-help';
+                var currentUnit = unitStats[rd.game.main.getCurrentUnitId()];
+
+                // Check if it is an enemy
+                if (team !== currentUnit.team) {
+                    currentPath = null;
+
+                    // Mouse over from left
+                    if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + 16 &&
+                        y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48) {
+                        currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0]-1,cell[1]]);
+                        drawPath([cell[0]-1,cell[1]]);
+                        body.className = 'cursor-right';
+
+                    // Mouse over from right
+                    } else if (x >= cell[0] * tileSize + 48 && x <= cell[0] * tileSize + 64 &&
+                                y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48) {
+                        currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0]+1,cell[1]]);
+                        drawPath([cell[0]+1,cell[1]]);
+                        body.className = 'cursor-left';
+
+                    // Mouse over from top
+                    } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
+                                y >= cell[1] * tileSize && y <= cell[1] * tileSize + 16) {
+                        currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]-1]);
+                        drawPath([cell[0],cell[1]-1]);
+                        body.className = 'cursor-bottom';
+
+                    // Mouse over from bottom
+                    } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
+                                y >= cell[1] * tileSize + 48 && y <= cell[1] * tileSize + 64) {
+                        currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]+1]);
+                        drawPath([cell[0],cell[1]+1]);
+                        body.className = 'cursor-top';
+                    }
+
+                    // If a path is possible
+                    if (currentPath) {
+
+                    }
+                }
+
+                canvas.drawMovable({
+                    lineWidth: 2,
+                    lineRgbColor: 'team' + team,
+                    fillRgbColor: 'team' + team,
+                    opacity: 1,
+                    x: unitStats[hoverUnitId].pos[0] * tileSize,
+                    y: unitStats[hoverUnitId].pos[1] * tileSize
+                });
             }
         }
     },
@@ -262,6 +273,12 @@ rd.define('game.map', (function(canvas) {
             });
 
             rd.game.canvas.disableUtils();
+
+            // Reset old position
+            map[ rd.game.main.getCurrentUnit().pos[1] ][ rd.game.main.getCurrentUnit().pos[0] ] = 0;
+
+            // New position
+            map[ cell[1] ][ cell[0] ] = 'id-' + rd.game.main.getCurrentUnitId();
         }
     },
 

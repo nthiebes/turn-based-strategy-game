@@ -433,6 +433,8 @@ rd.define('game.unit', function(cfg) {
     me.pos = cfg.pos;
     me.team = cfg.team;
     me.gear = cfg.gear;
+    me.race = cfg.race;
+    me.armor = cfg.armor;
     me.moving = false;
     me.skills = cfg.skills;
     me.dead = cfg.dead;
@@ -440,11 +442,13 @@ rd.define('game.unit', function(cfg) {
     me.wounded = cfg.wounded;
     me.count = cfg.count;
     me.posOffset = cfg.posOffset;
-    me.weapon = cfg.weapon;
+    me.weapons = cfg.weapons;
     me.health = cfg.health || 0;
-    me.attributes = cfg.attributes;
+    me.attributes = cfg.racesCfg[cfg.race];
+    me.attributes.moveRange += cfg.armorCfg[cfg.armor].moveRange;
+    me.attributes.defense += cfg.armorCfg[cfg.armor].defense;
+    me.currentMoveRange = me.attributes.moveRange;
     me.path = [];
-    me.currentMoveRange = cfg.attributes.moveRange;
     me.steps = 20;
     me.currentStep = 20;
 
@@ -532,6 +536,9 @@ rd.define('game.units', (function() {
      */
     var units = [],
         unitsCfg,
+        armorCfg,
+        weaponsCfg,
+        racesCfg,
         unitCount = 0,
 
 
@@ -541,16 +548,89 @@ rd.define('game.units', (function() {
      * @param {object} newUnit
      */
     add = function(cfg) {
-        var newUnit = JSON.parse(JSON.stringify(unitsCfg[cfg.key])); // Copy object
+        var newUnit = JSON.parse(JSON.stringify(unitsCfg[cfg.key])), // Copy object
+            side = cfg.team === 1 ? 0 : 64;
         newUnit.pos = cfg.pos;
         newUnit.team = cfg.team;
-        newUnit.skin = new rd.utils.sprite(newUnit.skin);
-        newUnit.gear.head = new rd.utils.sprite(newUnit.gear.head);
-        newUnit.gear.torso = new rd.utils.sprite(newUnit.gear.torso);
-        newUnit.gear.leg = new rd.utils.sprite(newUnit.gear.leg);
+        newUnit.weaponsCfg = JSON.parse(JSON.stringify(weaponsCfg));
+        newUnit.armorCfg = JSON.parse(JSON.stringify(armorCfg));
+        newUnit.racesCfg = JSON.parse(JSON.stringify(racesCfg));
+        newUnit.skin = new rd.utils.sprite(getSkinPreset(newUnit.race, newUnit.skin, side));
+        newUnit.gear.head = new rd.utils.sprite(getHeadPreset(newUnit.gear.head, side));
+        newUnit.gear.torso = new rd.utils.sprite(getTorsoPreset(newUnit.gear.torso, side));
+        newUnit.gear.leg = new rd.utils.sprite(getLegPreset(newUnit.gear.leg, side));
         units.push(new rd.game.unit(newUnit));
         rd.game.map.updateMap(cfg.pos[0], cfg.pos[1], 'id-' + unitCount);
         unitCount++;
+    },
+
+
+    /**
+     * Skin sprite preset
+     * @param  {string}  race
+     * @param  {integer} skin
+     * @param  {integer} side
+     * @return {object}
+     */
+    getSkinPreset = function(race, skin, side) {
+        return {
+            "url": "img/units/" + race + skin + ".png",
+            "pos": [0, 128 + side],
+            "size": [64, 64],
+            "speed": 4,
+            "frames": [0]
+        };
+    },
+
+
+    /**
+     * Head sprite preset
+     * @param  {string}  head
+     * @param  {integer} side
+     * @return {object}
+     */
+    getHeadPreset = function(head, side) {
+        return {
+            "url": "img/units/head" + head + ".png",
+            "pos": [0, 128 + side],
+            "size": [64, 64],
+            "speed": 4,
+            "frames": [0]
+        };
+    },
+
+
+    /**
+     * Torso sprite preset
+     * @param  {string}  torso
+     * @param  {integer} side
+     * @return {object}
+     */
+    getTorsoPreset = function(torso, side) {
+        return {
+            "url": "img/units/torso" + torso + ".png",
+            "pos": [0, 128 + side],
+            "size": [64, 64],
+            "speed": 4,
+            "frames": [0]
+        };
+    },
+
+
+    /**
+     * Leg sprite preset
+     * @param  {string}  leg
+     * @param  {integer} side
+     * @return {object}
+     */
+    getLegPreset = function(leg, side) {
+        return {
+            "url": "img/units/leg" + leg + ".png",
+            "pos": [0, 128 + side],
+            "size": [64, 64],
+            "speed": 4,
+            "frames": [0]
+        };
     },
 
     
@@ -583,31 +663,43 @@ rd.define('game.units', (function() {
      * @memberOf rd.game.units
      */
     init = function(callback) {
-        rd.utils.loadJSON('cfg/units.json', function(json) {
-            unitsCfg = json;
+        rd.utils.loadJSON('cfg/units.json', function(unitsJson) {
+            unitsCfg = unitsJson;
 
-            add({
-                key: 'nico',
-                pos: [0, 4],
-                team: 1
-            });
-            add({
-                key: 'nico',
-                pos: [0, 6],
-                team: 1
-            });
-            add({
-                key: 'nicoclone',
-                pos: [11, 5],
-                team: 2
-            });
-            add({
-                key: 'nicoclone',
-                pos: [2, 4],
-                team: 2
-            });
+            rd.utils.loadJSON('cfg/races.json', function(racesJson) {
+                racesCfg = racesJson;
 
-            callback();
+                rd.utils.loadJSON('cfg/weapons.json', function(weaponsJson) {
+                    weaponsCfg = weaponsJson;
+
+                    rd.utils.loadJSON('cfg/armor.json', function(armorJson) {
+                        armorCfg = armorJson;
+
+                        add({
+                            key: 'nico',
+                            pos: [0, 4],
+                            team: 1
+                        });
+                        add({
+                            key: 'nicoclone',
+                            pos: [0, 6],
+                            team: 1
+                        });
+                        add({
+                            key: 'enemy1',
+                            pos: [11, 5],
+                            team: 2
+                        });
+                        add({
+                            key: 'enemy1',
+                            pos: [2, 4],
+                            team: 2
+                        });
+
+                        callback();
+                    });
+                });
+            });
         });
     };
 
@@ -1104,7 +1196,9 @@ rd.define('game.map', (function(canvas) {
     canvasMove = function(e) {
         var x,
             y,
-            cellType;
+            cellType,
+            hoverUnitId,
+            team;
 
         // Stop if utils are disabled
         if (rd.game.canvas.areUtilsDisabled()) {
@@ -1132,76 +1226,85 @@ rd.define('game.map', (function(canvas) {
             Math.floor(y/tileSize)
         ];
 
+        cellType = map[ cell[1] ][ cell[0] ];
+
         // Draw path only after entering a new cell
         if ((currentCell[0] !== cell[0] || currentCell[1] !== cell[1]) && cell[0] < 12 && cell[1] < 10) {
             currentCell = cell;
-            cellType = map[ cell[1] ][ cell[0] ];
 
             // Unit hover
             if (typeof cellType === 'string') {
-                var hoverUnitId = parseInt(cellType.replace('id-', '')),
-                    team;
-                unitStats = rd.game.units.getStats();
-                team = team = unitStats[hoverUnitId].team;
-
-                // Hover effect
-                if (rd.game.main.getCurrentUnitId() !== hoverUnitId) {
-                    rd.game.canvas.renderMoveRange(unitStats[hoverUnitId], true);
-                    body.className = 'cursor-help';
-                    var currentUnit = unitStats[rd.game.main.getCurrentUnitId()];
-
-                    // Check if it is an enemy
-                    if (team !== currentUnit.team) {
-                        currentPath = null;
-
-                        // Mouse over from left
-                        if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + 16 &&
-                            y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48) {
-                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0]-1,cell[1]]);
-                        drawPath([cell[0]-1,cell[1]]);
-
-                        // Mouse over from right
-                        } else if (x >= cell[0] * tileSize + 48 && x <= cell[0] * tileSize + 64 &&
-                                    y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48) {
-                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0]+1,cell[1]]);
-                            drawPath([cell[0]+1,cell[1]]);
-
-                        // Mouse over from top
-                        } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
-                                    y >= cell[1] * tileSize && y <= cell[1] * tileSize + 16) {
-                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]-1]);
-                            drawPath([cell[0],cell[1]-1]);
-
-                        // Mouse over from bottom
-                        } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
-                                    y >= cell[1] * tileSize + 48 && y <= cell[1] * tileSize + 64) {
-                            currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]+1]);
-                            drawPath([cell[0],cell[1]+1]);
-                        }
-
-                        // If a path is possible
-                        if (currentPath) {
-
-                        }
-                    }
-
-                    canvas.drawMovable({
-                        lineWidth: 2,
-                        lineRgbColor: 'team' + team,
-                        fillRgbColor: 'team' + team,
-                        opacity: 1,
-                        x: unitStats[hoverUnitId].pos[0] * tileSize,
-                        y: unitStats[hoverUnitId].pos[1] * tileSize
-                    });
+                hoverUnitId = parseInt(cellType.replace('id-', ''));
 
                 // Current unit
-                } else {
+                if (rd.game.main.getCurrentUnitId() === hoverUnitId) {
                     drawPath(cell);
                 }
             
             // Field hover
             } else {
                 drawPath(cell);
+            }
+
+        // Unit hover
+        } else if (typeof cellType === 'string') {
+            hoverUnitId = parseInt(cellType.replace('id-', ''));
+            unitStats = rd.game.units.getStats();
+            team = team = unitStats[hoverUnitId].team;
+
+            // Hover effect
+            if (rd.game.main.getCurrentUnitId() !== hoverUnitId) {
+                rd.game.canvas.renderMoveRange(unitStats[hoverUnitId], true);
+                body.className = 'cursor-help';
+                var currentUnit = unitStats[rd.game.main.getCurrentUnitId()];
+
+                // Check if it is an enemy
+                if (team !== currentUnit.team) {
+                    currentPath = null;
+
+                    // Mouse over from left
+                    if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + 16 &&
+                        y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48) {
+                        currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0]-1,cell[1]]);
+                        drawPath([cell[0]-1,cell[1]]);
+                        body.className = 'cursor-right';
+
+                    // Mouse over from right
+                    } else if (x >= cell[0] * tileSize + 48 && x <= cell[0] * tileSize + 64 &&
+                                y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48) {
+                        currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0]+1,cell[1]]);
+                        drawPath([cell[0]+1,cell[1]]);
+                        body.className = 'cursor-left';
+
+                    // Mouse over from top
+                    } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
+                                y >= cell[1] * tileSize && y <= cell[1] * tileSize + 16) {
+                        currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]-1]);
+                        drawPath([cell[0],cell[1]-1]);
+                        body.className = 'cursor-bottom';
+
+                    // Mouse over from bottom
+                    } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
+                                y >= cell[1] * tileSize + 48 && y <= cell[1] * tileSize + 64) {
+                        currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]+1]);
+                        drawPath([cell[0],cell[1]+1]);
+                        body.className = 'cursor-top';
+                    }
+
+                    // If a path is possible
+                    if (currentPath) {
+
+                    }
+                }
+
+                canvas.drawMovable({
+                    lineWidth: 2,
+                    lineRgbColor: 'team' + team,
+                    fillRgbColor: 'team' + team,
+                    opacity: 1,
+                    x: unitStats[hoverUnitId].pos[0] * tileSize,
+                    y: unitStats[hoverUnitId].pos[1] * tileSize
+                });
             }
         }
     },
@@ -1308,6 +1411,12 @@ rd.define('game.map', (function(canvas) {
             });
 
             rd.game.canvas.disableUtils();
+
+            // Reset old position
+            map[ rd.game.main.getCurrentUnit().pos[1] ][ rd.game.main.getCurrentUnit().pos[0] ] = 0;
+
+            // New position
+            map[ cell[1] ][ cell[0] ] = 'id-' + rd.game.main.getCurrentUnitId();
         }
     },
 
@@ -1691,6 +1800,8 @@ rd.define('game.main', (function(canvas) {
         }
         
 		rd.game.canvas.enableUtils();
+        rd.game.canvas.highlightMovableTiles();
+        rd.game.canvas.renderMoveRange(unitStats[currentUnit]);
 
 		canvas.drawMovable({
             lineWidth: 2,
@@ -1735,13 +1846,27 @@ rd.define('game.main', (function(canvas) {
 	 */
 	init = function(){
 		rd.utils.resources.load([
-			'img/units/skin0.png',
-			'img/units/skin1.png',
-			'img/units/skin2.png',
-			'img/units/skin3.png',
-			'img/units/skin4.png',
-			'img/units/skin5.png',
-			'img/units/skin6.png',
+			'img/units/human0.png',
+			'img/units/human1.png',
+			'img/units/human2.png',
+			'img/units/human3.png',
+			'img/units/human4.png',
+			'img/units/human5.png',
+			'img/units/human6.png',
+			'img/units/zombie0.png',
+			'img/units/zombie1.png',
+			'img/units/zombie2.png',
+			'img/units/zombie3.png',
+			'img/units/zombie4.png',
+			'img/units/zombie5.png',
+			'img/units/zombie6.png',
+			'img/units/orc0.png',
+			'img/units/orc1.png',
+			'img/units/orc2.png',
+			'img/units/orc3.png',
+			'img/units/vampire0.png',
+			'img/units/ghost0.png',
+			'img/units/elf0.png',
 			'img/units/head0.png',
 			'img/units/head1.png',
 			'img/units/head2.png',

@@ -93,6 +93,8 @@ rd.define('game.unit', function(cfg) {
     me.pos = cfg.pos;
     me.team = cfg.team;
     me.gear = cfg.gear;
+    me.race = cfg.race;
+    me.armor = cfg.armor;
     me.moving = false;
     me.skills = cfg.skills;
     me.dead = cfg.dead;
@@ -100,11 +102,13 @@ rd.define('game.unit', function(cfg) {
     me.wounded = cfg.wounded;
     me.count = cfg.count;
     me.posOffset = cfg.posOffset;
-    me.weapon = cfg.weapon;
+    me.weapons = cfg.weapons;
     me.health = cfg.health || 0;
-    me.attributes = cfg.attributes;
+    me.attributes = cfg.racesCfg[cfg.race];
+    me.attributes.moveRange += cfg.armorCfg[cfg.armor].moveRange;
+    me.attributes.defense += cfg.armorCfg[cfg.armor].defense;
+    me.currentMoveRange = me.attributes.moveRange;
     me.path = [];
-    me.currentMoveRange = cfg.attributes.moveRange;
     me.steps = 20;
     me.currentStep = 20;
 

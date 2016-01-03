@@ -22,6 +22,22 @@ body {
 	&.cursor-move {
 		cursor: url("../img/cursors/move.png"), auto;
 	}
+
+	&.cursor-left {
+		cursor: url("../img/cursors/left.png"), auto;
+	}
+
+	&.cursor-right {
+		cursor: url("../img/cursors/right.png"), auto;
+	}
+
+	&.cursor-top {
+		cursor: url("../img/cursors/top.png"), auto;
+	}
+
+	&.cursor-bottom {
+		cursor: url("../img/cursors/bottom.png"), auto;
+	}
 }
 
 canvas {
