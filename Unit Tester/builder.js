@@ -281,16 +281,22 @@ resources.load([
     baseUrl + 'head0.png',
     baseUrl + 'head1.png',
     baseUrl + 'head2.png',
+    baseUrl + 'head3.png',
+    baseUrl + 'head4.png',
     baseUrl + 'torso0.png',
     baseUrl + 'torso1.png',
+    baseUrl + 'torso2.png',
     baseUrl + 'leg0.png',
     baseUrl + 'leg1.png',
+    baseUrl + 'leg2.png',
     baseUrl + 'primary0.png',
     baseUrl + 'primary1.png',
     baseUrl + 'primary2.png',
     baseUrl + 'primary3.png',
+    baseUrl + 'primary4.png',
     baseUrl + 'secondary0.png',
-    baseUrl + 'secondary1.png'
+    baseUrl + 'secondary1.png',
+    baseUrl + 'secondary2.png'
 ]);
 resources.onReady(loaded);
 
