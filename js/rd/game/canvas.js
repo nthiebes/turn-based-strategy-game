@@ -150,6 +150,31 @@ rd.define('game.canvas', (function() {
 
 
     /**
+     * Draw the range custom shape
+     * @param  {object} cfg
+     */
+    drawRange = function(cfg) {
+        var x = cfg.x,
+            y = cfg.y;
+
+        ctxUtils.strokeStyle = 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')';
+        ctxUtils.fillStyle = 'rgba(' + cfg.fillRgbColor + ',' + cfg.fillOpacity + ')';
+        ctxUtils.beginPath();
+        ctxUtils.moveTo(x, y);
+
+        ctxUtils.lineTo(x + fieldWidth, y);
+        ctxUtils.lineTo(x + fieldWidth, y + fieldWidth);
+        ctxUtils.lineTo(x, y + fieldWidth);
+        ctxUtils.lineTo(x, y);
+        
+        ctxUtils.closePath();
+        ctxUtils.lineWidth = cfg.lineWidth;
+        ctxUtils.stroke();
+        ctxUtils.fill();
+    },
+
+
+    /**
      * Render the canvas
      * @memberOf rd.game.canvas
      */
@@ -182,6 +207,40 @@ rd.define('game.canvas', (function() {
             arguments[i].render(ctxAnim);
         }
         ctxAnim.restore();
+    },
+
+
+    /**
+     * Attack range
+     * @param  {object} unit
+     */
+    renderAttackRange = function(unit) {
+        var newFields,
+            visibleFields = [unit.pos];
+
+        // Each map tile
+        for (var i=0; i<map.length; i++) {
+            for (var j=0; j<map[i].length; j++) {
+                newFields = bline(unit, unit.pos[0], unit.pos[1], i, j);
+                visibleFields = visibleFields.concat(newFields);
+            }
+        }
+
+        // Remove duplicates
+        visibleFields = uniq(visibleFields);
+
+        // Draw the attack range
+        for (var k=0; k<visibleFields.length; k++) {
+            drawRange({
+                lineWidth: 2,
+                lineRgbColor: '0,0,0',
+                fillRgbColor: '255,100,100',
+                lineOpacity: 0,
+                fillOpacity: 0.2,
+                x: fieldWidth * visibleFields[k][0],
+                y: fieldWidth * visibleFields[k][1]
+            });
+        }
     },
 
 
@@ -363,6 +422,42 @@ rd.define('game.canvas', (function() {
 
 
     /**
+     * Bresenham ray casting algorithm
+     * @param  {object} currentUnit
+     * @param  {integer} x0
+     * @param  {integer} y0
+     * @param  {integer} x1
+     * @param  {integer} y1
+     * @return {array}
+     */
+    bline = function(currentUnit, x0, y0, x1, y1) {
+        var dx = Math.abs(x1 - x0), sx = x0 < x1 ? 1 : -1,
+            dy = Math.abs(y1 - y0), sy = y0 < y1 ? 1 : -1,
+            err = (dx>dy ? dx : -dy)/2,
+            fields = [];
+
+        while(true) {
+            console.log( map[x0][y0] );
+            if (map[x0][y0] === 0 || (x0 !== currentUnit.pos[0] && y0 !== currentUnit.pos[1])) {
+                fields.push([x0,y0]);
+            } else {
+                break;
+            }
+            if (x0 === x1 && y0 === y1) break;
+            var e2 = err;
+            if (e2 > -dx) {
+                err -= dy; x0 += sx;
+            }
+            if (e2 < dy) {
+                err += dx; y0 += sy;
+            }
+        }
+
+        return fields;
+    },
+
+
+    /**
      * Disable the utils
      */
     disableUtils = function() {
@@ -410,6 +505,7 @@ rd.define('game.canvas', (function() {
         render: render,
         drawLine : drawLine,
         renderMoveRange: renderMoveRange,
+        renderAttackRange: renderAttackRange,
         highlightMovableTiles: highlightMovableTiles,
         drawMovable: drawMovable,
         isMovableField: isMovableField,

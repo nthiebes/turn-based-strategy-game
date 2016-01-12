@@ -448,6 +448,7 @@ rd.define('game.unit', function(cfg) {
     me.attributes.moveRange += cfg.armorCfg[cfg.armor].moveRange;
     me.attributes.defense += cfg.armorCfg[cfg.armor].defense;
     me.currentMoveRange = me.attributes.moveRange;
+    me.attackRange = cfg.weaponsCfg[me.weapons.primary].attackRange;
     me.path = [];
     me.steps = 20;
     me.currentStep = 20;
@@ -866,6 +867,31 @@ rd.define('game.canvas', (function() {
 
 
     /**
+     * Draw the range custom shape
+     * @param  {object} cfg
+     */
+    drawRange = function(cfg) {
+        var x = cfg.x,
+            y = cfg.y;
+
+        ctxUtils.strokeStyle = 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')';
+        ctxUtils.fillStyle = 'rgba(' + cfg.fillRgbColor + ',' + cfg.fillOpacity + ')';
+        ctxUtils.beginPath();
+        ctxUtils.moveTo(x, y);
+
+        ctxUtils.lineTo(x + fieldWidth, y);
+        ctxUtils.lineTo(x + fieldWidth, y + fieldWidth);
+        ctxUtils.lineTo(x, y + fieldWidth);
+        ctxUtils.lineTo(x, y);
+        
+        ctxUtils.closePath();
+        ctxUtils.lineWidth = cfg.lineWidth;
+        ctxUtils.stroke();
+        ctxUtils.fill();
+    },
+
+
+    /**
      * Render the canvas
      * @memberOf rd.game.canvas
      */
@@ -898,6 +924,40 @@ rd.define('game.canvas', (function() {
             arguments[i].render(ctxAnim);
         }
         ctxAnim.restore();
+    },
+
+
+    /**
+     * Attack range
+     * @param  {object} unit
+     */
+    renderAttackRange = function(unit) {
+        var newFields,
+            visibleFields = [unit.pos];
+
+        // Each map tile
+        for (var i=0; i<map.length; i++) {
+            for (var j=0; j<map[i].length; j++) {
+                newFields = bline(unit, unit.pos[0], unit.pos[1], i, j);
+                visibleFields = visibleFields.concat(newFields);
+            }
+        }
+
+        // Remove duplicates
+        visibleFields = uniq(visibleFields);
+
+        // Draw the attack range
+        for (var k=0; k<visibleFields.length; k++) {
+            drawRange({
+                lineWidth: 2,
+                lineRgbColor: '0,0,0',
+                fillRgbColor: '255,100,100',
+                lineOpacity: 0,
+                fillOpacity: 0.2,
+                x: fieldWidth * visibleFields[k][0],
+                y: fieldWidth * visibleFields[k][1]
+            });
+        }
     },
 
 
@@ -1079,6 +1139,42 @@ rd.define('game.canvas', (function() {
 
 
     /**
+     * Bresenham ray casting algorithm
+     * @param  {object} currentUnit
+     * @param  {integer} x0
+     * @param  {integer} y0
+     * @param  {integer} x1
+     * @param  {integer} y1
+     * @return {array}
+     */
+    bline = function(currentUnit, x0, y0, x1, y1) {
+        var dx = Math.abs(x1 - x0), sx = x0 < x1 ? 1 : -1,
+            dy = Math.abs(y1 - y0), sy = y0 < y1 ? 1 : -1,
+            err = (dx>dy ? dx : -dy)/2,
+            fields = [];
+
+        while(true) {
+            console.log( map[x0][y0] );
+            if (map[x0][y0] === 0 || (x0 !== currentUnit.pos[0] && y0 !== currentUnit.pos[1])) {
+                fields.push([x0,y0]);
+            } else {
+                break;
+            }
+            if (x0 === x1 && y0 === y1) break;
+            var e2 = err;
+            if (e2 > -dx) {
+                err -= dy; x0 += sx;
+            }
+            if (e2 < dy) {
+                err += dx; y0 += sy;
+            }
+        }
+
+        return fields;
+    },
+
+
+    /**
      * Disable the utils
      */
     disableUtils = function() {
@@ -1126,6 +1222,7 @@ rd.define('game.canvas', (function() {
         render: render,
         drawLine : drawLine,
         renderMoveRange: renderMoveRange,
+        renderAttackRange: renderAttackRange,
         highlightMovableTiles: highlightMovableTiles,
         drawMovable: drawMovable,
         isMovableField: isMovableField,
@@ -1277,14 +1374,14 @@ rd.define('game.map', (function(canvas) {
                         body.className = 'cursor-left';
 
                     // Mouse over from top
-                    } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
+                    } else if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + tileSize &&
                                 y >= cell[1] * tileSize && y <= cell[1] * tileSize + 16) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]-1]);
                         drawPath([cell[0],cell[1]-1]);
                         body.className = 'cursor-bottom';
 
                     // Mouse over from bottom
-                    } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
+                    } else if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + tileSize &&
                                 y >= cell[1] * tileSize + 48 && y <= cell[1] * tileSize + 64) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]+1]);
                         drawPath([cell[0],cell[1]+1]);
@@ -1888,6 +1985,7 @@ rd.define('game.main', (function(canvas) {
 				rd.game.canvas.init();
 				rd.game.map.init();
 				rd.game.canvas.renderMoveRange(unitStats[currentUnit]);
+				rd.game.canvas.renderAttackRange(unitStats[currentUnit]);
 				main();
 
 				// Default movable

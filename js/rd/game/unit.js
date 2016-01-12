@@ -108,6 +108,7 @@ rd.define('game.unit', function(cfg) {
     me.attributes.moveRange += cfg.armorCfg[cfg.armor].moveRange;
     me.attributes.defense += cfg.armorCfg[cfg.armor].defense;
     me.currentMoveRange = me.attributes.moveRange;
+    me.attackRange = cfg.weaponsCfg[me.weapons.primary].attackRange;
     me.path = [];
     me.steps = 20;
     me.currentStep = 20;

@@ -139,14 +139,14 @@ rd.define('game.map', (function(canvas) {
                         body.className = 'cursor-left';
 
                     // Mouse over from top
-                    } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
+                    } else if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + tileSize &&
                                 y >= cell[1] * tileSize && y <= cell[1] * tileSize + 16) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]-1]);
                         drawPath([cell[0],cell[1]-1]);
                         body.className = 'cursor-bottom';
 
                     // Mouse over from bottom
-                    } else if (x >= cell[0] * tileSize + 16 && x <= cell[0] * tileSize + 48 &&
+                    } else if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + tileSize &&
                                 y >= cell[1] * tileSize + 48 && y <= cell[1] * tileSize + 64) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]+1]);
                         drawPath([cell[0],cell[1]+1]);
