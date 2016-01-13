@@ -231,7 +231,7 @@ rd.define('game.main', (function(canvas) {
 				rd.game.canvas.init();
 				rd.game.map.init();
 				rd.game.canvas.renderMoveRange(unitStats[currentUnit]);
-				rd.game.canvas.renderAttackRange(unitStats[currentUnit]);
+				rd.game.canvas.renderAttackRange(unitStats[currentUnit].pos);
 				main();
 
 				// Default movable

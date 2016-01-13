@@ -800,6 +800,14 @@ rd.define('game.canvas', (function() {
 
 
     /**
+     * Clear the utils canvas
+     */
+    clearUtils = function() {
+        canvasUtils.width = canvasUtils.width;
+    },
+
+
+    /**
      * Draw the 'movable' custom shape
      * @memberOf rd.game.canvas
      * @param {object} cfg Configuration
@@ -831,8 +839,6 @@ rd.define('game.canvas', (function() {
         } else if (cfg.fillRgbColor === 'team2') {
             cfg.fillRgbColor = '255,150,0';
         }
-        
-        ctxUtils.clearRect(x, y, fieldWidth, fieldWidth);
 
         ctxUtils.strokeStyle = 'rgba(' + cfg.lineRgbColor + ',' + cfg.opacity + ')';
         ctxUtils.fillStyle = 'rgba(' + cfg.fillRgbColor + ',' + (cfg.opacity >= 0.8 ? cfg.opacity - 0.8 : 0) + ')';
@@ -874,20 +880,22 @@ rd.define('game.canvas', (function() {
         var x = cfg.x,
             y = cfg.y;
 
-        ctxUtils.strokeStyle = 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')';
-        ctxUtils.fillStyle = 'rgba(' + cfg.fillRgbColor + ',' + cfg.fillOpacity + ')';
-        ctxUtils.beginPath();
-        ctxUtils.moveTo(x, y);
+        ctxUtils.drawImage(tilesetImage, (15 * tileSize), (66 * tileSize), tileSize, tileSize, x + 16, y + 18, tileSize, tileSize);
 
-        ctxUtils.lineTo(x + fieldWidth, y);
-        ctxUtils.lineTo(x + fieldWidth, y + fieldWidth);
-        ctxUtils.lineTo(x, y + fieldWidth);
-        ctxUtils.lineTo(x, y);
+        // ctxUtils.strokeStyle = 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')';
+        // ctxUtils.fillStyle = 'rgba(' + cfg.fillRgbColor + ',' + cfg.fillOpacity + ')';
+        // ctxUtils.beginPath();
+        // ctxUtils.moveTo(x, y);
+
+        // ctxUtils.lineTo(x + fieldWidth, y);
+        // ctxUtils.lineTo(x + fieldWidth, y + fieldWidth);
+        // ctxUtils.lineTo(x, y + fieldWidth);
+        // ctxUtils.lineTo(x, y);
         
-        ctxUtils.closePath();
-        ctxUtils.lineWidth = cfg.lineWidth;
-        ctxUtils.stroke();
-        ctxUtils.fill();
+        // ctxUtils.closePath();
+        // ctxUtils.lineWidth = cfg.lineWidth;
+        // ctxUtils.stroke();
+        // ctxUtils.fill();
     },
 
 
@@ -929,16 +937,16 @@ rd.define('game.canvas', (function() {
 
     /**
      * Attack range
-     * @param  {object} unit
+     * @param {object} unit
      */
-    renderAttackRange = function(unit) {
+    renderAttackRange = function(pos) {
         var newFields,
-            visibleFields = [unit.pos];
+            visibleFields = [pos];
 
         // Each map tile
         for (var i=0; i<map.length; i++) {
             for (var j=0; j<map[i].length; j++) {
-                newFields = bline(unit, unit.pos[0], unit.pos[1], i, j);
+                newFields = bline(pos[0], pos[1], j, i);
                 visibleFields = visibleFields.concat(newFields);
             }
         }
@@ -1140,22 +1148,20 @@ rd.define('game.canvas', (function() {
 
     /**
      * Bresenham ray casting algorithm
-     * @param  {object} currentUnit
      * @param  {integer} x0
      * @param  {integer} y0
      * @param  {integer} x1
      * @param  {integer} y1
      * @return {array}
      */
-    bline = function(currentUnit, x0, y0, x1, y1) {
+    bline = function(x0, y0, x1, y1) {
         var dx = Math.abs(x1 - x0), sx = x0 < x1 ? 1 : -1,
             dy = Math.abs(y1 - y0), sy = y0 < y1 ? 1 : -1,
             err = (dx>dy ? dx : -dy)/2,
             fields = [];
 
         while(true) {
-            console.log( map[x0][y0] );
-            if (map[x0][y0] === 0 || (x0 !== currentUnit.pos[0] && y0 !== currentUnit.pos[1])) {
+            if (map[y0][x0] === 0 || typeof map[y0][x0] === 'string') {
                 fields.push([x0,y0]);
             } else {
                 break;
@@ -1180,6 +1186,7 @@ rd.define('game.canvas', (function() {
     disableUtils = function() {
         utilsDisabled = true;
         highlightMovableTiles();
+        //renderAttackRange(rd.game.main.getCurrentUnit().pos);
     },
 
 
@@ -1220,7 +1227,8 @@ rd.define('game.canvas', (function() {
      */
     return {
         render: render,
-        drawLine : drawLine,
+        drawLine: drawLine,
+        clearUtils: clearUtils,
         renderMoveRange: renderMoveRange,
         renderAttackRange: renderAttackRange,
         highlightMovableTiles: highlightMovableTiles,
@@ -1340,6 +1348,8 @@ rd.define('game.map', (function(canvas) {
             
             // Field hover
             } else {
+                canvas.clearUtils();
+                canvas.highlightMovableTiles();
                 drawPath(cell);
             }
 
@@ -1351,9 +1361,10 @@ rd.define('game.map', (function(canvas) {
 
             // Hover effect
             if (rd.game.main.getCurrentUnitId() !== hoverUnitId) {
-                rd.game.canvas.renderMoveRange(unitStats[hoverUnitId], true);
-                body.className = 'cursor-help';
                 var currentUnit = unitStats[rd.game.main.getCurrentUnitId()];
+
+                canvas.clearUtils();
+                canvas.highlightMovableTiles();
 
                 // Check if it is an enemy
                 if (team !== currentUnit.team) {
@@ -1363,34 +1374,35 @@ rd.define('game.map', (function(canvas) {
                     if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + 16 &&
                         y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0]-1,cell[1]]);
-                        drawPath([cell[0]-1,cell[1]]);
+                        drawPath([cell[0]-1,cell[1]], true);
                         body.className = 'cursor-right';
 
                     // Mouse over from right
                     } else if (x >= cell[0] * tileSize + 48 && x <= cell[0] * tileSize + 64 &&
                                 y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0]+1,cell[1]]);
-                        drawPath([cell[0]+1,cell[1]]);
+                        drawPath([cell[0]+1,cell[1]], true);
                         body.className = 'cursor-left';
 
                     // Mouse over from top
                     } else if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + tileSize &&
                                 y >= cell[1] * tileSize && y <= cell[1] * tileSize + 16) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]-1]);
-                        drawPath([cell[0],cell[1]-1]);
+                        drawPath([cell[0],cell[1]-1], true);
                         body.className = 'cursor-bottom';
 
                     // Mouse over from bottom
                     } else if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + tileSize &&
                                 y >= cell[1] * tileSize + 48 && y <= cell[1] * tileSize + 64) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnit().pos, [cell[0],cell[1]+1]);
-                        drawPath([cell[0],cell[1]+1]);
+                        drawPath([cell[0],cell[1]+1], true);
                         body.className = 'cursor-top';
-                    }
 
-                    // If a path is possible
-                    if (currentPath) {
-
+                    // Center
+                    } else {
+                        canvas.renderMoveRange(unitStats[hoverUnitId], true);
+                        canvas.renderAttackRange(cell);
+                        body.className = 'cursor-help';
                     }
                 }
 
@@ -1411,7 +1423,7 @@ rd.define('game.map', (function(canvas) {
      * Draw a moveable path
      * @param {array} cell
      */
-    drawPath = function(cell) {
+    drawPath = function(cell, hideAttackRange) {
         var type;
 
         // Now we know which tile we clicked and can calculate a path
@@ -1426,6 +1438,7 @@ rd.define('game.map', (function(canvas) {
         // Show path if it is below the move range
         if (currentPath.length <= rd.game.main.getCurrentUnit().currentMoveRange + 1) {
             // Redraw base tiles
+            canvas.clearUtils();
             canvas.highlightMovableTiles();
             canvas.renderMoveRange(rd.game.main.getCurrentUnit());
 
@@ -1445,6 +1458,16 @@ rd.define('game.map', (function(canvas) {
                     x: currentPath[i][0] * tileSize,
                     y: currentPath[i][1] * tileSize
                 });
+            }
+
+            // Current unit or no obstacle
+            if (currentPath.length === 1) {
+                canvas.renderAttackRange(rd.game.main.getCurrentUnit().pos);
+            }
+
+            // Draw attack range
+            if (currentPath.length > 1 && !hideAttackRange) {
+                canvas.renderAttackRange(cell);
             }
 
             // Cursors
@@ -1522,10 +1545,11 @@ rd.define('game.map', (function(canvas) {
      * Redraw all utils
      */
     redrawUtils = function() {
+        currentPath = rd.game.main.getCurrentUnit().pos;
+        canvas.clearUtils();
         canvas.highlightMovableTiles();
         canvas.renderMoveRange(rd.game.main.getCurrentUnit());
-
-        currentPath = rd.game.main.getCurrentUnit().pos;
+        
         canvas.drawMovable({
             lineWidth: 2,
             lineRgbColor: 'current',
@@ -1535,6 +1559,7 @@ rd.define('game.map', (function(canvas) {
             y: currentPath[1] * tileSize
         });
 
+        canvas.renderAttackRange(currentPath);
         body.className = 'default';
     },
 
@@ -1985,7 +2010,7 @@ rd.define('game.main', (function(canvas) {
 				rd.game.canvas.init();
 				rd.game.map.init();
 				rd.game.canvas.renderMoveRange(unitStats[currentUnit]);
-				rd.game.canvas.renderAttackRange(unitStats[currentUnit]);
+				rd.game.canvas.renderAttackRange(unitStats[currentUnit].pos);
 				main();
 
 				// Default movable
