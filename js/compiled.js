@@ -880,22 +880,22 @@ rd.define('game.canvas', (function() {
         var x = cfg.x,
             y = cfg.y;
 
-        ctxUtils.drawImage(tilesetImage, (15 * tileSize), (66 * tileSize), tileSize, tileSize, x + 16, y + 18, tileSize, tileSize);
+        //ctxUtils.drawImage(tilesetImage, (15 * tileSize), (66 * tileSize), tileSize, tileSize, x + 16, y + 18, tileSize, tileSize);
 
-        // ctxUtils.strokeStyle = 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')';
-        // ctxUtils.fillStyle = 'rgba(' + cfg.fillRgbColor + ',' + cfg.fillOpacity + ')';
-        // ctxUtils.beginPath();
-        // ctxUtils.moveTo(x, y);
+        ctxUtils.strokeStyle = 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')';
+        ctxUtils.fillStyle = 'rgba(' + cfg.fillRgbColor + ',' + cfg.fillOpacity + ')';
+        ctxUtils.beginPath();
+        ctxUtils.moveTo(x, y);
 
-        // ctxUtils.lineTo(x + fieldWidth, y);
-        // ctxUtils.lineTo(x + fieldWidth, y + fieldWidth);
-        // ctxUtils.lineTo(x, y + fieldWidth);
-        // ctxUtils.lineTo(x, y);
+        ctxUtils.lineTo(x + fieldWidth, y);
+        ctxUtils.lineTo(x + fieldWidth, y + fieldWidth);
+        ctxUtils.lineTo(x, y + fieldWidth);
+        ctxUtils.lineTo(x, y);
         
-        // ctxUtils.closePath();
-        // ctxUtils.lineWidth = cfg.lineWidth;
-        // ctxUtils.stroke();
-        // ctxUtils.fill();
+        ctxUtils.closePath();
+        ctxUtils.lineWidth = cfg.lineWidth;
+        ctxUtils.stroke();
+        ctxUtils.fill();
     },
 
 
@@ -940,15 +940,40 @@ rd.define('game.canvas', (function() {
      * @param {object} unit
      */
     renderAttackRange = function(pos) {
-        var newFields,
+        var range = rd.game.main.getCurrentUnit().attackRange,
+            attackRangeFields = [],
+            newFields = [],
             visibleFields = [pos];
 
-        // Each map tile
-        for (var i=0; i<map.length; i++) {
-            for (var j=0; j<map[i].length; j++) {
-                newFields = bline(pos[0], pos[1], j, i);
-                visibleFields = visibleFields.concat(newFields);
+        // Collect circle tiles for each range
+        for (var l=1; l<=range; l++) {
+            attackRangeFields = attackRangeFields.concat(getCircle(pos[0], pos[1], l));
+        }
+
+        // Remove tiles that are out of the map
+        attackRangeFields = removeNegative(attackRangeFields);
+
+        // Fill gaps
+        for (var i=0; i<attackRangeFields.length; i++) {
+            var y = attackRangeFields[i][0],
+                x = attackRangeFields[i][1];
+
+            if (x > pos[1]) {
+                newFields.push([y,x-1]);
             }
+
+            if (x < pos[1]) {
+                newFields.push([y,x+1]);
+            }
+        }
+
+        // Merge the new array
+        attackRangeFields = attackRangeFields.concat(newFields);
+
+        // Remove fields that are out of the viewport
+        for (var j=0; j<attackRangeFields.length; j++) {
+            newFields = bline(pos[0], pos[1], attackRangeFields[j][0], attackRangeFields[j][1]);
+            visibleFields = visibleFields.concat(newFields);
         }
 
         // Remove duplicates
@@ -957,14 +982,14 @@ rd.define('game.canvas', (function() {
         // Draw the attack range
         for (var k=0; k<visibleFields.length; k++) {
             drawRange({
-                lineWidth: 2,
+                lineWidth: 1,
                 lineRgbColor: '0,0,0',
                 fillRgbColor: '255,100,100',
-                lineOpacity: 0,
+                lineOpacity: 0.3,
                 fillOpacity: 0.2,
                 x: fieldWidth * visibleFields[k][0],
                 y: fieldWidth * visibleFields[k][1]
-            });
+            });    
         }
     },
 
@@ -1044,14 +1069,35 @@ rd.define('game.canvas', (function() {
 
     /**
      * Removes duplicates from array
-     * @param  {array} a
+     * @param  {array} array
      * @return {array}
      */
-    uniq = function(a) {
+    uniq = function(array) {
         var seen = {};
-        return a.filter(function(item) {
+        return array.filter(function(item) {
             return seen.hasOwnProperty(item) ? false : (seen[item] = true);
         });
+    },
+
+
+    removeNegative = function(array) {
+        var fields = [];
+        for (var i=0; i<array.length; i++) {
+            var x = array[i][0],
+                y = array[i][1];
+            if (x < 0) {
+                x = 0;
+            } else if (x > 11) {
+                x = 11;
+            }
+            if (y < 0) {
+                y = 0;
+            } else if (y > 9) {
+                y = 9;
+            }
+            fields.push([x, y]);
+        }
+        return fields;
     },
 
 
@@ -1175,6 +1221,40 @@ rd.define('game.canvas', (function() {
                 err += dx; y0 += sy;
             }
         }
+
+        return fields;
+    },
+
+
+    /**
+     * Returns an array of circle tiles
+     * @param  {integer} x0
+     * @param  {integer} y0
+     * @param  {integer} radius
+     * @return {array}
+     */
+    getCircle = function(x0, y0, radius){
+        var x = -radius,
+            y = 0,
+            err = 2 - 2 * radius,
+            fields = [];
+
+        do {
+            fields.push([(x0 - x), (y0 + y)]);
+            fields.push([(x0 - y), (y0 - x)]);
+            fields.push([(x0 + x), (y0 - y)]);
+            fields.push([(x0 + y), (y0 + x)]);
+
+            radius = err;
+            if (radius <= y) {
+                y++;
+                err += y * 2 + 1;
+            }          
+            if (radius > x || err > y) {
+                x++;
+                err += x * 2 + 1;
+            } 
+        } while (x < 0);
 
         return fields;
     },

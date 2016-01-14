@@ -12,8 +12,8 @@
             "leg": 1
         },
         "weapons": {
-            "primary": "sword0",
-            "secondary": "shield0"
+            "primary": "shortbow0",
+            "secondary": null
         }
     },
 
@@ -48,8 +48,8 @@
             "leg": 1
         },
         "weapons": {
-            "primary": "sword0",
-            "secondary": "shield0"
+            "primary": "speer0",
+            "secondary": null
         }
     }
 }
