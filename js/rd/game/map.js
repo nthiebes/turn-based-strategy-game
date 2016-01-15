@@ -158,7 +158,7 @@ rd.define('game.map', (function(canvas) {
                     // Center
                     } else {
                         canvas.renderMoveRange(unitStats[hoverUnitId], true);
-                        canvas.renderAttackRange(cell);
+                        canvas.renderAttackRange(cell, unitStats[hoverUnitId].attackRange);
                         body.className = 'cursor-help';
                     }
                 }
@@ -219,12 +219,12 @@ rd.define('game.map', (function(canvas) {
 
             // Current unit or no obstacle
             if (currentPath.length === 1) {
-                canvas.renderAttackRange(rd.game.main.getCurrentUnit().pos);
+                canvas.renderAttackRange(rd.game.main.getCurrentUnit().pos, rd.game.main.getCurrentUnit().attackRange);
             }
 
             // Draw attack range
             if (currentPath.length > 1 && !hideAttackRange) {
-                canvas.renderAttackRange(cell);
+                canvas.renderAttackRange(cell, rd.game.main.getCurrentUnit().attackRange);
             }
 
             // Cursors
@@ -316,7 +316,7 @@ rd.define('game.map', (function(canvas) {
             y: currentPath[1] * tileSize
         });
 
-        canvas.renderAttackRange(currentPath);
+        canvas.renderAttackRange(currentPath, rd.game.main.getCurrentUnit().attackRange);
         body.className = 'default';
     },
 

@@ -167,6 +167,15 @@ rd.define('game.main', (function(canvas) {
 
 
     /**
+	 * Get the stats of the current unit
+	 * @memberOf rd.game.main
+	 */
+    getCurrentUnitInst = function() {
+    	return units[currentUnit];
+    },
+
+
+    /**
      * Get the ID of the current unit
      * @return {integer}
      */
@@ -231,7 +240,7 @@ rd.define('game.main', (function(canvas) {
 				rd.game.canvas.init();
 				rd.game.map.init();
 				rd.game.canvas.renderMoveRange(unitStats[currentUnit]);
-				rd.game.canvas.renderAttackRange(unitStats[currentUnit].pos);
+				rd.game.canvas.renderAttackRange(unitStats[currentUnit].pos, unitStats[currentUnit].attackRange);
 				main();
 
 				// Default movable
@@ -255,6 +264,7 @@ rd.define('game.main', (function(canvas) {
 		init: init,
 		getCurrentUnit: getCurrentUnit,
 		getCurrentUnitId: getCurrentUnitId,
+		getCurrentUnitInst: getCurrentUnitInst,
 		endTurn: endTurn
 	};
 

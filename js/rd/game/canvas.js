@@ -222,9 +222,8 @@ rd.define('game.canvas', (function() {
      * Attack range
      * @param {object} unit
      */
-    renderAttackRange = function(pos) {
-        var range = rd.game.main.getCurrentUnit().attackRange,
-            attackRangeFields = [],
+    renderAttackRange = function(pos, range) {
+        var attackRangeFields = [],
             newFields = [],
             visibleFields = [pos];
 
