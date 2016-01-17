@@ -7,31 +7,33 @@ rd.define('game.map', (function(canvas) {
     /**
      * Variables
      */
-    var map =  [[0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,1,1,1,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,1,0,0,0,0],
-                [0,0,0,0,0,0,0,1,0,0,0,0],
-                [0,0,0,1,1,1,1,1,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,0,0],
+    var map =  [[0,0,1,1,1,1,1,1,1,1,1,1],
+                [0,0,0,1,1,1,1,1,0,1,1,0],
+                [0,0,0,0,0,1,1,1,0,0,0,0],
+                [0,0,0,1,0,1,1,1,0,0,0,0],
+                [0,0,0,1,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0],
                 [0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,0,0]],
-        canvasAnim = document.getElementById('canvas-anim'),
+                [0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,1,1,1,0,0,0,0,0,0,0,0],
+                [0,1,1,1,1,1,0,0,0,0,0,0]],
+        canvasTop = document.getElementById('canvas-top1'),
         body = document.getElementsByTagName('body')[0],
         tileSize = 64,
         currentPath,
         currentCell = [],
         unitStats,
+        meleePossible = false,
+        rangedPossible = false,
 
 
     /**
      * Register the event listener
      */
     eventListener = function() {
-        canvasAnim.addEventListener('click', canvasClick);
-        canvasAnim.addEventListener('mousemove', canvasMove);
-        canvasAnim.addEventListener('mouseleave', canvasLeave);
+        canvasTop.addEventListener('click', canvasClick);
+        canvasTop.addEventListener('mousemove', canvasMove);
+        canvasTop.addEventListener('mouseleave', canvasLeave);
     },
 
 
@@ -79,8 +81,8 @@ rd.define('game.map', (function(canvas) {
         }
 
         // Make them relative to the canvas only
-        x -= canvasAnim.offsetLeft;
-        y -= canvasAnim.offsetTop;
+        x -= canvasTop.offsetLeft;
+        y -= canvasTop.offsetTop;
 
         // Return tile x,y that we clicked
         var cell = [
@@ -126,13 +128,13 @@ rd.define('game.map', (function(canvas) {
                 // Check if it is an enemy
                 if (team !== hoverUnit.team) {
                     currentPath = null;
+                    meleePossible = false;
 
                     var hoverUnitPos = unitStats[hoverUnitId].pos,
                         currentUnit = rd.game.main.getCurrentUnit(),
                         currentUnitStats = unitStats[rd.game.main.getCurrentUnitId()],
                         range = currentUnitStats.attackRange,
                         isInRange = currentUnit.isInRange(hoverUnitPos),
-                        meleePossible = false,
                         infoHoverEffect = false;
 
                     // Mouse over from left
@@ -141,7 +143,7 @@ rd.define('game.map', (function(canvas) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0]-1,cell[1]]);
 
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.attributes.moveRange && currentPath.length > 1) {
+                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[0] > 0) {
                             drawPath([cell[0]-1,cell[1]], true);
                             body.className = 'cursor-right';
                             meleePossible = true;
@@ -153,7 +155,7 @@ rd.define('game.map', (function(canvas) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0]+1,cell[1]]);
                         
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.attributes.moveRange && currentPath.length > 1) {
+                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[0] < 11) {
                             drawPath([cell[0]+1,cell[1]], true);
                             body.className = 'cursor-left';
                             meleePossible = true;
@@ -165,7 +167,7 @@ rd.define('game.map', (function(canvas) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1]-1]);
                         
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.attributes.moveRange && currentPath.length > 1) {
+                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[1] > 0) {
                             drawPath([cell[0],cell[1]-1], true);
                             body.className = 'cursor-bottom';
                             meleePossible = true;
@@ -177,7 +179,7 @@ rd.define('game.map', (function(canvas) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1]+1]);
                         
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.attributes.moveRange && currentPath.length > 1) {
+                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[1] < 9) {
                             drawPath([cell[0],cell[1]+1], true);
                             body.className = 'cursor-top';
                             meleePossible = true;
@@ -185,28 +187,30 @@ rd.define('game.map', (function(canvas) {
 
                     // Center
                     } else {
-                        canvas.renderMoveRange(unitStats[hoverUnitId], true);
                         canvas.renderAttackRange(cell, unitStats[hoverUnitId].attackRange);
+                        canvas.renderMoveRange(unitStats[hoverUnitId], true);
                         body.className = 'cursor-help';
                         infoHoverEffect = true;
                     }
 
                     // Unit not attackable through melee
                     if (!meleePossible && !infoHoverEffect) {
-                        canvas.renderMoveRange(unitStats[hoverUnitId], true);
                         canvas.renderAttackRange(cell, unitStats[hoverUnitId].attackRange);
+                        canvas.renderMoveRange(unitStats[hoverUnitId], true);
                         body.className = 'cursor-help';
                     }
 
                     // Unit that is in range
+                    rangedPossible = false;
                     if (isInRange && range > 1) {
                         body.className = 'cursor-ranged';
+                        rangedPossible = true;
                     }
 
                 // Unit from the same team
                 } else {
-                    canvas.renderMoveRange(unitStats[hoverUnitId], true);
                     canvas.renderAttackRange(cell, unitStats[hoverUnitId].attackRange);
+                    canvas.renderMoveRange(unitStats[hoverUnitId], true);
                     body.className = 'cursor-help';
                 }
 
@@ -244,6 +248,18 @@ rd.define('game.map', (function(canvas) {
             // Redraw base tiles
             canvas.clearUtils();
             canvas.highlightMovableTiles();
+
+            // Current unit or no obstacle
+            if (currentPath.length === 1) {
+                canvas.renderAttackRange(rd.game.main.getCurrentUnitStats().pos, rd.game.main.getCurrentUnitStats().attackRange);
+            }
+
+            // Draw attack range
+            if (currentPath.length > 1 && !hideAttackRange) {
+                canvas.renderAttackRange(cell, rd.game.main.getCurrentUnitStats().attackRange);
+            }
+
+            // Move range
             canvas.renderMoveRange(rd.game.main.getCurrentUnitStats());
 
             // Highlight the path tiles
@@ -262,16 +278,6 @@ rd.define('game.map', (function(canvas) {
                     x: currentPath[i][0] * tileSize,
                     y: currentPath[i][1] * tileSize
                 });
-            }
-
-            // Current unit or no obstacle
-            if (currentPath.length === 1) {
-                canvas.renderAttackRange(rd.game.main.getCurrentUnitStats().pos, rd.game.main.getCurrentUnitStats().attackRange);
-            }
-
-            // Draw attack range
-            if (currentPath.length > 1 && !hideAttackRange) {
-                canvas.renderAttackRange(cell, rd.game.main.getCurrentUnitStats().attackRange);
             }
 
             // Cursors
@@ -313,35 +319,65 @@ rd.define('game.map', (function(canvas) {
         }
 
         // Make them relative to the canvas only
-        x -= canvasAnim.offsetLeft;
-        y -= canvasAnim.offsetTop;
+        x -= canvasTop.offsetLeft;
+        y -= canvasTop.offsetTop;
 
         // Return tile x,y that we clicked
         var cell = [
-            Math.floor(x/tileSize),
-            Math.floor(y/tileSize)
-        ];
+                Math.floor(x/tileSize),
+                Math.floor(y/tileSize)
+            ],
+            cellType = map[ cell[1] ][ cell[0] ],
+            clickUnitId,
+            team;
+
+        // Click on unit
+        if (typeof cellType === 'string') {
+            var currentUnitStats = unitStats[rd.game.main.getCurrentUnitId()];
+            clickUnitId = parseInt(cellType.replace('id-', ''));
+            team = unitStats[clickUnitId].team;
+
+            // Fight
+            if ((meleePossible || rangedPossible) && currentUnitStats.team !== team) {
+                rd.game.combat.fight(rd.game.main.getCurrentUnitId(), clickUnitId);
+
+                if (currentPath.length > 1) {
+                    startWalking(currentPath[currentPath.length-1]);
+                }
+            }
+
+            return false;
+        }
 
         // Now we know which tile we clicked and can calculate a path
         currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1]]);
 
         // Check if player can move to that field
         if (currentPath.length <= rd.game.main.getCurrentUnitStats().currentMoveRange + 1 && rd.game.canvas.isMovableField(cell)) {
-            var currentUnit = rd.game.main.getCurrentUnit();
-            
-            // Walk animation
-            currentUnit.walk({
-                path: currentPath
-            });
-
-            rd.game.canvas.disableUtils();
-
-            // Reset old position
-            map[ rd.game.main.getCurrentUnitStats().pos[1] ][ rd.game.main.getCurrentUnitStats().pos[0] ] = 0;
-
-            // New position
-            map[ cell[1] ][ cell[0] ] = 'id-' + rd.game.main.getCurrentUnitId();
+            startWalking(cell);
         }
+    },
+
+
+    /**
+     * Start the walk animation and occupy the new field
+     * @param {array} cell
+     */
+    startWalking = function(cell) {
+        var currentUnit = rd.game.main.getCurrentUnit();
+
+        // Walk animation
+        currentUnit.walk({
+            path: currentPath
+        });
+
+        rd.game.canvas.disableUtils();
+
+        // Reset old position
+        map[ rd.game.main.getCurrentUnitStats().pos[1] ][ rd.game.main.getCurrentUnitStats().pos[0] ] = 0;
+
+        // New position
+        map[ cell[1] ][ cell[0] ] = 'id-' + rd.game.main.getCurrentUnitId();
     },
 
 
@@ -352,6 +388,7 @@ rd.define('game.map', (function(canvas) {
         currentPath = rd.game.main.getCurrentUnitStats().pos;
         canvas.clearUtils();
         canvas.highlightMovableTiles();
+        canvas.renderAttackRange(currentPath, rd.game.main.getCurrentUnitStats().attackRange);
         canvas.renderMoveRange(rd.game.main.getCurrentUnitStats());
         
         canvas.drawMovable({
@@ -363,7 +400,6 @@ rd.define('game.map', (function(canvas) {
             y: currentPath[1] * tileSize
         });
 
-        canvas.renderAttackRange(currentPath, rd.game.main.getCurrentUnitStats().attackRange);
         body.className = 'default';
     },
 

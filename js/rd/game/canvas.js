@@ -7,33 +7,20 @@ rd.define('game.canvas', (function() {
     /**
      * Variables
      */
-    var canvasGround1 = document.getElementById('canvas-ground'),
+    var canvasGround1 = document.getElementById('canvas-ground1'),
+        canvasGround2 = document.getElementById('canvas-ground2'),
+        canvasTop1 = document.getElementById('canvas-top1'),
         canvasAnim = document.getElementById('canvas-anim'),
         canvasUtils = document.getElementById('canvas-utils'),
         ctxGround1 = canvasGround1.getContext('2d'),
+        ctxGround2 = canvasGround2.getContext('2d'),
+        ctxTop1 = canvasTop1.getContext('2d'),
         ctxAnim = canvasAnim.getContext('2d'),
         ctxUtils = canvasUtils.getContext('2d'),
         // should be in an external file ...
-        ground1 = [[126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
-                    [142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],
-                    [126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
-                    [142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],
-                    [126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
-                    [142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],
-                    [126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
-                    [142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],
-                    [126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
-                    [142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],
-                    [126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
-                    [142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],
-                    [126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
-                    [142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],
-                    [126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
-                    [142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],
-                    [126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
-                    [142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],
-                    [126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],
-                    [142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143]],
+        ground1 = [[126,127,126,127,126,127,126,85,70,65,81,82,66,65,88,99,126,127,126,70,87,88,147,106],[142,143,142,143,142,143,142,101,102,145,82,87,82,81,72,143,142,143,142,161,102,108,142,143],[126,127,126,127,126,127,126,127,126,107,85,145,65,66,88,127,126,127,126,127,126,127,126,127],[142,143,142,143,142,143,142,143,142,143,142,85,81,82,72,143,142,143,142,143,142,143,142,143],[126,127,126,127,126,127,126,127,126,127,126,69,129,130,88,127,126,127,126,127,126,127,126,127],[142,143,142,143,142,143,142,143,142,143,142,85,145,146,104,143,142,143,142,143,142,143,142,143],[126,127,126,127,126,127,126,127,126,127,126,101,102,108,126,127,126,127,126,127,126,127,126,127],[142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],[126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],[142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],[126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],[142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],[126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],[142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],[126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],[142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],[126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],[142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],[126,127,126,69,70,87,50,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],[142,143,142,85,87,70,87,75,54,55,142,143,142,143,142,143,142,143,142,143,142,143,142,143]],
+        ground2 = [[0,0,0,0,223,269,84,0,0,0,0,0,0,0,0,0,118,119,144,0,0,0,0,0],[0,0,0,0,239,0,100,0,0,0,0,0,0,0,0,115,134,135,160,0,0,0,163,122],[0,0,0,0,0,0,116,117,106,0,0,0,0,0,0,89,0,0,176,177,118,178,179,0],[0,0,0,0,0,0,132,133,122,123,144,0,0,0,0,73,0,0,192,193,134,194,195,0],[0,0,0,0,0,0,0,0,138,139,160,0,0,0,0,89,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,692,68,0,0,0,0,105,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,100,0,0,0,120,121,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,116,117,118,124,136,137,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,341,342,0,0,132,133,134,140,141,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,357,358,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,240,241,241,242,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,256,257,0,258,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,68,0,0,0,0,51,38,39,40,41,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,84,0,0,0,0,0,0,0,56,57,0,0,0,0,0,0,0,0,0,0,0,0]],
+        top1 = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,309,310,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,325,326,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,37,38,39,40,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,52,53,54,55,56,57,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
         rowTileCount = ground1.length,
         colTileCount = ground1[0].length,
         imageNumTiles = 16,
@@ -50,12 +37,12 @@ rd.define('game.canvas', (function() {
      * Draw the images of a sprite onto the canvas
      * @param {object} ctx Canvas context
      */
-    drawImage = function(ctx) {
+    drawImage = function(ctx, array) {
         // Each row
         for (var r = 0; r < rowTileCount; r++) {
             // Each column
             for (var c = 0; c < colTileCount; c++) {
-                var tile = ground1[ r ][ c ],
+                var tile = array[ r ][ c ],
                     tileRow = (tile / imageNumTiles) | 0,
                     tileCol = (tile % imageNumTiles) | 0;
 
@@ -71,7 +58,6 @@ rd.define('game.canvas', (function() {
      * @param {object} cfg Configuration
      */
     drawLine = function(cfg) {
-        ctxUtils.fillStyle = cfg.lineColor;
         ctxUtils.strokeStyle = cfg.lineColor;
         ctxUtils.beginPath();
         ctxUtils.moveTo(cfg.x1, cfg.y1);
@@ -79,6 +65,20 @@ rd.define('game.canvas', (function() {
         ctxUtils.lineWidth = cfg.lineWidth;
         ctxUtils.stroke();
         ctxUtils.closePath();
+    },
+
+
+    /**
+     * Draw a rectangle with gradient
+     * @memberOf rd.game.canvas
+     * @param {object} cfg Configuration
+     */
+    drawGradient = function(cfg) {
+        var gradient = ctxUtils.createLinearGradient(cfg.x1, cfg.y1, cfg.x2, cfg.y2);
+        gradient.addColorStop(0, 'rgba(' + cfg.rgbColor + ',' + (cfg.opacity - 0.3) + ')');
+        gradient.addColorStop(1, 'transparent');
+        ctxUtils.fillStyle = gradient;
+        ctxUtils.fillRect(cfg.x0, cfg.y0, fieldWidth, fieldWidth);
     },
 
 
@@ -157,28 +157,150 @@ rd.define('game.canvas', (function() {
 
     /**
      * Draw the range custom shape
-     * @param  {object} cfg
+     * @param {object} cfg
      */
     drawRange = function(cfg) {
         var x = cfg.x,
-            y = cfg.y;
+            y = cfg.y,
+            border = isBorderTile(x/fieldWidth, y/fieldWidth, cfg.visibleFields);
 
-        //ctxUtils.drawImage(tilesetImage, (15 * tileSize), (66 * tileSize), tileSize, tileSize, x + 16, y + 18, tileSize, tileSize);
+        // Draw border on right side
+        if (border.right) {
+            drawLine({
+                lineColor: 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')',
+                lineWidth: cfg.lineWidth,
+                x1: x + fieldWidth,
+                x2: x + fieldWidth,
+                y1: y,
+                y2: y + fieldWidth
+            });
 
-        ctxUtils.strokeStyle = 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')';
-        ctxUtils.fillStyle = 'rgba(' + cfg.fillRgbColor + ',' + cfg.fillOpacity + ')';
-        ctxUtils.beginPath();
-        ctxUtils.moveTo(x, y);
+            drawGradient({
+                rgbColor: cfg.lineRgbColor,
+                opacity: cfg.lineOpacity,
+                x0: x,
+                y0: y,
+                x1: x + fieldWidth,
+                x2: x,
+                y1: y,
+                y2: y
+            });
+        }
 
-        ctxUtils.lineTo(x + fieldWidth, y);
-        ctxUtils.lineTo(x + fieldWidth, y + fieldWidth);
-        ctxUtils.lineTo(x, y + fieldWidth);
-        ctxUtils.lineTo(x, y);
-        
-        ctxUtils.closePath();
-        ctxUtils.lineWidth = cfg.lineWidth;
-        ctxUtils.stroke();
-        ctxUtils.fill();
+        // Draw border on left side
+        if (border.left) {
+            drawLine({
+                lineColor: 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')',
+                lineWidth: cfg.lineWidth,
+                x1: x,
+                x2: x,
+                y1: y,
+                y2: y + fieldWidth
+            });
+
+            drawGradient({
+                rgbColor: cfg.lineRgbColor,
+                opacity: cfg.lineOpacity,
+                x0: x,
+                y0: y,
+                x1: x,
+                x2: x + fieldWidth,
+                y1: y,
+                y2: y
+            });
+        }
+
+        // Draw border on bottom side
+        if (border.bottom) {
+            drawLine({
+                lineColor: 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')',
+                lineWidth: cfg.lineWidth,
+                x1: x,
+                x2: x + fieldWidth,
+                y1: y + fieldWidth,
+                y2: y + fieldWidth
+            });
+
+            drawGradient({
+                rgbColor: cfg.lineRgbColor,
+                opacity: cfg.lineOpacity,
+                x0: x,
+                y0: y,
+                x1: x,
+                x2: x,
+                y1: y + fieldWidth,
+                y2: y
+            });
+        }
+
+        // Draw border on top side
+        if (border.top) {
+            drawLine({
+                lineColor: 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')',
+                lineWidth: cfg.lineWidth,
+                x1: x,
+                x2: x + fieldWidth,
+                y1: y,
+                y2: y
+            });
+
+            drawGradient({
+                rgbColor: cfg.lineRgbColor,
+                opacity: cfg.lineOpacity,
+                x0: x,
+                y0: y,
+                x1: x,
+                x2: x,
+                y1: y,
+                y2: y + fieldWidth
+            });
+        }
+    },
+
+
+    /**
+     * Checks for fields that are at the border
+     * @param  {integer} x
+     * @param  {integer} y
+     * @param  {array}   fields
+     * @return {object}
+     */
+    isBorderTile = function(x, y, fields) {
+        var right = x + 1,
+            left = x - 1,
+            bottom = y + 1,
+            top = y - 1,
+            result = {
+                right: true,
+                left: true,
+                bottom: true,
+                top: true
+            };
+
+        // Each field in range
+        for (var i=0; i<fields.length; i++) {
+            // Check the right side
+            if (fields[i][0] === right && fields[i][1] === y) {
+                result.right = false;
+            }
+
+            // Check the left side
+            if (fields[i][0] === left && fields[i][1] === y) {
+                result.left = false;
+            }
+
+            // Check the bottom side
+            if (fields[i][0] === x && fields[i][1] === bottom) {
+                result.bottom = false;
+            }
+
+            // Check the top side
+            if (fields[i][0] === x && fields[i][1] === top) {
+                result.top = false;
+            }
+        }
+
+        return result;
     },
 
 
@@ -200,7 +322,7 @@ rd.define('game.canvas', (function() {
     renderEntities = function(list) {
         for (var i=0; i<list.length; i++) {
             renderEntity(list[i], list[i].skin, list[i].gear.leg, list[i].gear.torso, list[i].gear.head);
-        }    
+        }
     },
 
     
@@ -234,13 +356,12 @@ rd.define('game.canvas', (function() {
         // Draw the attack range
         for (var k=0; k<visibleFields.length; k++) {
             drawRange({
-                lineWidth: 1,
-                lineRgbColor: '0,0,0',
-                fillRgbColor: '255,100,100',
-                lineOpacity: 0.3,
-                fillOpacity: 0.2,
+                lineWidth: 2,
+                lineRgbColor: '150,0,0',
+                lineOpacity: 0.5,
                 x: fieldWidth * visibleFields[k][0],
-                y: fieldWidth * visibleFields[k][1]
+                y: fieldWidth * visibleFields[k][1],
+                visibleFields: visibleFields
             });    
         }
     },
@@ -599,7 +720,9 @@ rd.define('game.canvas', (function() {
     init = function() {
         tilesetImage = rd.utils.resources.get('img/tileset.png');
         unitStats = rd.game.units.getStats();
-        drawImage(ctxGround1);
+        drawImage(ctxGround1, ground1);
+        drawImage(ctxGround2, ground2);
+        drawImage(ctxTop1, top1);
         map = rd.game.map.getMap();
         highlightMovableTiles();
     };

@@ -16,6 +16,7 @@ rd.define('game.main', (function(canvas) {
 		fpsLimiter = 0,
 		currentUnit = 0,
 		tileCounter = 0,
+		direction,
 		elmFps = document.getElementById('fps'),
 
 
@@ -97,6 +98,7 @@ rd.define('game.main', (function(canvas) {
 						unit.gear.head.setPos([0, 64]);
 						unit.gear.torso.setPos([0, 64]);
 						unit.gear.leg.setPos([0, 64]);
+						direction = 64;
 						
 					// Move right if next tile is on the right side of the current
 					} else if (unit.nextTile[0] < path[0][0]) {
@@ -105,6 +107,7 @@ rd.define('game.main', (function(canvas) {
 						unit.gear.head.setPos([0, 0]);
 						unit.gear.torso.setPos([0, 0]);
 						unit.gear.leg.setPos([0, 0]);
+						direction = 0;
 					}
 				}
 
@@ -124,7 +127,7 @@ rd.define('game.main', (function(canvas) {
 				unit.currentStep--;
 	        } else {
 	        	if (unit.moving) {
-	        		stopWalking(unit, i);
+	        		stopWalking(unit, i, direction);
 	        	}
 	        }
         }
@@ -134,9 +137,9 @@ rd.define('game.main', (function(canvas) {
     /**
      * Stop the walk animation and show hud
      */
-    stopWalking = function(unit, id) {
+    stopWalking = function(unit, id, direction) {
     	unit.moving = false;
-		units[id].stop();
+		units[id].stop(direction);
 		canvas.enableUtils();
     },
 
@@ -215,10 +218,19 @@ rd.define('game.main', (function(canvas) {
 			'img/units/head0.png',
 			'img/units/head1.png',
 			'img/units/head2.png',
+			'img/units/head3.png',
+			'img/units/head4.png',
+			'img/units/head5.png',
 			'img/units/torso0.png',
 			'img/units/torso1.png',
+			'img/units/torso2.png',
+			'img/units/torso3.png',
+			'img/units/torso4.png',
 			'img/units/leg0.png',
 			'img/units/leg1.png',
+			'img/units/leg2.png',
+			'img/units/leg3.png',
+			'img/units/leg4.png',
             'img/tileset.png'
         ]);
 
@@ -233,8 +245,8 @@ rd.define('game.main', (function(canvas) {
 				canvas.init();
 				rd.game.map.init();
 				var currentUnitStats = unitStats[currentUnit];
-				canvas.renderMoveRange(currentUnitStats);
 				canvas.renderAttackRange(currentUnitStats.pos, currentUnitStats.attackRange);
+				canvas.renderMoveRange(currentUnitStats);
 				units[currentUnit].setFieldsInRange(canvas.calculateAttackRangeFields(currentUnitStats.pos, currentUnitStats.attackRange));
 				main();
 				rd.game.ui.init();

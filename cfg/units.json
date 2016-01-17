@@ -23,11 +23,11 @@
         "race": "human",
         "skin": 0,
         "count": 10,
-        "armor": "skin",
+        "armor": "cloth",
         "gear": {
-            "head": 0,
-            "torso": 0,
-            "leg": 0
+            "head": 3,
+            "torso": 2,
+            "leg": 2
         },
         "weapons": {
             "primary": "sword0",
@@ -44,8 +44,8 @@
         "armor": "iron",
         "gear": {
             "head": 0,
-            "torso": 1,
-            "leg": 1
+            "torso": 3,
+            "leg": 3
         },
         "weapons": {
             "primary": "speer0",

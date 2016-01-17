@@ -25,6 +25,7 @@ rd.define('game.units', (function() {
             side = cfg.team === 1 ? 0 : 64;
         newUnit.pos = cfg.pos;
         newUnit.team = cfg.team;
+        newUnit.side = side;
         newUnit.weaponsCfg = JSON.parse(JSON.stringify(weaponsCfg));
         newUnit.armorCfg = JSON.parse(JSON.stringify(armorCfg));
         newUnit.racesCfg = JSON.parse(JSON.stringify(racesCfg));

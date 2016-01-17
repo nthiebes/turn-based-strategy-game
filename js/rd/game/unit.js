@@ -14,17 +14,17 @@ rd.define('game.unit', function(cfg) {
      * Stop animations
      * @memberOf rd.game.unit
      */
-    stop = function() {
-        me.skin.setPos([0, 128]);
+    stop = function(direction) {
+        me.skin.setPos([0, 128 + direction]);
         me.skin.setFrames([0]);
 
-        me.gear.head.setPos([0, 128]);
+        me.gear.head.setPos([0, 128 + direction]);
         me.gear.head.setFrames([0]);
 
-        me.gear.torso.setPos([0, 128]);
+        me.gear.torso.setPos([0, 128 + direction]);
         me.gear.torso.setFrames([0]);
 
-        me.gear.leg.setPos([0, 128]);
+        me.gear.leg.setPos([0, 128 + direction]);
         me.gear.leg.setFrames([0]);
 
         // Round new position
@@ -137,6 +137,7 @@ rd.define('game.unit', function(cfg) {
     me.skin = cfg.skin;
     me.pos = cfg.pos;
     me.team = cfg.team;
+    me.side = cfg.side;
     me.gear = cfg.gear;
     me.race = cfg.race;
     me.armor = cfg.armor;

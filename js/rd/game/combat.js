@@ -7,11 +7,18 @@ rd.define('game.combat', (function() {
     /**
      * Just testing stuff ...
      */
-    var fight = function(attacker, defender) {
-        var attackerStats = attacker.get(),
-            defenderStats = defender.get(),
+    var units,
+
+
+    fight = function(attacker, defender) {
+        units = rd.game.units.get();
+
+        var attackerStats = units[attacker].get(),
+            defenderStats = units[defender].get(),
             attackerAttr = attackerStats.attributes,
             defenderAttr = defenderStats.attributes;
+
+        console.log( attackerStats, defenderStats );
 
         var baseDmg = attackerStats.count * attackerAttr.attack;
 
