@@ -14,6 +14,8 @@ body {
   width: 100%; }
   body.cursor-help {
     cursor: url("../img/cursors/help.png"), auto; }
+  body.cursor-ranged {
+    cursor: url("../img/cursors/ranged.png"), auto; }
   body.cursor-move {
     cursor: url("../img/cursors/move.png"), auto; }
   body.cursor-left {

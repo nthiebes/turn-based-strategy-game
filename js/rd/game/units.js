@@ -168,6 +168,11 @@ rd.define('game.units', (function() {
                             pos: [2, 4],
                             team: 2
                         });
+                        add({
+                            key: 'enemy1',
+                            pos: [4, 7],
+                            team: 2
+                        });
 
                         callback();
                     });

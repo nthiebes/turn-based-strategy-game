@@ -19,6 +19,10 @@ body {
 		cursor: url("../img/cursors/help.png"), auto;
 	}
 
+	&.cursor-ranged {
+		cursor: url("../img/cursors/ranged.png"), auto;
+	}
+
 	&.cursor-move {
 		cursor: url("../img/cursors/move.png"), auto;
 	}

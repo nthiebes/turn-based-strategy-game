@@ -79,6 +79,51 @@ rd.define('game.unit', function(cfg) {
 
 
     /**
+     * Save the map tiles that are in range
+     * @memberOf rd.game.unit
+     * @param {array} fields
+     */
+    setFieldsInRange = function(fields) {
+        me.fieldsInRange = fields;
+    },
+
+
+    /**
+     * Get the map tiles that are in range
+     * @memberOf rd.game.unit
+     * @return {array}
+     */
+    getFieldsInRange = function() {
+        return me.fieldsInRange;
+    },
+
+
+    /**
+     * Check if a unit is in range
+     * @memberOf rd.game.unit
+     * @param  {array} unitPos
+     * @return {boolean}
+     */
+    isInRange = function(unitPos) {
+        for (var i=0; i<me.fieldsInRange.length; i++) {
+            if (me.fieldsInRange[i][0] === unitPos[0] && me.fieldsInRange[i][1] === unitPos[1]) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+
+    /**
+     * Set the move range to the default value
+     * @memberOf rd.game.unit
+     */
+    resetMoveRange = function() {
+        me.currentMoveRange = me.attributes.moveRange;
+    },
+
+
+    /**
      * Get the unit object
      * @memberOf rd.game.unit
      * @return {object}
@@ -110,6 +155,7 @@ rd.define('game.unit', function(cfg) {
     me.currentMoveRange = me.attributes.moveRange;
     me.attackRange = cfg.weaponsCfg[me.weapons.primary].attackRange;
     me.path = [];
+    me.fieldsInRange = [];
     me.steps = 20;
     me.currentStep = 20;
 
@@ -121,7 +167,11 @@ rd.define('game.unit', function(cfg) {
         get: get,
         walk: walk,
         stop: stop,
-        attack: attack
+        attack: attack,
+        setFieldsInRange: setFieldsInRange,
+        getFieldsInRange: getFieldsInRange,
+        isInRange: isInRange,
+        resetMoveRange: resetMoveRange
     };
 
 });

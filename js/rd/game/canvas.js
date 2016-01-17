@@ -220,9 +220,40 @@ rd.define('game.canvas', (function() {
 
     /**
      * Attack range
-     * @param {object} unit
+     * @memberOf rd.game.canvas
+     * @param {array}   pos
+     * @param {integer} range
      */
     renderAttackRange = function(pos, range) {
+        if (range === 1) {
+            return false;
+        }
+
+        var visibleFields = calculateAttackRangeFields(pos, range);
+
+        // Draw the attack range
+        for (var k=0; k<visibleFields.length; k++) {
+            drawRange({
+                lineWidth: 1,
+                lineRgbColor: '0,0,0',
+                fillRgbColor: '255,100,100',
+                lineOpacity: 0.3,
+                fillOpacity: 0.2,
+                x: fieldWidth * visibleFields[k][0],
+                y: fieldWidth * visibleFields[k][1]
+            });    
+        }
+    },
+
+
+    /**
+     * Calculate all valid fields that are in range
+     * @memberOf rd.game.canvas
+     * @param  {array}   pos
+     * @param  {integer} range
+     * @return {array}
+     */
+    calculateAttackRangeFields = function(pos, range) {
         var attackRangeFields = [],
             newFields = [],
             visibleFields = [pos];
@@ -261,18 +292,7 @@ rd.define('game.canvas', (function() {
         // Remove duplicates
         visibleFields = uniq(visibleFields);
 
-        // Draw the attack range
-        for (var k=0; k<visibleFields.length; k++) {
-            drawRange({
-                lineWidth: 1,
-                lineRgbColor: '0,0,0',
-                fillRgbColor: '255,100,100',
-                lineOpacity: 0.3,
-                fillOpacity: 0.2,
-                x: fieldWidth * visibleFields[k][0],
-                y: fieldWidth * visibleFields[k][1]
-            });    
-        }
+        return visibleFields;
     },
 
 
@@ -317,12 +337,12 @@ rd.define('game.canvas', (function() {
                 fillRgbColor = 'hover';
                 
                 // Check if the field is also highlighted for the current move range
-                for (var j=0; j<curentMoveRange.length; j++) {
-                    if (fieldWidth * curentMoveRange[j][0] === fieldWidth * availableFields[i][0] &&
-                        fieldWidth * curentMoveRange[j][1] === fieldWidth * availableFields[i][1]) {
-                        overlap = true;
-                    }
-                }
+                // for (var j=0; j<curentMoveRange.length; j++) {
+                //     if (fieldWidth * curentMoveRange[j][0] === fieldWidth * availableFields[i][0] &&
+                //         fieldWidth * curentMoveRange[j][1] === fieldWidth * availableFields[i][1]) {
+                //         overlap = true;
+                //     }
+                // }
 
                 // Define colors
                 if (overlap) {
@@ -394,7 +414,7 @@ rd.define('game.canvas', (function() {
 
         // Nothing in our way
         if (isMovableField(field) ||
-            (field[0] === rd.game.main.getCurrentUnit().pos[0] && field[1] === rd.game.main.getCurrentUnit().pos[1]) ||
+            (field[0] === rd.game.main.getCurrentUnitStats().pos[0] && field[1] === rd.game.main.getCurrentUnitStats().pos[1]) ||
             hover) {
             // Top
             if (field[1] > 0) {
@@ -546,9 +566,9 @@ rd.define('game.canvas', (function() {
      * Disable the utils
      */
     disableUtils = function() {
+        clearUtils();
         utilsDisabled = true;
         highlightMovableTiles();
-        //renderAttackRange(rd.game.main.getCurrentUnit().pos);
     },
 
 
@@ -556,9 +576,10 @@ rd.define('game.canvas', (function() {
      * Disable the utils
      */
     enableUtils = function() {
+        var currentUnitStats = rd.game.main.getCurrentUnitStats();
         utilsDisabled = false;
         rd.game.map.redrawUtils();
-        rd.game.canvas.renderMoveRange(rd.game.main.getCurrentUnit());
+        rd.game.main.getCurrentUnit().setFieldsInRange(calculateAttackRangeFields(currentUnitStats.pos, currentUnitStats.attackRange));
     },
 
 
@@ -599,6 +620,7 @@ rd.define('game.canvas', (function() {
         disableUtils: disableUtils,
         enableUtils: enableUtils,
         areUtilsDisabled: areUtilsDisabled,
+        calculateAttackRangeFields: calculateAttackRangeFields,
         init: init
     };
 

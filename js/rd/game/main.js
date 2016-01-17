@@ -137,58 +137,51 @@ rd.define('game.main', (function(canvas) {
     stopWalking = function(unit, id) {
     	unit.moving = false;
 		units[id].stop();
-    	
-    	if (unit.currentMoveRange === 0) {
-        	endTurn();
-        }
-        
-		rd.game.canvas.enableUtils();
-        rd.game.canvas.highlightMovableTiles();
-        rd.game.canvas.renderMoveRange(unitStats[currentUnit]);
-
-		canvas.drawMovable({
-            lineWidth: 2,
-            lineRgbColor: 'current',
-            fillRgbColor: 'current',
-            opacity: 1,
-            x: unitStats[currentUnit].pos[0] * 64,
-            y: unitStats[currentUnit].pos[1] * 64
-        });
+		canvas.enableUtils();
     },
 
 
     /**
 	 * Get the stats of the current unit
 	 * @memberOf rd.game.main
+	 * @return {object}
 	 */
-    getCurrentUnit = function() {
+    getCurrentUnitStats = function() {
     	return unitStats[currentUnit];
     },
 
 
     /**
-	 * Get the stats of the current unit
-	 * @memberOf rd.game.main
-	 */
-    getCurrentUnitInst = function() {
-    	return units[currentUnit];
-    },
-
-
-    /**
      * Get the ID of the current unit
+     * @memberOf rd.game.main
      * @return {integer}
      */
     getCurrentUnitId = function() {
     	return currentUnit;
     },
 
+    
+    /**
+     * Get the current unit
+     * @memberOf rd.game.main
+     * @return {object}
+     */
+    getCurrentUnit = function() {
+    	return units[currentUnit];
+    },
+
 
     /**
      * Ende the current turn
+     * @memberOf rd.game.main
      */
     endTurn = function() {
+    	getCurrentUnit().resetMoveRange();
     	currentUnit++;
+    	if (!units[currentUnit]) {
+    		currentUnit = 0;
+    	}
+    	canvas.enableUtils();
     },
 
 
@@ -237,14 +230,17 @@ rd.define('game.main', (function(canvas) {
 	        	lastTime = Date.now();
 				unitStats = rd.game.units.getStats();
 				units = rd.game.units.get();
-				rd.game.canvas.init();
+				canvas.init();
 				rd.game.map.init();
-				rd.game.canvas.renderMoveRange(unitStats[currentUnit]);
-				rd.game.canvas.renderAttackRange(unitStats[currentUnit].pos, unitStats[currentUnit].attackRange);
+				var currentUnitStats = unitStats[currentUnit];
+				canvas.renderMoveRange(currentUnitStats);
+				canvas.renderAttackRange(currentUnitStats.pos, currentUnitStats.attackRange);
+				units[currentUnit].setFieldsInRange(canvas.calculateAttackRangeFields(currentUnitStats.pos, currentUnitStats.attackRange));
 				main();
+				rd.game.ui.init();
 
 				// Default movable
-		        rd.game.canvas.drawMovable({
+		        canvas.drawMovable({
 		            lineWidth: 2,
 		            lineRgbColor: 'current',
 		            fillRgbColor: 'current',
@@ -262,9 +258,9 @@ rd.define('game.main', (function(canvas) {
 	 */
 	return {
 		init: init,
-		getCurrentUnit: getCurrentUnit,
 		getCurrentUnitId: getCurrentUnitId,
-		getCurrentUnitInst: getCurrentUnitInst,
+		getCurrentUnitStats: getCurrentUnitStats,
+		getCurrentUnit: getCurrentUnit,
 		endTurn: endTurn
 	};
 
