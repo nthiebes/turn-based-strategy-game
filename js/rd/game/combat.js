@@ -16,45 +16,76 @@ rd.define('game.combat', (function() {
         var attackerStats = units[attacker].get(),
             defenderStats = units[defender].get(),
             attackerAttr = attackerStats.attributes,
-            defenderAttr = defenderStats.attributes;
+            defenderAttr = defenderStats.attributes,
+            damageAttacker;
 
         console.log( attackerStats, defenderStats );
 
-        var baseDmg = attackerStats.count * attackerAttr.attack;
+
+        // Turn units
+        if (attackerStats.pos[0] < defenderStats.pos[0]) {
+            units[attacker].turn('right');
+        } else if (attackerStats.pos[0] > defenderStats.pos[0]) {
+            units[attacker].turn('left');
+        } else if (attackerStats.pos[0] === defenderStats.pos[0]) {
+            if (attackerStats.team === 1) {
+                units[attacker].turn('right');
+            } else {
+                units[attacker].turn('left');
+            }
+        }
+
+        units[attacker].attack();
+
+        
+
+        
+
+        if (attackerStats.attackRange > 1) {
+            damageAttacker = attackerAttr.damageRanged;
+        } else {
+            damageAttacker = attackerAttr.damageMelee;
+        }
+
+
+        console.log(damageAttacker, 'damage');
+        console.log('vs');
+        console.log(defenderAttr.defense, 'defense');
+
+        var baseDmg =  7 * damageAttacker;
+
 
         console.log('base damage:', baseDmg);
 
         var modifier = 0;
 
-        if (attackerAttr.attack > defenderAttr.defense) {
+        if (damageAttacker > defenderAttr.defense) {
+            modifier = 0.1 * (damageAttacker - defenderAttr.defense);
             console.log('bonus:', modifier);
-            modifier = 0.05 * (attackerAttr.attack - defenderAttr.defense);
-        } else if (attackerAttr.attack < defenderAttr.defense) {
+        } else if (damageAttacker < defenderAttr.defense) {
+            modifier = 0.1 * (damageAttacker - defenderAttr.defense);
             console.log('reduction:', modifier);
-            modifier = 0.05 * (attackerAttr.attack - defenderAttr.defense);
         }
 
         var modifiedDmg = baseDmg * (1 + modifier);
 
         console.log('modified damage:', modifiedDmg);
 
-        var kills = modifiedDmg / 10;
+        var newHealth = (defenderStats.health - modifiedDmg > 0 ? defenderStats.health - modifiedDmg : 0);
 
-        console.log('kills:', kills);
+        newHealth = Math.floor(newHealth);
 
-        var woundedCheck = kills - Math.floor(kills)
+        console.log('health', newHealth);
 
-        console.log('wounded check:', woundedCheck);
-
-        var wounded = (woundedCheck > 0 && woundedCheck < 0.5) ? true : false;
+        var wounded = newHealth < 50 ? true : false;
 
         // var wounded = kills % 1 !== 0 ? true : false;
 
         console.log('wounded:', wounded);
 
-        kills = wounded ? Math.floor(kills) : Math.round(kills);
+        //kills = wounded ? Math.floor(kills) : Math.round(kills);
 
-        console.log('rounded kills:', kills);
+        // console.log('rounded kills:', kills);
     };
 
 

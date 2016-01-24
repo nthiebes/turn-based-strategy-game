@@ -353,31 +353,43 @@ rd.define('game.unit', function(cfg) {
     /**
      * Stop animations
      * @memberOf rd.game.unit
+     * @param {string} direction
      */
     stop = function(direction) {
-        me.skin.setPos([0, 128 + direction]);
+        var offset = direction || me.directionOffset;
+        
+        me.skin.setPos([0, 128 + offset]);
         me.skin.setFrames([0]);
 
-        me.gear.head.setPos([0, 128 + direction]);
+        me.gear.head.setPos([0, 128 + offset]);
         me.gear.head.setFrames([0]);
 
-        me.gear.torso.setPos([0, 128 + direction]);
+        me.gear.torso.setPos([0, 128 + offset]);
         me.gear.torso.setFrames([0]);
 
-        me.gear.leg.setPos([0, 128 + direction]);
+        me.gear.leg.setPos([0, 128 + offset]);
         me.gear.leg.setFrames([0]);
 
         // Round new position
         me.pos[0] = Math.round(me.pos[0]);
         me.pos[1] = Math.round(me.pos[1]);
+
+        // Start combat
+        if (me.fightAfterWalking) {
+            rd.game.combat.fight(rd.game.main.getCurrentUnitId(), me.nextEnemyId);
+        }
     },
 
 
     /**
      * Play the walk animation cycle
      * @memberOf rd.game.unit
+     * @param {object} cfg
      */
     walk = function(cfg) {
+        me.fightAfterWalking = cfg.fight;
+        me.nextEnemyId = cfg.enemyId;
+
         me.skin.setPos([0, 0]);
         me.skin.setFrames([0, 1, 2, 3]);
 
@@ -404,17 +416,33 @@ rd.define('game.unit', function(cfg) {
      * @memberOf rd.game.unit
      */
     attack = function() {
-        me.skin.setPos([0, 128]);
+        me.skin.setPos([0, 128 + me.directionOffset]);
         me.skin.setFrames([0, 1, 2]);
 
-        me.gear.head.setPos([0, 128]);
+        me.gear.head.setPos([0, 128 + me.directionOffset]);
         me.gear.head.setFrames([0, 1, 2]);
 
-        me.gear.torso.setPos([0, 128]);
+        me.gear.torso.setPos([0, 128 + me.directionOffset]);
         me.gear.torso.setFrames([0, 1, 2]);
 
-        me.gear.leg.setPos([0, 128]);
+        me.gear.leg.setPos([0, 128 + me.directionOffset]);
         me.gear.leg.setFrames([0, 1, 2]);
+    },
+
+
+    /**
+     * Turn the unit
+     * @memberOf rd.game.unit
+     * @param {string} direction
+     */
+    turn = function(direction) {
+        var offset = direction === 'left' ? 64 : 0;
+        me.directionOffset = offset;
+
+        me.skin.setPos([0, 128 + offset]);
+        me.gear.head.setPos([0, 128 + offset]);
+        me.gear.torso.setPos([0, 128 + offset]);
+        me.gear.leg.setPos([0, 128 + offset]);
     },
 
 
@@ -486,19 +514,22 @@ rd.define('game.unit', function(cfg) {
     me.dead = cfg.dead;
     me.visible = cfg.visible || true;
     me.wounded = cfg.wounded;
-    me.count = cfg.count;
     me.posOffset = cfg.posOffset;
     me.weapons = cfg.weapons;
     me.health = cfg.health || 0;
     me.attributes = cfg.racesCfg[cfg.race];
-    me.attributes.moveRange += cfg.armorCfg[cfg.armor].moveRange;
+    me.attributes.damageMelee += (cfg.weaponsCfg[cfg.weapons.primary].damageMelee || 0);
+    me.attributes.damageRanged += (cfg.weaponsCfg[cfg.weapons.primary].damageRanged || 0);
+    me.attributes.moveRange = Math.round(me.attributes.moveRange + cfg.armorCfg[cfg.armor].moveRange);
     me.attributes.defense += cfg.armorCfg[cfg.armor].defense;
+    me.attributes.defense += (cfg.weaponsCfg[cfg.weapons.secondary].defense || 0);
     me.currentMoveRange = me.attributes.moveRange;
     me.attackRange = cfg.weaponsCfg[me.weapons.primary].attackRange;
     me.path = [];
     me.fieldsInRange = [];
     me.steps = 20;
     me.currentStep = 20;
+    me.directionOffset = me.team === 1 ? 0 : 64;
 
 
     /**
@@ -509,6 +540,7 @@ rd.define('game.unit', function(cfg) {
         walk: walk,
         stop: stop,
         attack: attack,
+        turn: turn,
         setFieldsInRange: setFieldsInRange,
         getFieldsInRange: getFieldsInRange,
         isInRange: isInRange,
@@ -534,45 +566,76 @@ rd.define('game.combat', (function() {
         var attackerStats = units[attacker].get(),
             defenderStats = units[defender].get(),
             attackerAttr = attackerStats.attributes,
-            defenderAttr = defenderStats.attributes;
+            defenderAttr = defenderStats.attributes,
+            damageAttacker;
 
         console.log( attackerStats, defenderStats );
 
-        var baseDmg = attackerStats.count * attackerAttr.attack;
+
+        // Turn units
+        if (attackerStats.pos[0] < defenderStats.pos[0]) {
+            units[attacker].turn('right');
+        } else if (attackerStats.pos[0] > defenderStats.pos[0]) {
+            units[attacker].turn('left');
+        } else if (attackerStats.pos[0] === defenderStats.pos[0]) {
+            if (attackerStats.team === 1) {
+                units[attacker].turn('right');
+            } else {
+                units[attacker].turn('left');
+            }
+        }
+
+        units[attacker].attack();
+
+        
+
+        
+
+        if (attackerStats.attackRange > 1) {
+            damageAttacker = attackerAttr.damageRanged;
+        } else {
+            damageAttacker = attackerAttr.damageMelee;
+        }
+
+
+        console.log(damageAttacker, 'damage');
+        console.log('vs');
+        console.log(defenderAttr.defense, 'defense');
+
+        var baseDmg =  7 * damageAttacker;
+
 
         console.log('base damage:', baseDmg);
 
         var modifier = 0;
 
-        if (attackerAttr.attack > defenderAttr.defense) {
+        if (damageAttacker > defenderAttr.defense) {
+            modifier = 0.1 * (damageAttacker - defenderAttr.defense);
             console.log('bonus:', modifier);
-            modifier = 0.05 * (attackerAttr.attack - defenderAttr.defense);
-        } else if (attackerAttr.attack < defenderAttr.defense) {
+        } else if (damageAttacker < defenderAttr.defense) {
+            modifier = 0.1 * (damageAttacker - defenderAttr.defense);
             console.log('reduction:', modifier);
-            modifier = 0.05 * (attackerAttr.attack - defenderAttr.defense);
         }
 
         var modifiedDmg = baseDmg * (1 + modifier);
 
         console.log('modified damage:', modifiedDmg);
 
-        var kills = modifiedDmg / 10;
+        var newHealth = (defenderStats.health - modifiedDmg > 0 ? defenderStats.health - modifiedDmg : 0);
 
-        console.log('kills:', kills);
+        newHealth = Math.floor(newHealth);
 
-        var woundedCheck = kills - Math.floor(kills)
+        console.log('health', newHealth);
 
-        console.log('wounded check:', woundedCheck);
-
-        var wounded = (woundedCheck > 0 && woundedCheck < 0.5) ? true : false;
+        var wounded = newHealth < 50 ? true : false;
 
         // var wounded = kills % 1 !== 0 ? true : false;
 
         console.log('wounded:', wounded);
 
-        kills = wounded ? Math.floor(kills) : Math.round(kills);
+        //kills = wounded ? Math.floor(kills) : Math.round(kills);
 
-        console.log('rounded kills:', kills);
+        // console.log('rounded kills:', kills);
     };
 
 
@@ -750,16 +813,16 @@ rd.define('game.units', (function() {
                             pos: [11, 5],
                             team: 2
                         });
-                        add({
-                            key: 'enemy1',
-                            pos: [11, 4],
-                            team: 2
-                        });
-                        add({
-                            key: 'enemy1',
-                            pos: [11, 7],
-                            team: 2
-                        });
+                        // add({
+                        //     key: 'enemy1',
+                        //     pos: [11, 4],
+                        //     team: 2
+                        // });
+                        // add({
+                        //     key: 'enemy1',
+                        //     pos: [11, 7],
+                        //     team: 2
+                        // });
 
                         callback();
                     });
@@ -1624,6 +1687,7 @@ rd.define('game.map', (function(canvas) {
             Math.floor(y/tileSize)
         ];
 
+        cell[1] = cell[1] < 10 ? cell[1] : 9;
         cellType = map[ cell[1] ][ cell[0] ];
 
         // Draw path only after entering a new cell
@@ -1677,7 +1741,7 @@ rd.define('game.map', (function(canvas) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0]-1,cell[1]]);
 
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[0] > 0) {
+                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[0] > 0 && currentPath[currentPath.length-1]) {
                             drawPath([cell[0]-1,cell[1]], true);
                             body.className = 'cursor-right';
                             meleePossible = true;
@@ -1689,7 +1753,7 @@ rd.define('game.map', (function(canvas) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0]+1,cell[1]]);
                         
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[0] < 11) {
+                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[0] < 11 && currentPath[currentPath.length-1]) {
                             drawPath([cell[0]+1,cell[1]], true);
                             body.className = 'cursor-left';
                             meleePossible = true;
@@ -1701,7 +1765,7 @@ rd.define('game.map', (function(canvas) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1]-1]);
                         
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[1] > 0) {
+                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[1] > 0 && currentPath[currentPath.length-1]) {
                             drawPath([cell[0],cell[1]-1], true);
                             body.className = 'cursor-bottom';
                             meleePossible = true;
@@ -1713,7 +1777,7 @@ rd.define('game.map', (function(canvas) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1]+1]);
                         
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[1] < 9) {
+                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[1] < 9 && currentPath[currentPath.length-1]) {
                             drawPath([cell[0],cell[1]+1], true);
                             body.className = 'cursor-top';
                             meleePossible = true;
@@ -1872,11 +1936,18 @@ rd.define('game.map', (function(canvas) {
             team = unitStats[clickUnitId].team;
 
             // Fight
-            if ((meleePossible || rangedPossible) && currentUnitStats.team !== team) {
-                rd.game.combat.fight(rd.game.main.getCurrentUnitId(), clickUnitId);
+            if (currentUnitStats.team !== team) {
+                // Ranged attack
+                if (rangedPossible) {
+                    rd.game.combat.fight(rd.game.main.getCurrentUnitId(), clickUnitId);
+                }
 
-                if (currentPath.length > 1) {
-                    startWalking(currentPath[currentPath.length-1]);
+                // Walk and then attack
+                if (currentPath.length > 1 && meleePossible) {
+                    startWalking(currentPath[currentPath.length-1], true, clickUnitId);
+                // Just attack
+                } else if (meleePossible) {
+                    rd.game.combat.fight(rd.game.main.getCurrentUnitId(), clickUnitId);
                 }
             }
 
@@ -1895,14 +1966,17 @@ rd.define('game.map', (function(canvas) {
 
     /**
      * Start the walk animation and occupy the new field
-     * @param {array} cell
+     * @param {array}   cell
+     * @param {boolean} fight
      */
-    startWalking = function(cell) {
+    startWalking = function(cell, fight, enemyId) {
         var currentUnit = rd.game.main.getCurrentUnit();
 
         // Walk animation
         currentUnit.walk({
-            path: currentPath
+            path: currentPath,
+            fight: fight,
+            enemyId: enemyId
         });
 
         rd.game.canvas.disableUtils();

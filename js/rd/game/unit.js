@@ -13,31 +13,43 @@ rd.define('game.unit', function(cfg) {
     /**
      * Stop animations
      * @memberOf rd.game.unit
+     * @param {string} direction
      */
     stop = function(direction) {
-        me.skin.setPos([0, 128 + direction]);
+        var offset = direction || me.directionOffset;
+        
+        me.skin.setPos([0, 128 + offset]);
         me.skin.setFrames([0]);
 
-        me.gear.head.setPos([0, 128 + direction]);
+        me.gear.head.setPos([0, 128 + offset]);
         me.gear.head.setFrames([0]);
 
-        me.gear.torso.setPos([0, 128 + direction]);
+        me.gear.torso.setPos([0, 128 + offset]);
         me.gear.torso.setFrames([0]);
 
-        me.gear.leg.setPos([0, 128 + direction]);
+        me.gear.leg.setPos([0, 128 + offset]);
         me.gear.leg.setFrames([0]);
 
         // Round new position
         me.pos[0] = Math.round(me.pos[0]);
         me.pos[1] = Math.round(me.pos[1]);
+
+        // Start combat
+        if (me.fightAfterWalking) {
+            rd.game.combat.fight(rd.game.main.getCurrentUnitId(), me.nextEnemyId);
+        }
     },
 
 
     /**
      * Play the walk animation cycle
      * @memberOf rd.game.unit
+     * @param {object} cfg
      */
     walk = function(cfg) {
+        me.fightAfterWalking = cfg.fight;
+        me.nextEnemyId = cfg.enemyId;
+
         me.skin.setPos([0, 0]);
         me.skin.setFrames([0, 1, 2, 3]);
 
@@ -64,17 +76,33 @@ rd.define('game.unit', function(cfg) {
      * @memberOf rd.game.unit
      */
     attack = function() {
-        me.skin.setPos([0, 128]);
+        me.skin.setPos([0, 128 + me.directionOffset]);
         me.skin.setFrames([0, 1, 2]);
 
-        me.gear.head.setPos([0, 128]);
+        me.gear.head.setPos([0, 128 + me.directionOffset]);
         me.gear.head.setFrames([0, 1, 2]);
 
-        me.gear.torso.setPos([0, 128]);
+        me.gear.torso.setPos([0, 128 + me.directionOffset]);
         me.gear.torso.setFrames([0, 1, 2]);
 
-        me.gear.leg.setPos([0, 128]);
+        me.gear.leg.setPos([0, 128 + me.directionOffset]);
         me.gear.leg.setFrames([0, 1, 2]);
+    },
+
+
+    /**
+     * Turn the unit
+     * @memberOf rd.game.unit
+     * @param {string} direction
+     */
+    turn = function(direction) {
+        var offset = direction === 'left' ? 64 : 0;
+        me.directionOffset = offset;
+
+        me.skin.setPos([0, 128 + offset]);
+        me.gear.head.setPos([0, 128 + offset]);
+        me.gear.torso.setPos([0, 128 + offset]);
+        me.gear.leg.setPos([0, 128 + offset]);
     },
 
 
@@ -146,19 +174,22 @@ rd.define('game.unit', function(cfg) {
     me.dead = cfg.dead;
     me.visible = cfg.visible || true;
     me.wounded = cfg.wounded;
-    me.count = cfg.count;
     me.posOffset = cfg.posOffset;
     me.weapons = cfg.weapons;
     me.health = cfg.health || 0;
     me.attributes = cfg.racesCfg[cfg.race];
-    me.attributes.moveRange += cfg.armorCfg[cfg.armor].moveRange;
+    me.attributes.damageMelee += (cfg.weaponsCfg[cfg.weapons.primary].damageMelee || 0);
+    me.attributes.damageRanged += (cfg.weaponsCfg[cfg.weapons.primary].damageRanged || 0);
+    me.attributes.moveRange = Math.round(me.attributes.moveRange + cfg.armorCfg[cfg.armor].moveRange);
     me.attributes.defense += cfg.armorCfg[cfg.armor].defense;
+    me.attributes.defense += (cfg.weaponsCfg[cfg.weapons.secondary].defense || 0);
     me.currentMoveRange = me.attributes.moveRange;
     me.attackRange = cfg.weaponsCfg[me.weapons.primary].attackRange;
     me.path = [];
     me.fieldsInRange = [];
     me.steps = 20;
     me.currentStep = 20;
+    me.directionOffset = me.team === 1 ? 0 : 64;
 
 
     /**
@@ -169,6 +200,7 @@ rd.define('game.unit', function(cfg) {
         walk: walk,
         stop: stop,
         attack: attack,
+        turn: turn,
         setFieldsInRange: setFieldsInRange,
         getFieldsInRange: getFieldsInRange,
         isInRange: isInRange,

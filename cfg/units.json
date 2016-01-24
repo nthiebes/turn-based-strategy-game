@@ -1,33 +1,15 @@
 {
 	"nico": {
-        "name": "Nico",
+        "name": "Human swordsman",
         "posOffset": -6,
         "race": "human",
         "skin": 0,
-        "count": 10,
-        "armor": "leather",
+        "health": 100,
+        "armor": "iron",
         "gear": {
             "head": 2,
             "torso": 1,
             "leg": 1
-        },
-        "weapons": {
-            "primary": "shortbow0",
-            "secondary": null
-        }
-    },
-
-    "nicoclone": {
-        "name": "Nico Clone",
-        "posOffset": -6,
-        "race": "human",
-        "skin": 0,
-        "count": 10,
-        "armor": "cloth",
-        "gear": {
-            "head": 3,
-            "torso": 2,
-            "leg": 2
         },
         "weapons": {
             "primary": "sword0",
@@ -35,21 +17,39 @@
         }
     },
 
+    "nicoclone": {
+        "name": "Elven ninja",
+        "posOffset": -6,
+        "race": "elf",
+        "skin": 0,
+        "health": 100,
+        "armor": "cloth",
+        "gear": {
+            "head": 3,
+            "torso": 2,
+            "leg": 2
+        },
+        "weapons": {
+            "primary": "dagger0",
+            "secondary": "fist0"
+        }
+    },
+
     "enemy1": {
-        "name": "Orc 1",
+        "name": "Orc warrior",
         "posOffset": -6,
         "race": "orc",
         "skin": 0,
-        "count": 10,
-        "armor": "iron",
+        "health": 100,
+        "armor": "leather",
         "gear": {
             "head": 0,
             "torso": 3,
             "leg": 3
         },
         "weapons": {
-            "primary": "speer0",
-            "secondary": null
+            "primary": "axe0",
+            "secondary": "fist0"
         }
     }
 }

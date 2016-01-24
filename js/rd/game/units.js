@@ -164,16 +164,16 @@ rd.define('game.units', (function() {
                             pos: [11, 5],
                             team: 2
                         });
-                        add({
-                            key: 'enemy1',
-                            pos: [11, 4],
-                            team: 2
-                        });
-                        add({
-                            key: 'enemy1',
-                            pos: [11, 7],
-                            team: 2
-                        });
+                        // add({
+                        //     key: 'enemy1',
+                        //     pos: [11, 4],
+                        //     team: 2
+                        // });
+                        // add({
+                        //     key: 'enemy1',
+                        //     pos: [11, 7],
+                        //     team: 2
+                        // });
 
                         callback();
                     });

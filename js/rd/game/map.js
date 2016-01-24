@@ -90,6 +90,7 @@ rd.define('game.map', (function(canvas) {
             Math.floor(y/tileSize)
         ];
 
+        cell[1] = cell[1] < 10 ? cell[1] : 9;
         cellType = map[ cell[1] ][ cell[0] ];
 
         // Draw path only after entering a new cell
@@ -143,7 +144,7 @@ rd.define('game.map', (function(canvas) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0]-1,cell[1]]);
 
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[0] > 0) {
+                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[0] > 0 && currentPath[currentPath.length-1]) {
                             drawPath([cell[0]-1,cell[1]], true);
                             body.className = 'cursor-right';
                             meleePossible = true;
@@ -155,7 +156,7 @@ rd.define('game.map', (function(canvas) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0]+1,cell[1]]);
                         
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[0] < 11) {
+                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[0] < 11 && currentPath[currentPath.length-1]) {
                             drawPath([cell[0]+1,cell[1]], true);
                             body.className = 'cursor-left';
                             meleePossible = true;
@@ -167,7 +168,7 @@ rd.define('game.map', (function(canvas) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1]-1]);
                         
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[1] > 0) {
+                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[1] > 0 && currentPath[currentPath.length-1]) {
                             drawPath([cell[0],cell[1]-1], true);
                             body.className = 'cursor-bottom';
                             meleePossible = true;
@@ -179,7 +180,7 @@ rd.define('game.map', (function(canvas) {
                         currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1]+1]);
                         
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[1] < 9) {
+                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[1] < 9 && currentPath[currentPath.length-1]) {
                             drawPath([cell[0],cell[1]+1], true);
                             body.className = 'cursor-top';
                             meleePossible = true;
@@ -338,11 +339,18 @@ rd.define('game.map', (function(canvas) {
             team = unitStats[clickUnitId].team;
 
             // Fight
-            if ((meleePossible || rangedPossible) && currentUnitStats.team !== team) {
-                rd.game.combat.fight(rd.game.main.getCurrentUnitId(), clickUnitId);
+            if (currentUnitStats.team !== team) {
+                // Ranged attack
+                if (rangedPossible) {
+                    rd.game.combat.fight(rd.game.main.getCurrentUnitId(), clickUnitId);
+                }
 
-                if (currentPath.length > 1) {
-                    startWalking(currentPath[currentPath.length-1]);
+                // Walk and then attack
+                if (currentPath.length > 1 && meleePossible) {
+                    startWalking(currentPath[currentPath.length-1], true, clickUnitId);
+                // Just attack
+                } else if (meleePossible) {
+                    rd.game.combat.fight(rd.game.main.getCurrentUnitId(), clickUnitId);
                 }
             }
 
@@ -361,14 +369,17 @@ rd.define('game.map', (function(canvas) {
 
     /**
      * Start the walk animation and occupy the new field
-     * @param {array} cell
+     * @param {array}   cell
+     * @param {boolean} fight
      */
-    startWalking = function(cell) {
+    startWalking = function(cell, fight, enemyId) {
         var currentUnit = rd.game.main.getCurrentUnit();
 
         // Walk animation
         currentUnit.walk({
-            path: currentPath
+            path: currentPath,
+            fight: fight,
+            enemyId: enemyId
         });
 
         rd.game.canvas.disableUtils();
