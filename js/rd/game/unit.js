@@ -36,7 +36,13 @@ rd.define('game.unit', function(cfg) {
 
         // Start combat
         if (me.fightAfterWalking) {
+            console.log('aha');
             rd.game.combat.fight(rd.game.main.getCurrentUnitId(), me.nextEnemyId);
+            me.fightAfterWalking = false;
+        }
+        if (me.unitFighting) {
+            me.unitFighting = false;
+            console.log('-- stop');
         }
     },
 
@@ -76,17 +82,19 @@ rd.define('game.unit', function(cfg) {
      * @memberOf rd.game.unit
      */
     attack = function() {
+        me.unitFighting = true;
+
         me.skin.setPos([0, 128 + me.directionOffset]);
-        me.skin.setFrames([0, 1, 2]);
+        me.skin.setFrames([0, 1, 2, 2]);
 
         me.gear.head.setPos([0, 128 + me.directionOffset]);
-        me.gear.head.setFrames([0, 1, 2]);
+        me.gear.head.setFrames([0, 1, 2, 2]);
 
         me.gear.torso.setPos([0, 128 + me.directionOffset]);
-        me.gear.torso.setFrames([0, 1, 2]);
+        me.gear.torso.setFrames([0, 1, 2, 2]);
 
         me.gear.leg.setPos([0, 128 + me.directionOffset]);
-        me.gear.leg.setFrames([0, 1, 2]);
+        me.gear.leg.setFrames([0, 1, 2, 2]);
     },
 
 
@@ -113,6 +121,16 @@ rd.define('game.unit', function(cfg) {
      */
     setFieldsInRange = function(fields) {
         me.fieldsInRange = fields;
+    },
+
+
+    /**
+     * Set the health
+     * @memberOf rd.game.unit
+     * @param {array} newHealth
+     */
+    setHealth = function(newHealth) {
+        me.health = newHealth;
     },
 
 
@@ -204,7 +222,8 @@ rd.define('game.unit', function(cfg) {
         setFieldsInRange: setFieldsInRange,
         getFieldsInRange: getFieldsInRange,
         isInRange: isInRange,
-        resetMoveRange: resetMoveRange
+        resetMoveRange: resetMoveRange,
+        setHealth: setHealth
     };
 
 });

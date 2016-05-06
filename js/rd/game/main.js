@@ -2,7 +2,7 @@
  * Main game controller
  * @namespace rd.game.main
  */
-rd.define('game.main', (function(canvas) {
+rd.define('game.main', (function() {
 
 	/**
 	 * Variables
@@ -18,6 +18,7 @@ rd.define('game.main', (function(canvas) {
 		tileCounter = 0,
 		direction,
 		elmFps = document.getElementById('fps'),
+        canvas = rd.game.canvas,
 
 
 	/**
@@ -128,6 +129,11 @@ rd.define('game.main', (function(canvas) {
 	        } else {
 	        	if (unit.moving) {
 	        		stopWalking(unit, i, direction);
+	        	} else if (unit.unitFighting) {
+	        		var frames = unit.skin.getFrames();
+	        		if (frames.framesLength-1 === frames.index) {
+	        			units[i].stop();
+	        		}
 	        	}
 	        }
         }
@@ -276,7 +282,7 @@ rd.define('game.main', (function(canvas) {
 		endTurn: endTurn
 	};
 
-})(rd.game.canvas));
+})());
 
 
 rd.game.main.init();

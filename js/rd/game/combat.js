@@ -83,9 +83,7 @@ rd.define('game.combat', (function() {
 
         console.log('wounded:', wounded);
 
-        //kills = wounded ? Math.floor(kills) : Math.round(kills);
-
-        // console.log('rounded kills:', kills);
+        units[defender].setHealth(newHealth);
     };
 
 

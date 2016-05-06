@@ -87,6 +87,18 @@ rd.define('utils.sprite', function(cfg) {
 
 
     /**
+     * Get the current frame and frames length
+     * @return {object}
+     */
+    getFrames = function() {
+        return {
+            framesLength: me.frames.length,
+            index: Math.floor(me._index)
+        };
+    },
+
+
+    /**
      * Update the positions within a sprite (e.g. for an animation)
      * @memberOf rd.utils.sprite
      * @param {array} newPos
@@ -116,7 +128,8 @@ rd.define('utils.sprite', function(cfg) {
         render: render,
         update: update,
         setPos: setPos,
-        setFrames: setFrames
+        setFrames: setFrames,
+        getFrames: getFrames
     };
 
 });

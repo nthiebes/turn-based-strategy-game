@@ -61,13 +61,13 @@ rd.define('game.canvas', (function() {
      * @param {object} cfg Configuration
      */
     drawLine = function(cfg) {
-        ctxUtils.strokeStyle = cfg.lineColor;
-        ctxUtils.beginPath();
-        ctxUtils.moveTo(cfg.x1, cfg.y1);
-        ctxUtils.lineTo(cfg.x2, cfg.y2);
-        ctxUtils.lineWidth = cfg.lineWidth;
-        ctxUtils.stroke();
-        ctxUtils.closePath();
+        cfg.ctx.strokeStyle = cfg.lineColor;
+        cfg.ctx.beginPath();
+        cfg.ctx.moveTo(cfg.x1, cfg.y1);
+        cfg.ctx.lineTo(cfg.x2, cfg.y2);
+        cfg.ctx.lineWidth = cfg.lineWidth;
+        cfg.ctx.stroke();
+        cfg.ctx.closePath();
     },
 
 
@@ -170,6 +170,7 @@ rd.define('game.canvas', (function() {
         // Draw border on right side
         if (border.right) {
             drawLine({
+                ctx: ctxUtils,
                 lineColor: 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')',
                 lineWidth: cfg.lineWidth,
                 x1: x + fieldWidth,
@@ -193,6 +194,7 @@ rd.define('game.canvas', (function() {
         // Draw border on left side
         if (border.left) {
             drawLine({
+                ctx: ctxUtils,
                 lineColor: 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')',
                 lineWidth: cfg.lineWidth,
                 x1: x,
@@ -216,6 +218,7 @@ rd.define('game.canvas', (function() {
         // Draw border on bottom side
         if (border.bottom) {
             drawLine({
+                ctx: ctxUtils,
                 lineColor: 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')',
                 lineWidth: cfg.lineWidth,
                 x1: x,
@@ -239,6 +242,7 @@ rd.define('game.canvas', (function() {
         // Draw border on top side
         if (border.top) {
             drawLine({
+                ctx: ctxUtils,
                 lineColor: 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')',
                 lineWidth: cfg.lineWidth,
                 x1: x,
@@ -323,8 +327,34 @@ rd.define('game.canvas', (function() {
      * @param {array} list
      */
     renderEntities = function(list) {
+        var fullWidth = 48;
         for (var i=0; i<list.length; i++) {
+            // Unit gear
             renderEntity(list[i], list[i].skin, list[i].gear.leg, list[i].gear.torso, list[i].gear.head);
+
+            // Health bar
+            var test = 100 / fullWidth,
+                healthWidth = Math.round((list[i].health) / test);
+
+            drawLine({
+                ctx: ctxAnim,
+                lineWidth: 4,
+                lineColor: '#000',
+                x1: list[i].pos[0] * 64 + 7,
+                y1: list[i].pos[1] * 64 + 59,
+                x2: list[i].pos[0] * 64 + 57,
+                y2: list[i].pos[1] * 64 + 59
+            });
+
+            drawLine({
+                ctx: ctxAnim,
+                lineWidth: 2,
+                lineColor: '#070',
+                x1: list[i].pos[0] * 64 + 8,
+                y1: list[i].pos[1] * 64 + 59,
+                x2: list[i].pos[0] * 64 + 8 + healthWidth,
+                y2: list[i].pos[1] * 64 + 59
+            });
         }
     },
 
