@@ -12,21 +12,21 @@ var rd = {};
  * @param {function} logic     
  */
 rd.define = function(namespace, logic){
-	var parts = namespace.split('.'),
-		root = this,
-		length = parts.length,
-		i;
+    var parts = namespace.split('.'),
+        root = this,
+        length = parts.length,
+        i;
 
-	for( i=0; i<length; i++ ){
-		if( !root[parts[i]] ){
-			if( i === length-1 ){
-				root[parts[i]] = logic;
-			} else{
-				root[parts[i]] = {};
-			}
-		}
-		root = root[parts[i]];
-	}
+    for( i=0; i<length; i++ ){
+        if( !root[parts[i]] ){
+            if( i === length-1 ){
+                root[parts[i]] = logic;
+            } else{
+                root[parts[i]] = {};
+            }
+        }
+        root = root[parts[i]];
+    }
 };
 
 
@@ -34,14 +34,14 @@ rd.define = function(namespace, logic){
  * A cross-browser requestAnimationFrame
  */
 var requestAnimFrame = (function(){
-	return window.requestAnimationFrame    ||
-		window.webkitRequestAnimationFrame ||
-		window.mozRequestAnimationFrame    ||
-		window.oRequestAnimationFrame      ||
-		window.msRequestAnimationFrame     ||
-		function(callback){
-			window.setTimeout(callback, 1000 / 60);
-		};
+    return window.requestAnimationFrame    ||
+        window.webkitRequestAnimationFrame ||
+        window.mozRequestAnimationFrame    ||
+        window.oRequestAnimationFrame      ||
+        window.msRequestAnimationFrame     ||
+        function(callback){
+            window.setTimeout(callback, 1000 / 60);
+        };
 })();
 
 
@@ -49,12 +49,12 @@ var requestAnimFrame = (function(){
  * Behaves the same as setTimeout except uses requestAnimationFrame() where possible for better performance
  * @global
  * @param {function} fn    The callback function
- * @param {int} 	 delay The delay in milliseconds
+ * @param {int}      delay The delay in milliseconds
  */
 window.requestTimeout = function(fn, delay) {
     if( !window.requestAnimationFrame       && 
         !window.webkitRequestAnimationFrame && 
-        !(window.mozRequestAnimationFrame && window.mozCancelRequestAnimationFrame) && // Firefox 5 ships without cancel support
+        !(window.mozRequestAnimationFrame   && window.mozCancelRequestAnimationFrame) && // Firefox 5 ships without cancel support
         !window.oRequestAnimationFrame      && 
         !window.msRequestAnimationFrame)
             return window.setTimeout(fn, delay);
@@ -305,6 +305,18 @@ rd.define('utils.sprite', function(cfg) {
 
 
     /**
+     * Get the current frame and frames length
+     * @return {object}
+     */
+    getFrames = function() {
+        return {
+            framesLength: me.frames.length,
+            index: Math.floor(me._index)
+        };
+    },
+
+
+    /**
      * Update the positions within a sprite (e.g. for an animation)
      * @memberOf rd.utils.sprite
      * @param {array} newPos
@@ -334,7 +346,8 @@ rd.define('utils.sprite', function(cfg) {
         render: render,
         update: update,
         setPos: setPos,
-        setFrames: setFrames
+        setFrames: setFrames,
+        getFrames: getFrames
     };
 
 });
@@ -376,7 +389,13 @@ rd.define('game.unit', function(cfg) {
 
         // Start combat
         if (me.fightAfterWalking) {
+            console.log('aha');
             rd.game.combat.fight(rd.game.main.getCurrentUnitId(), me.nextEnemyId);
+            me.fightAfterWalking = false;
+        }
+        if (me.unitFighting) {
+            me.unitFighting = false;
+            console.log('-- stop');
         }
     },
 
@@ -416,17 +435,19 @@ rd.define('game.unit', function(cfg) {
      * @memberOf rd.game.unit
      */
     attack = function() {
+        me.unitFighting = true;
+
         me.skin.setPos([0, 128 + me.directionOffset]);
-        me.skin.setFrames([0, 1, 2]);
+        me.skin.setFrames([0, 1, 2, 2]);
 
         me.gear.head.setPos([0, 128 + me.directionOffset]);
-        me.gear.head.setFrames([0, 1, 2]);
+        me.gear.head.setFrames([0, 1, 2, 2]);
 
         me.gear.torso.setPos([0, 128 + me.directionOffset]);
-        me.gear.torso.setFrames([0, 1, 2]);
+        me.gear.torso.setFrames([0, 1, 2, 2]);
 
         me.gear.leg.setPos([0, 128 + me.directionOffset]);
-        me.gear.leg.setFrames([0, 1, 2]);
+        me.gear.leg.setFrames([0, 1, 2, 2]);
     },
 
 
@@ -453,6 +474,16 @@ rd.define('game.unit', function(cfg) {
      */
     setFieldsInRange = function(fields) {
         me.fieldsInRange = fields;
+    },
+
+
+    /**
+     * Set the health
+     * @memberOf rd.game.unit
+     * @param {array} newHealth
+     */
+    setHealth = function(newHealth) {
+        me.health = newHealth;
     },
 
 
@@ -544,7 +575,8 @@ rd.define('game.unit', function(cfg) {
         setFieldsInRange: setFieldsInRange,
         getFieldsInRange: getFieldsInRange,
         isInRange: isInRange,
-        resetMoveRange: resetMoveRange
+        resetMoveRange: resetMoveRange,
+        setHealth: setHealth
     };
 
 });
@@ -633,9 +665,7 @@ rd.define('game.combat', (function() {
 
         console.log('wounded:', wounded);
 
-        //kills = wounded ? Math.floor(kills) : Math.round(kills);
-
-        // console.log('rounded kills:', kills);
+        units[defender].setHealth(newHealth);
     };
 
 
@@ -905,13 +935,13 @@ rd.define('game.canvas', (function() {
      * @param {object} cfg Configuration
      */
     drawLine = function(cfg) {
-        ctxUtils.strokeStyle = cfg.lineColor;
-        ctxUtils.beginPath();
-        ctxUtils.moveTo(cfg.x1, cfg.y1);
-        ctxUtils.lineTo(cfg.x2, cfg.y2);
-        ctxUtils.lineWidth = cfg.lineWidth;
-        ctxUtils.stroke();
-        ctxUtils.closePath();
+        cfg.ctx.strokeStyle = cfg.lineColor;
+        cfg.ctx.beginPath();
+        cfg.ctx.moveTo(cfg.x1, cfg.y1);
+        cfg.ctx.lineTo(cfg.x2, cfg.y2);
+        cfg.ctx.lineWidth = cfg.lineWidth;
+        cfg.ctx.stroke();
+        cfg.ctx.closePath();
     },
 
 
@@ -1014,6 +1044,7 @@ rd.define('game.canvas', (function() {
         // Draw border on right side
         if (border.right) {
             drawLine({
+                ctx: ctxUtils,
                 lineColor: 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')',
                 lineWidth: cfg.lineWidth,
                 x1: x + fieldWidth,
@@ -1037,6 +1068,7 @@ rd.define('game.canvas', (function() {
         // Draw border on left side
         if (border.left) {
             drawLine({
+                ctx: ctxUtils,
                 lineColor: 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')',
                 lineWidth: cfg.lineWidth,
                 x1: x,
@@ -1060,6 +1092,7 @@ rd.define('game.canvas', (function() {
         // Draw border on bottom side
         if (border.bottom) {
             drawLine({
+                ctx: ctxUtils,
                 lineColor: 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')',
                 lineWidth: cfg.lineWidth,
                 x1: x,
@@ -1083,6 +1116,7 @@ rd.define('game.canvas', (function() {
         // Draw border on top side
         if (border.top) {
             drawLine({
+                ctx: ctxUtils,
                 lineColor: 'rgba(' + cfg.lineRgbColor + ',' + cfg.lineOpacity + ')',
                 lineWidth: cfg.lineWidth,
                 x1: x,
@@ -1167,8 +1201,34 @@ rd.define('game.canvas', (function() {
      * @param {array} list
      */
     renderEntities = function(list) {
+        var fullWidth = 48;
         for (var i=0; i<list.length; i++) {
+            // Unit gear
             renderEntity(list[i], list[i].skin, list[i].gear.leg, list[i].gear.torso, list[i].gear.head);
+
+            // Health bar
+            var test = 100 / fullWidth,
+                healthWidth = Math.round((list[i].health) / test);
+
+            drawLine({
+                ctx: ctxAnim,
+                lineWidth: 4,
+                lineColor: '#000',
+                x1: list[i].pos[0] * 64 + 7,
+                y1: list[i].pos[1] * 64 + 59,
+                x2: list[i].pos[0] * 64 + 57,
+                y2: list[i].pos[1] * 64 + 59
+            });
+
+            drawLine({
+                ctx: ctxAnim,
+                lineWidth: 2,
+                lineColor: '#070',
+                x1: list[i].pos[0] * 64 + 8,
+                y1: list[i].pos[1] * 64 + 59,
+                x2: list[i].pos[0] * 64 + 8 + healthWidth,
+                y2: list[i].pos[1] * 64 + 59
+            });
         }
     },
 
@@ -2274,7 +2334,7 @@ rd.define('game.ui', (function() {
  * Main game controller
  * @namespace rd.game.main
  */
-rd.define('game.main', (function(canvas) {
+rd.define('game.main', (function() {
 
 	/**
 	 * Variables
@@ -2290,6 +2350,7 @@ rd.define('game.main', (function(canvas) {
 		tileCounter = 0,
 		direction,
 		elmFps = document.getElementById('fps'),
+        canvas = rd.game.canvas,
 
 
 	/**
@@ -2400,6 +2461,11 @@ rd.define('game.main', (function(canvas) {
 	        } else {
 	        	if (unit.moving) {
 	        		stopWalking(unit, i, direction);
+	        	} else if (unit.unitFighting) {
+	        		var frames = unit.skin.getFrames();
+	        		if (frames.framesLength-1 === frames.index) {
+	        			units[i].stop();
+	        		}
 	        	}
 	        }
         }
@@ -2548,7 +2614,7 @@ rd.define('game.main', (function(canvas) {
 		endTurn: endTurn
 	};
 
-})(rd.game.canvas));
+})());
 
 
 rd.game.main.init();
