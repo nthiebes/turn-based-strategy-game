@@ -301,7 +301,8 @@ resources.load([
     baseUrl + 'primary4.png',
     baseUrl + 'secondary0.png',
     baseUrl + 'secondary1.png',
-    baseUrl + 'secondary2.png'
+    baseUrl + 'secondary2.png',
+    baseUrl + 'skeleton0.png'
 ]);
 resources.onReady(loaded);
 
