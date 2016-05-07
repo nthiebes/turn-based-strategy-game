@@ -19,6 +19,7 @@ rd.define('game.main', (function() {
         unitDirection,
         elmFps = document.getElementById('fps'),
         canvas = rd.canvas.main,
+        currentMap = 0,
         resourcesList = [
             'img/units/human0.png',
             'img/units/human1.png',
@@ -259,29 +260,33 @@ rd.define('game.main', (function() {
 
         /** Initialize if all ressources are loaded */
         rd.utils.resources.onReady(function() {
+
             // Units
             rd.game.units.init(function() {
-                // Game preparation
-                lastTime = Date.now();
-                unitStats = rd.game.units.getStats();
-                units = rd.game.units.get();
-                canvas.init();
-                rd.game.map.init();
-                var currentUnitStats = unitStats[currentUnit];
-                canvas.renderAttackRange(currentUnitStats.pos, currentUnitStats.attackRange);
-                canvas.renderMoveRange(currentUnitStats);
-                units[currentUnit].setFieldsInRange(canvas.calculateAttackRangeFields(currentUnitStats.pos, currentUnitStats.attackRange));
-                main();
-                rd.game.ui.init();
 
-                // Default movable
-                canvas.drawMovable({
-                    lineWidth: 2,
-                    lineRgbColor: 'current',
-                    fillRgbColor: 'current',
-                    opacity: 1,
-                    x: unitStats[currentUnit].pos[0] * 64,
-                    y: unitStats[currentUnit].pos[1] * 64
+                rd.utils.loadJSON('maps/' + currentMap + '.json', function(mapJson) {
+                    // Game preparation
+                    lastTime = Date.now();
+                    unitStats = rd.game.units.getStats();
+                    units = rd.game.units.get();
+                    canvas.init(mapJson);
+                    rd.game.map.init();
+                    var currentUnitStats = unitStats[currentUnit];
+                    canvas.renderAttackRange(currentUnitStats.pos, currentUnitStats.attackRange);
+                    canvas.renderMoveRange(currentUnitStats);
+                    units[currentUnit].setFieldsInRange(canvas.calculateAttackRangeFields(currentUnitStats.pos, currentUnitStats.attackRange));
+                    main();
+                    rd.game.ui.init();
+
+                    // Default movable
+                    canvas.drawMovable({
+                        lineWidth: 2,
+                        lineRgbColor: 'current',
+                        fillRgbColor: 'current',
+                        opacity: 1,
+                        x: unitStats[currentUnit].pos[0] * 64,
+                        y: unitStats[currentUnit].pos[1] * 64
+                    });
                 });
             });
         });

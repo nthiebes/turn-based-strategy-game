@@ -48,11 +48,11 @@ rd.define('game.units', (function() {
      */
     getSkinPreset = function(race, skin, side) {
         return {
-            "url": "img/units/" + race + skin + ".png",
-            "pos": [0, 128 + side],
-            "size": [64, 64],
-            "speed": 4,
-            "frames": [0]
+            'url': 'img/units/' + race + skin + '.png',
+            'pos': [0, 128 + side],
+            'size': [64, 64],
+            'speed': 4,
+            'frames': [0]
         };
     },
 
@@ -65,11 +65,11 @@ rd.define('game.units', (function() {
      */
     getHeadPreset = function(head, side) {
         return {
-            "url": "img/units/head" + head + ".png",
-            "pos": [0, 128 + side],
-            "size": [64, 64],
-            "speed": 4,
-            "frames": [0]
+            'url': 'img/units/head' + head + '.png',
+            'pos': [0, 128 + side],
+            'size': [64, 64],
+            'speed': 4,
+            'frames': [0]
         };
     },
 
@@ -82,11 +82,11 @@ rd.define('game.units', (function() {
      */
     getTorsoPreset = function(torso, side) {
         return {
-            "url": "img/units/torso" + torso + ".png",
-            "pos": [0, 128 + side],
-            "size": [64, 64],
-            "speed": 4,
-            "frames": [0]
+            'url': 'img/units/torso' + torso + '.png',
+            'pos': [0, 128 + side],
+            'size': [64, 64],
+            'speed': 4,
+            'frames': [0]
         };
     },
 
@@ -99,15 +99,15 @@ rd.define('game.units', (function() {
      */
     getLegPreset = function(leg, side) {
         return {
-            "url": "img/units/leg" + leg + ".png",
-            "pos": [0, 128 + side],
-            "size": [64, 64],
-            "speed": 4,
-            "frames": [0]
+            'url': 'img/units/leg' + leg + '.png',
+            'pos': [0, 128 + side],
+            'size': [64, 64],
+            'speed': 4,
+            'frames': [0]
         };
     },
 
-    
+
     /**
      * Get a list of all units
      * @memberOf rd.game.units
@@ -125,7 +125,7 @@ rd.define('game.units', (function() {
      */
     getStats = function() {
         var returnArray = [];
-        for (var i=0; i<units.length; i++) {
+        for (var i = 0; i < units.length; i++) {
             returnArray.push(units[i].get());
         }
         return returnArray;
