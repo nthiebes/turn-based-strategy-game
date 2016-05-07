@@ -18,7 +18,7 @@ rd.define('game.main', (function() {
         tileCounter = 0,
         unitDirection,
         elmFps = document.getElementById('fps'),
-        canvas = rd.game.canvas,
+        canvas = rd.canvas.main,
         resourcesList = [
             'img/units/human0.png',
             'img/units/human1.png',

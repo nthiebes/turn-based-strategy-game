@@ -1,8 +1,8 @@
 /**
  * Canvas controller
- * @namespace rd.game.canvas
+ * @namespace rd.canvas.main
  */
-rd.define('game.canvas', (function() {
+rd.define('canvas.main', (function() {
 
     /**
      * Variables
@@ -57,7 +57,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * Draw a single line
-     * @memberOf rd.game.canvas
+     * @memberOf rd.canvas.main
      * @param {object} cfg Configuration
      */
     drawLine = function(cfg) {
@@ -73,7 +73,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * Draw a rectangle with gradient
-     * @memberOf rd.game.canvas
+     * @memberOf rd.canvas.main
      * @param {object} cfg Configuration
      */
     drawGradient = function(cfg) {
@@ -95,7 +95,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * Draw the 'movable' custom shape
-     * @memberOf rd.game.canvas
+     * @memberOf rd.canvas.main
      * @param {object} cfg Configuration
      */
     drawMovable = function(cfg) {
@@ -313,7 +313,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * Render the canvas
-     * @memberOf rd.game.canvas
+     * @memberOf rd.canvas.main
      */
     render = function() {
         // Clear canvas hack
@@ -375,7 +375,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * Attack range
-     * @memberOf rd.game.canvas
+     * @memberOf rd.canvas.main
      * @param {array}   pos
      * @param {integer} range
      */
@@ -402,7 +402,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * Calculate all valid fields that are in range
-     * @memberOf rd.game.canvas
+     * @memberOf rd.canvas.main
      * @param  {array}   pos
      * @param  {integer} range
      * @return {array}
@@ -452,7 +452,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * Show the move range
-     * @memberOf rd.game.canvas
+     * @memberOf rd.canvas.main
      */
     renderMoveRange = function(unit, hover) {
         var moveRange = unit.currentMoveRange,
@@ -622,7 +622,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * Highlight movable tiles
-     * @memberOf rd.game.canvas
+     * @memberOf rd.canvas.main
      */
     highlightMovableTiles = function() {
         for (var i = 0; i < colTileCount / 2; i++) {
@@ -749,7 +749,7 @@ rd.define('game.canvas', (function() {
 
     /**
      * Canvas initialization
-     * @memberOf rd.game.canvas
+     * @memberOf rd.canvas.main
      */
     init = function() {
         tilesetImage = rd.utils.resources.get('img/tileset.png');

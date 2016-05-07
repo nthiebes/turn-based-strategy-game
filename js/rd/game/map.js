@@ -2,7 +2,7 @@
  * Combat controller
  * @namespace rd.game.map
  */
-rd.define('game.map', (function(canvas) {
+rd.define('game.map', (function() {
 
     /**
      * Variables
@@ -25,6 +25,7 @@ rd.define('game.map', (function(canvas) {
         unitStats,
         meleePossible = false,
         rangedPossible = false,
+        canvas = rd.canvas.main,
 
 
     /**
@@ -42,7 +43,7 @@ rd.define('game.map', (function(canvas) {
      */
     canvasLeave = function() {
         // Stop if utils are disabled
-        if (rd.game.canvas.areUtilsDisabled()) {
+        if (canvas.areUtilsDisabled()) {
             return false;
         }
 
@@ -65,7 +66,7 @@ rd.define('game.map', (function(canvas) {
             team;
 
         // Stop if utils are disabled
-        if (rd.game.canvas.areUtilsDisabled()) {
+        if (canvas.areUtilsDisabled()) {
             return false;
         }
 
@@ -304,7 +305,7 @@ rd.define('game.map', (function(canvas) {
             y;
 
         // Stop if utils are disabled
-        if (rd.game.canvas.areUtilsDisabled()) {
+        if (canvas.areUtilsDisabled()) {
             return false;
         }
 
@@ -361,7 +362,7 @@ rd.define('game.map', (function(canvas) {
         currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1]]);
 
         // Check if player can move to that field
-        if (currentPath.length <= rd.game.main.getCurrentUnitStats().currentMoveRange + 1 && rd.game.canvas.isMovableField(cell)) {
+        if (currentPath.length <= rd.game.main.getCurrentUnitStats().currentMoveRange + 1 && canvas.isMovableField(cell)) {
             startWalking(cell);
         }
     },
@@ -382,7 +383,7 @@ rd.define('game.map', (function(canvas) {
             enemyId: enemyId
         });
 
-        rd.game.canvas.disableUtils();
+        canvas.disableUtils();
 
         // Reset old position
         map[ rd.game.main.getCurrentUnitStats().pos[1] ][ rd.game.main.getCurrentUnitStats().pos[0] ] = 0;
@@ -627,4 +628,4 @@ rd.define('game.map', (function(canvas) {
         redrawUtils: redrawUtils
     };
 
-})(rd.game.canvas));
+})());
