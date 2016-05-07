@@ -9,6 +9,7 @@ rd.define('ui.menu', (function() {
      */
     var menuMain = document.getElementById('menu-main'),
         itemContinue = document.getElementById('item-continue'),
+        lightning = document.getElementById('lightning'),
 
 
     /**
@@ -28,6 +29,7 @@ rd.define('ui.menu', (function() {
     init = function() {
         eventListener();
 
+        lightning.className = lightning.className.replace(/ show/i, '');
         menuMain.className += ' show';
     };
 

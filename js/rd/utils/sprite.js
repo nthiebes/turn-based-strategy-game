@@ -99,6 +99,15 @@ rd.define('utils.sprite', function(cfg) {
 
 
     /**
+     * Set a new frame index
+     * @param {integer} newIndex
+     */
+    setIndex = function(newIndex) {
+        me._index = newIndex;
+    },
+
+
+    /**
      * Update the positions within a sprite (e.g. for an animation)
      * @memberOf rd.utils.sprite
      * @param {array} newPos
@@ -129,7 +138,8 @@ rd.define('utils.sprite', function(cfg) {
         update: update,
         setPos: setPos,
         setFrames: setFrames,
-        getFrames: getFrames
+        getFrames: getFrames,
+        setIndex: setIndex
     };
 
 });

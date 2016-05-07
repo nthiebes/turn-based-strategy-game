@@ -17,7 +17,7 @@ rd.define('game.unit', function(cfg) {
      */
     stop = function(direction) {
         var offset = direction || me.directionOffset;
-        
+
         me.skin.setPos([0, 128 + offset]);
         me.skin.setFrames([0]);
 
@@ -34,15 +34,14 @@ rd.define('game.unit', function(cfg) {
         me.pos[0] = Math.round(me.pos[0]);
         me.pos[1] = Math.round(me.pos[1]);
 
-        // Start combat
-        if (me.fightAfterWalking) {
-            console.log('aha');
-            rd.game.combat.fight(rd.game.main.getCurrentUnitId(), me.nextEnemyId);
-            me.fightAfterWalking = false;
-        }
         if (me.unitFighting) {
             me.unitFighting = false;
-            console.log('-- stop');
+        }
+
+        // Start combat
+        if (me.fightAfterWalking) {
+            rd.game.combat.fight(rd.game.main.getCurrentUnitId(), me.nextEnemyId);
+            me.fightAfterWalking = false;
         }
     },
 
@@ -50,11 +49,11 @@ rd.define('game.unit', function(cfg) {
     /**
      * Play the walk animation cycle
      * @memberOf rd.game.unit
-     * @param {object} cfg
+     * @param {object} config
      */
-    walk = function(cfg) {
-        me.fightAfterWalking = cfg.fight;
-        me.nextEnemyId = cfg.enemyId;
+    walk = function(config) {
+        me.fightAfterWalking = config.fight;
+        me.nextEnemyId = config.enemyId;
 
         me.skin.setPos([0, 0]);
         me.skin.setFrames([0, 1, 2, 3]);
@@ -68,10 +67,10 @@ rd.define('game.unit', function(cfg) {
         me.gear.leg.setPos([0, 0]);
         me.gear.leg.setFrames([0, 1, 2, 3]);
 
-        me.path = cfg.path.splice(1,cfg.path.length);
+        me.path = config.path.splice(1, config.path.length);
 
         // Define the next tile for the animation
-        me.nextTile = cfg.path[0];
+        me.nextTile = config.path[0];
 
         me.currentMoveRange = me.currentMoveRange - me.path.length;
     },
@@ -86,15 +85,19 @@ rd.define('game.unit', function(cfg) {
 
         me.skin.setPos([0, 128 + me.directionOffset]);
         me.skin.setFrames([0, 1, 2, 2]);
+        me.skin.setIndex(0);
 
         me.gear.head.setPos([0, 128 + me.directionOffset]);
         me.gear.head.setFrames([0, 1, 2, 2]);
+        me.gear.head.setIndex(0);
 
         me.gear.torso.setPos([0, 128 + me.directionOffset]);
         me.gear.torso.setFrames([0, 1, 2, 2]);
+        me.gear.torso.setIndex(0);
 
         me.gear.leg.setPos([0, 128 + me.directionOffset]);
         me.gear.leg.setFrames([0, 1, 2, 2]);
+        me.gear.leg.setIndex(0);
     },
 
 
@@ -151,7 +154,7 @@ rd.define('game.unit', function(cfg) {
      * @return {boolean}
      */
     isInRange = function(unitPos) {
-        for (var i=0; i<me.fieldsInRange.length; i++) {
+        for (var i = 0; i < me.fieldsInRange.length; i++) {
             if (me.fieldsInRange[i][0] === unitPos[0] && me.fieldsInRange[i][1] === unitPos[1]) {
                 return true;
             }
@@ -177,7 +180,6 @@ rd.define('game.unit', function(cfg) {
     get = function() {
         return me;
     };
-
 
     me.name = cfg.name;
     me.skin = cfg.skin;
@@ -208,6 +210,7 @@ rd.define('game.unit', function(cfg) {
     me.steps = 20;
     me.currentStep = 20;
     me.directionOffset = me.team === 1 ? 0 : 64;
+    me.unitFighting = false;
 
 
     /**
