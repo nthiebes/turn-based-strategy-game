@@ -150,25 +150,25 @@ rd.define('game.units', (function() {
                         armorCfg = armorJson;
 
                         add({
-                            key: 'nico',
+                            key: 'nico1',
                             pos: [0, 4],
                             team: 1
                         });
-                        add({
-                            key: 'nicoclone',
-                            pos: [0, 6],
-                            team: 1
-                        });
+                        // add({
+                        //     key: 'nicoclone',
+                        //     pos: [0, 6],
+                        //     team: 1
+                        // });
                         add({
                             key: 'enemy1',
                             pos: [11, 5],
                             team: 2
                         });
-                        // add({
-                        //     key: 'enemy1',
-                        //     pos: [11, 4],
-                        //     team: 2
-                        // });
+                        add({
+                            key: 'enemy2',
+                            pos: [11, 4],
+                            team: 2
+                        });
                         // add({
                         //     key: 'enemy1',
                         //     pos: [11, 7],

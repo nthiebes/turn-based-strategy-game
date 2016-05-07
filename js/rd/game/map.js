@@ -344,14 +344,20 @@ rd.define('game.map', (function() {
                 // Ranged attack
                 if (rangedPossible) {
                     rd.game.combat.fight(rd.game.main.getCurrentUnitId(), clickUnitId);
+                    body.className = 'default';
+                    rd.canvas.main.disableUtils();
                 }
 
                 // Walk and then attack
-                if (currentPath.length > 1 && meleePossible) {
+                if (currentPath && currentPath.length > 1 && meleePossible) {
                     startWalking(currentPath[currentPath.length-1], true, clickUnitId);
+                    body.className = 'default';
+                    rd.canvas.main.disableUtils();
                 // Just attack
                 } else if (meleePossible) {
                     rd.game.combat.fight(rd.game.main.getCurrentUnitId(), clickUnitId);
+                    body.className = 'default';
+                    rd.canvas.main.disableUtils();
                 }
             }
 

@@ -1469,6 +1469,10 @@ rd.define('game.combat', (function() {
         console.log('wounded:', wounded);
 
         units[defender].setHealth(newHealth);
+
+        requestTimeout(function() {
+            rd.canvas.main.enableUtils();
+        }, 1000);
     };
 
 
@@ -1632,25 +1636,25 @@ rd.define('game.units', (function() {
                         armorCfg = armorJson;
 
                         add({
-                            key: 'nico',
+                            key: 'nico1',
                             pos: [0, 4],
                             team: 1
                         });
-                        add({
-                            key: 'nicoclone',
-                            pos: [0, 6],
-                            team: 1
-                        });
+                        // add({
+                        //     key: 'nicoclone',
+                        //     pos: [0, 6],
+                        //     team: 1
+                        // });
                         add({
                             key: 'enemy1',
                             pos: [11, 5],
                             team: 2
                         });
-                        // add({
-                        //     key: 'enemy1',
-                        //     pos: [11, 4],
-                        //     team: 2
-                        // });
+                        add({
+                            key: 'enemy2',
+                            pos: [11, 4],
+                            team: 2
+                        });
                         // add({
                         //     key: 'enemy1',
                         //     pos: [11, 7],
@@ -2022,14 +2026,20 @@ rd.define('game.map', (function() {
                 // Ranged attack
                 if (rangedPossible) {
                     rd.game.combat.fight(rd.game.main.getCurrentUnitId(), clickUnitId);
+                    body.className = 'default';
+                    rd.canvas.main.disableUtils();
                 }
 
                 // Walk and then attack
-                if (currentPath.length > 1 && meleePossible) {
+                if (currentPath && currentPath.length > 1 && meleePossible) {
                     startWalking(currentPath[currentPath.length-1], true, clickUnitId);
+                    body.className = 'default';
+                    rd.canvas.main.disableUtils();
                 // Just attack
                 } else if (meleePossible) {
                     rd.game.combat.fight(rd.game.main.getCurrentUnitId(), clickUnitId);
+                    body.className = 'default';
+                    rd.canvas.main.disableUtils();
                 }
             }
 
@@ -2474,7 +2484,9 @@ rd.define('game.main', (function() {
         if (unit.moving) {
             unit.moving = false;
             units[index].stop(unitDirection);
-            canvas.enableUtils();
+            if (!unit.unitFighting) {
+                canvas.enableUtils();
+            }
 
         } else if (unit.unitFighting) {
             var frames = unit.skin.getFrames();
@@ -2849,6 +2861,14 @@ rd.define('main', (function() {
             'img/units/leg2.png',
             'img/units/leg3.png',
             'img/units/leg4.png',
+            'img/cursors/default.png',
+            'img/cursors/bottom.png',
+            'img/cursors/help.png',
+            'img/cursors/left.png',
+            'img/cursors/move.png',
+            'img/cursors/ranged.png',
+            'img/cursors/right.png',
+            'img/cursors/top.png',
             'img/tileset.png',
             'img/bg.jpg',
             'img/splash-bg.jpg',

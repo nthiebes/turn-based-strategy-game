@@ -84,6 +84,10 @@ rd.define('game.combat', (function() {
         console.log('wounded:', wounded);
 
         units[defender].setHealth(newHealth);
+
+        requestTimeout(function() {
+            rd.canvas.main.enableUtils();
+        }, 1000);
     };
 
 

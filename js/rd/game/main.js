@@ -120,7 +120,9 @@ rd.define('game.main', (function() {
         if (unit.moving) {
             unit.moving = false;
             units[index].stop(unitDirection);
-            canvas.enableUtils();
+            if (!unit.unitFighting) {
+                canvas.enableUtils();
+            }
 
         } else if (unit.unitFighting) {
             var frames = unit.skin.getFrames();

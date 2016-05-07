@@ -1,9 +1,9 @@
 {
-    "nico": {
+    "nico1": {
         "name": "Human swordsman",
         "posOffset": -6,
         "race": "human",
-        "skin": 0,
+        "skin": 1,
         "health": 100,
         "armor": "iron",
         "gear": {
@@ -17,7 +17,7 @@
         }
     },
 
-    "nicoclone": {
+    "nico2": {
         "name": "Elven ninja",
         "posOffset": -6,
         "race": "elf",
@@ -41,7 +41,7 @@
         "race": "orc",
         "skin": 0,
         "health": 100,
-        "armor": "leather",
+        "armor": "iron",
         "gear": {
             "head": 0,
             "torso": 3,
@@ -49,6 +49,24 @@
         },
         "weapons": {
             "primary": "axe0",
+            "secondary": "fist0"
+        }
+    },
+
+    "enemy2": {
+        "name": "Orc archer",
+        "posOffset": -6,
+        "race": "orc",
+        "skin": 3,
+        "health": 100,
+        "armor": "leather",
+        "gear": {
+            "head": 0,
+            "torso": 3,
+            "leg": 3
+        },
+        "weapons": {
+            "primary": "shortbow0",
             "secondary": "fist0"
         }
     }
