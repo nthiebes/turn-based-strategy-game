@@ -1,55 +1,55 @@
 {
-	"fist0": {
-		"damageMelee": 0,
-		"attackRange": 1
-	},
+    "fist0": {
+        "damageMelee": 0,
+        "attackRange": 1
+    },
 
-	"dagger0": {
-		"damageMelee": 1,
-		"attackRange": 1
-	},
+    "dagger0": {
+        "damageMelee": 1,
+        "attackRange": 1
+    },
 
-	"sword0": {
-		"damageMelee": 2,
-		"attackRange": 1
-	},
+    "sword0": {
+        "damageMelee": 2,
+        "attackRange": 1
+    },
 
-	"speer0": {
-		"damageMelee": 1,
-		"attackRange": 2
-	},
+    "speer0": {
+        "damageMelee": 1,
+        "attackRange": 2
+    },
 
-	"axe0": {
-		"damageMelee": 2,
-		"attackRange": 1
-	},
+    "axe0": {
+        "damageMelee": 2,
+        "attackRange": 1
+    },
 
-	"shortbow0": {
-		"damageRanged": 1,
-		"attackRange": 5
-	},
+    "shortbow0": {
+        "damageRanged": 1,
+        "attackRange": 5
+    },
 
-	"longbow0": {
-		"damageRanged": 2,
-		"attackRange": 7
-	},
+    "longbow0": {
+        "damageRanged": 2,
+        "attackRange": 7
+    },
 
-	"crossbow0": {
-		"damageRanged": 3,
-		"attackRange": 6
-	},
+    "crossbow0": {
+        "damageRanged": 3,
+        "attackRange": 6
+    },
 
-	"musket0": {
-		"damageRanged": 4,
-		"attackRange": 5
-	},
+    "musket0": {
+        "damageRanged": 4,
+        "attackRange": 5
+    },
 
-	"rifle0": {
-		"damageRanged": 4,
-		"attackRange": 7
-	},
+    "rifle0": {
+        "damageRanged": 4,
+        "attackRange": 7
+    },
 
-	"shield0": {
-		"defense": 2
-	}
+    "shield0": {
+        "defense": 2
+    }
 }

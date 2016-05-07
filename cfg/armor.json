@@ -1,31 +1,31 @@
 {
-	"skin": {
-		"defense": 0,
-		"moveRange": 2.5
-	},
+    "skin": {
+        "defense": 0,
+        "moveRange": 2.5
+    },
 
-	"cloth": {
-		"defense": 1,
-		"moveRange": 2
-	},
+    "cloth": {
+        "defense": 1,
+        "moveRange": 2
+    },
 
-	"leather": {
-		"defense": 2,
-		"moveRange": 1.5
-	},
+    "leather": {
+        "defense": 2,
+        "moveRange": 1.5
+    },
 
-	"iron": {
-		"defense": 3,
-		"moveRange": 1
-	},
+    "iron": {
+        "defense": 3,
+        "moveRange": 1
+    },
 
-	"steel": {
-		"defense": 4,
-		"moveRange": 0.5
-	},
+    "steel": {
+        "defense": 4,
+        "moveRange": 0.5
+    },
 
-	"plate": {
-		"defense": 5,
-		"moveRange": 0
-	}
+    "plate": {
+        "defense": 5,
+        "moveRange": 0
+    }
 }

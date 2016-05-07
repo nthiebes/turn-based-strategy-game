@@ -893,7 +893,7 @@ rd.define('game.canvas', (function() {
         ctxUtils = canvasUtils.getContext('2d'),
         // should be in an external file ...
         mapLayers = [
-            [[257,127,126,127,126,127,126,85,70,65,81,82,66,65,88,99,126,127,126,85,88,127,126,127],[257,143,142,143,142,143,142,101,102,80,82,87,82,81,72,143,142,143,142,161,104,143,142,143],[126,127,126,127,126,127,126,127,126,107,85,145,65,66,88,148,149,149,149,127,126,127,126,127],[142,143,142,143,142,143,142,143,142,143,142,97,81,82,72,164,165,165,165,166,142,143,142,143],[126,127,126,127,126,127,126,127,126,127,126,69,129,93,104,164,165,165,165,157,149,149,149,150],[142,143,142,143,142,143,142,143,142,143,142,101,108,143,142,180,172,165,165,165,165,165,173,182],[149,150,126,127,126,127,126,127,126,127,126,101,102,127,126,127,164,165,173,181,181,181,182,127],[165,166,142,143,142,143,142,143,142,143,142,143,142,143,142,143,180,181,182,143,142,143,142,143],[165,157,149,149,150,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],[203,203,204,173,182,143,142,148,150,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],[171,235,236,166,126,127,148,156,166,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],[236,173,181,182,142,143,164,165,166,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],[181,182,126,127,126,127,164,165,166,127,126,127,126,127,126,127,126,127,126,127,151,152,152,153],[142,143,142,143,142,143,164,165,157,149,150,143,142,143,142,143,142,143,142,143,167,219,219,169],[126,127,126,127,126,127,180,181,172,165,166,127,126,127,126,127,126,127,148,149,158,219,175,185],[142,143,142,143,142,143,142,143,180,181,182,143,142,143,142,143,142,143,164,165,165,173,185,143],[126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,164,165,165,166,126,127],[142,143,142,257,142,143,142,143,142,143,142,143,142,143,142,143,142,143,180,181,181,182,142,143],[126,127,126,69,70,87,50,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],[142,143,142,85,87,70,87,75,54,55,142,143,142,143,142,143,142,143,142,143,142,143,142,143]],[[0,227,274,0,223,269,84,0,0,0,253,0,0,253,420,0,118,119,144,773,0,89,0,0],[243,258,355,356,239,0,100,0,0,722,269,253,253,269,0,115,134,135,160,752,753,105,0,0],[227,274,0,0,0,0,116,117,106,738,688,269,269,0,0,89,478,479,176,177,120,121,0,0],[274,0,0,0,0,0,132,133,122,123,96,327,328,0,0,73,494,495,192,193,136,137,0,0],[0,0,0,0,0,0,0,0,138,139,112,343,344,222,0,105,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,100,359,360,109,120,121,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,116,123,124,125,136,137,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,132,133,140,141,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,357,358,0,240,242,0,0,0,0,0,0,0,0,0,0,0,0,0],[222,0,0,0,0,0,0,0,0,256,258,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,256,258,0,0,0,0,0,752,753,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,272,274,0,0,524,0,0,773,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,237,0,0,738,0,540,0,0,0,708,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,345,346,347,348,523,0,0,0,0,0,0,240,241,242,0,0],[0,0,0,0,0,0,0,0,361,362,363,364,340,0,323,324,0,0,0,272,273,274,0,0],[0,0,240,241,241,242,0,0,756,757,344,355,356,0,339,340,672,0,0,0,0,0,0,0],[0,0,256,53,54,55,56,0,689,0,360,0,336,337,355,356,0,706,0,0,0,0,0,0],[0,0,68,0,240,241,242,51,38,39,355,356,352,353,354,0,0,0,389,0,758,759,0,240],[0,0,84,0,256,257,211,241,242,0,56,0,270,339,340,359,360,325,240,241,241,241,241,210]],[[0,0,339,340,0,0,240,210,227,274,0,0,0,0,0,0,0,0,0,736,737,0,0,0],[0,0,0,0,0,0,272,273,274,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,309,310,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,325,326,0,0,0,0,0,690,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,341,342,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,736,737,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,221,0,0,722,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,329,330,331,332,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,323,324,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,327,328,339,304,305,306,0,0,0,0,0,0,0,0,0],[0,0,0,37,38,39,40,0,0,343,323,324,320,321,322,0,0,0,0,0,0,0,0,0],[0,0,52,329,330,331,332,57,0,359,339,340,0,0,338,327,328,0,0,0,0,0,0,0],[0,0,0,345,346,347,348,0,0,0,40,0,0,323,324,343,344,309,310,0,0,0,0,0],[0,0,0,361,362,363,364,0,0,222,0,57,0,0,0,0,0,0,340,373,0,0,0,0]],
+            [[257,127,126,127,126,127,126,85,70,65,81,82,66,65,88,99,126,127,126,85,88,127,126,127],[257,143,142,143,142,143,142,101,102,80,82,87,82,81,72,143,142,143,142,161,104,143,142,143],[126,127,126,127,126,127,126,127,126,107,85,145,65,66,88,148,149,149,149,127,126,127,126,127],[142,143,142,143,142,143,142,143,142,143,142,97,81,82,72,164,165,165,165,166,142,143,142,143],[126,127,126,127,126,127,126,127,126,127,126,69,129,93,104,164,165,165,165,157,149,149,149,150],[142,143,142,143,142,143,142,143,142,143,142,101,108,143,142,180,172,165,165,165,165,165,173,182],[149,150,126,127,126,127,126,127,126,127,126,101,102,127,126,127,164,165,173,181,181,181,182,127],[165,166,142,143,142,143,142,143,142,143,142,143,142,143,142,143,180,181,182,143,142,143,142,143],[165,157,149,149,150,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],[203,203,204,173,182,143,142,148,150,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],[171,235,236,166,126,127,148,156,166,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],[236,173,181,182,142,143,164,165,166,143,142,143,142,143,142,143,142,143,142,143,142,143,142,143],[181,182,126,127,126,127,164,165,166,127,126,127,126,127,126,127,126,127,126,127,151,152,152,153],[142,143,142,143,142,143,164,165,157,149,150,143,142,143,142,143,142,143,142,143,167,219,219,169],[126,127,126,127,126,127,180,181,172,165,166,127,126,127,126,127,126,127,148,149,158,219,175,185],[142,143,142,143,142,143,142,143,180,181,182,143,142,143,142,143,142,143,164,165,165,173,185,143],[126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,164,165,165,166,126,127],[142,143,142,257,142,143,142,143,142,143,142,143,142,143,142,143,142,143,180,181,181,182,142,143],[126,127,126,69,70,87,50,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127,126,127],[142,143,142,85,87,70,87,75,54,55,142,143,142,143,142,143,142,143,142,143,142,143,142,143]],[[0,227,274,0,223,269,84,0,0,0,253,0,0,253,420,0,118,119,144,773,0,89,0,0],[243,258,355,356,239,0,100,0,0,722,269,253,253,269,0,115,134,135,160,752,753,105,0,0],[227,274,0,0,0,0,116,117,106,738,688,269,269,0,0,89,478,479,176,177,120,121,0,0],[274,0,0,0,0,0,132,133,122,123,96,327,328,0,0,73,494,495,192,193,136,137,0,0],[0,0,0,0,0,0,0,0,138,139,112,343,344,222,0,105,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,100,359,360,109,120,121,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,116,123,124,125,136,137,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,132,133,140,141,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,357,358,0,240,242,0,0,0,0,0,0,0,0,0,0,0,0,0],[222,0,0,0,0,0,0,0,0,256,258,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,256,258,0,0,0,0,0,752,753,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,272,274,0,0,524,0,0,773,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,237,0,0,738,0,540,0,0,0,708,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,345,346,347,348,523,0,0,0,0,0,0,240,241,242,0,0],[0,0,0,0,0,0,0,0,361,362,363,364,340,0,323,324,0,0,0,272,273,274,0,0],[0,0,240,241,241,242,0,0,756,757,344,355,356,0,339,340,672,0,0,0,0,0,0,0],[0,0,256,53,54,55,56,0,689,0,360,0,336,337,355,356,0,706,0,0,0,0,0,0],[0,0,68,0,240,241,242,51,38,39,355,356,352,353,354,0,0,0,389,0,758,759,0,240],[0,0,84,0,256,257,211,241,242,0,56,0,270,339,340,359,360,325,240,241,241,241,241,210]],[[0,0,339,340,0,0,240,210,227,274,0,0,0,0,0,0,0,0,0,736,737,0,0,0],[0,0,0,0,0,0,272,273,274,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,309,310,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,325,326,0,0,0,0,0,690,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,341,342,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,736,737,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,221,0,0,722,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,329,330,331,332,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,323,324,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,327,328,339,304,305,306,0,0,0,0,0,0,0,0,0],[0,0,0,37,38,39,40,0,0,343,323,324,320,321,322,0,0,0,0,0,0,0,0,0],[0,0,52,329,330,331,332,57,0,359,339,340,0,0,338,327,328,0,0,0,0,0,0,0],[0,0,0,345,346,347,348,0,0,0,40,0,0,323,324,343,344,309,310,0,0,0,0,0],[0,0,0,361,362,363,364,0,0,222,0,57,0,0,0,0,0,0,340,373,0,0,0,0]]
         ],
         ground1 = mapLayers[0],
         ground2 = mapLayers[1],
@@ -1024,7 +1024,7 @@ rd.define('game.canvas', (function() {
         ctxUtils.lineTo(x + 3, y + 32);
         ctxUtils.lineTo(x + 8, y + 27);
         ctxUtils.lineTo(x + 8, y + 8);
-        
+
         ctxUtils.closePath();
         ctxUtils.lineWidth = cfg.lineWidth;
         ctxUtils.stroke();
@@ -1039,7 +1039,7 @@ rd.define('game.canvas', (function() {
     drawRange = function(cfg) {
         var x = cfg.x,
             y = cfg.y,
-            border = isBorderTile(x/fieldWidth, y/fieldWidth, cfg.visibleFields);
+            border = isBorderTile(x / fieldWidth, y / fieldWidth, cfg.visibleFields);
 
         // Draw border on right side
         if (border.right) {
@@ -1159,7 +1159,7 @@ rd.define('game.canvas', (function() {
             };
 
         // Each field in range
-        for (var i=0; i<fields.length; i++) {
+        for (var i = 0; i < fields.length; i++) {
             // Check the right side
             if (fields[i][0] === right && fields[i][1] === y) {
                 result.right = false;
@@ -1195,14 +1195,14 @@ rd.define('game.canvas', (function() {
         renderEntities(unitStats);
     },
 
-    
+
     /**
      * Go through the list of entities
      * @param {array} list
      */
     renderEntities = function(list) {
         var fullWidth = 48;
-        for (var i=0; i<list.length; i++) {
+        for (var i = 0; i < list.length; i++) {
             // Unit gear
             renderEntity(list[i], list[i].skin, list[i].gear.leg, list[i].gear.torso, list[i].gear.head);
 
@@ -1232,7 +1232,7 @@ rd.define('game.canvas', (function() {
         }
     },
 
-    
+
     /**
      * Render a single entity
      */
@@ -1240,7 +1240,7 @@ rd.define('game.canvas', (function() {
         ctxAnim.save();
         ctxAnim.translate(arguments[0].pos[0] * fieldWidth, arguments[0].pos[1] * fieldWidth + arguments[0].posOffset);
 
-        for (var i=1; i<arguments.length; i++) {
+        for (var i = 1; i < arguments.length; i++) {
             arguments[i].render(ctxAnim);
         }
         ctxAnim.restore();
@@ -1261,7 +1261,7 @@ rd.define('game.canvas', (function() {
         var visibleFields = calculateAttackRangeFields(pos, range);
 
         // Draw the attack range
-        for (var k=0; k<visibleFields.length; k++) {
+        for (var k = 0; k < visibleFields.length; k++) {
             drawRange({
                 lineWidth: 2,
                 lineRgbColor: '150,0,0',
@@ -1269,7 +1269,7 @@ rd.define('game.canvas', (function() {
                 x: fieldWidth * visibleFields[k][0],
                 y: fieldWidth * visibleFields[k][1],
                 visibleFields: visibleFields
-            });    
+            });
         }
     },
 
@@ -1287,7 +1287,7 @@ rd.define('game.canvas', (function() {
             visibleFields = [pos];
 
         // Collect circle tiles for each range
-        for (var l=1; l<=range; l++) {
+        for (var l = 1; l <= range; l++) {
             attackRangeFields = attackRangeFields.concat(getCircle(pos[0], pos[1], l));
         }
 
@@ -1295,16 +1295,16 @@ rd.define('game.canvas', (function() {
         attackRangeFields = removeNegative(attackRangeFields);
 
         // Fill gaps
-        for (var i=0; i<attackRangeFields.length; i++) {
+        for (var i = 0; i < attackRangeFields.length; i++) {
             var y = attackRangeFields[i][0],
                 x = attackRangeFields[i][1];
 
             if (x > pos[1]) {
-                newFields.push([y,x-1]);
+                newFields.push([y,x - 1]);
             }
 
             if (x < pos[1]) {
-                newFields.push([y,x+1]);
+                newFields.push([y,x + 1]);
             }
         }
 
@@ -1312,7 +1312,7 @@ rd.define('game.canvas', (function() {
         attackRangeFields = attackRangeFields.concat(newFields);
 
         // Remove fields that are out of the viewport
-        for (var j=0; j<attackRangeFields.length; j++) {
+        for (var j = 0; j < attackRangeFields.length; j++) {
             newFields = bline(pos[0], pos[1], attackRangeFields[j][0], attackRangeFields[j][1]);
             visibleFields = visibleFields.concat(newFields);
         }
@@ -1338,15 +1338,15 @@ rd.define('game.canvas', (function() {
         // Get and concat movable fields
         function getFields() {
             newFields = [];
-            for (var j=0; j<availableFields.length; j++) {
-                newFields = newFields.concat( getSurroundingFields(availableFields[j], hover) );
+            for (var j = 0; j < availableFields.length; j++) {
+                newFields = newFields.concat(getSurroundingFields(availableFields[j], hover));
             }
 
             availableFields = uniq(availableFields.concat(newFields));
         }
 
         // Highlight fields for each move range
-        for (var i=1; i<=moveRange; i++) {
+        for (var i = 1; i <= moveRange; i++) {
             getFields();
         }
 
@@ -1356,14 +1356,14 @@ rd.define('game.canvas', (function() {
         }
 
         // Highlight all movable fields
-        for (var i=0; i<availableFields.length; i++) {
+        for (var i = 0; i < availableFields.length; i++) {
             var lineRgbColor = 'move',
                 fillRgbColor = 'move';
 
             if (hover) {
                 var overlap = false;
                 fillRgbColor = 'hover';
-                
+
                 // Check if the field is also highlighted for the current move range
                 // for (var j=0; j<curentMoveRange.length; j++) {
                 //     if (fieldWidth * curentMoveRange[j][0] === fieldWidth * availableFields[i][0] &&
@@ -1409,10 +1409,9 @@ rd.define('game.canvas', (function() {
         });
     },
 
-
     removeNegative = function(array) {
         var fields = [];
-        for (var i=0; i<array.length; i++) {
+        for (var i = 0; i < array.length; i++) {
             var x = array[i][0],
                 y = array[i][1];
             if (x < 0) {
@@ -1448,7 +1447,7 @@ rd.define('game.canvas', (function() {
             if (field[1] > 0) {
                 newField = [field[0], field[1] - 1];
                 if (isMovableField(newField)) {
-                    fields.push( newField );
+                    fields.push(newField);
                 }
             }
 
@@ -1456,7 +1455,7 @@ rd.define('game.canvas', (function() {
             if (field[0] < map[0].length) {
                 newField = [field[0] + 1, field[1]];
                 if (isMovableField(newField)) {
-                    fields.push( newField );
+                    fields.push(newField);
                 }
             }
 
@@ -1464,7 +1463,7 @@ rd.define('game.canvas', (function() {
             if (field[1] < map.length) {
                 newField = [field[0], field[1] + 1];
                 if (isMovableField(newField)) {
-                    fields.push( newField );
+                    fields.push(newField);
                 }
             }
 
@@ -1472,11 +1471,11 @@ rd.define('game.canvas', (function() {
             if (field[0] > 0) {
                 newField = [field[0] - 1, field[1]];
                 if (isMovableField(newField)) {
-                    fields.push( newField );
+                    fields.push(newField);
                 }
             }
         }
-        
+
         return fields;
     },
 
@@ -1500,11 +1499,11 @@ rd.define('game.canvas', (function() {
      * @memberOf rd.game.canvas
      */
     highlightMovableTiles = function() {
-        for (var i=0; i<colTileCount/2; i++) {
-            for (var j=0; j<rowTileCount/2; j++) {
+        for (var i = 0; i < colTileCount / 2; i++) {
+            for (var j = 0; j < rowTileCount / 2; j++) {
                 // Only movable tiles
                 if (map[j][i] === 0 || typeof map[j][i] === 'string') {
-                    var opacity= 0.2;
+                    var opacity = 0.2;
                     if (typeof map[j][i] === 'string' || utilsDisabled) {
                         opacity = 0;
                     }
@@ -1533,10 +1532,10 @@ rd.define('game.canvas', (function() {
     bline = function(x0, y0, x1, y1) {
         var dx = Math.abs(x1 - x0), sx = x0 < x1 ? 1 : -1,
             dy = Math.abs(y1 - y0), sy = y0 < y1 ? 1 : -1,
-            err = (dx>dy ? dx : -dy)/2,
+            err = (dx > dy ? dx : -dy) / 2,
             fields = [];
 
-        while(true) {
+        while (true) {
             if (map[y0][x0] === 0 || typeof map[y0][x0] === 'string') {
                 fields.push([x0,y0]);
             } else {
@@ -1563,7 +1562,7 @@ rd.define('game.canvas', (function() {
      * @param  {integer} radius
      * @return {array}
      */
-    getCircle = function(x0, y0, radius){
+    getCircle = function(x0, y0, radius) {
         var x = -radius,
             y = 0,
             err = 2 - 2 * radius,
@@ -1579,11 +1578,11 @@ rd.define('game.canvas', (function() {
             if (radius <= y) {
                 y++;
                 err += y * 2 + 1;
-            }          
+            }
             if (radius > x || err > y) {
                 x++;
                 err += x * 2 + 1;
-            } 
+            }
         } while (x < 0);
 
         return fields;
@@ -1655,6 +1654,7 @@ rd.define('game.canvas', (function() {
     };
 
 })());
+
 /**
  * Combat controller
  * @namespace rd.game.map
@@ -2351,6 +2351,46 @@ rd.define('game.main', (function() {
         unitDirection,
         elmFps = document.getElementById('fps'),
         canvas = rd.game.canvas,
+        resourcesList = [
+            'img/units/human0.png',
+            'img/units/human1.png',
+            'img/units/human2.png',
+            'img/units/human3.png',
+            'img/units/human4.png',
+            'img/units/human5.png',
+            'img/units/human6.png',
+            'img/units/zombie0.png',
+            'img/units/zombie1.png',
+            'img/units/zombie2.png',
+            'img/units/zombie3.png',
+            'img/units/zombie4.png',
+            'img/units/zombie5.png',
+            'img/units/zombie6.png',
+            'img/units/orc0.png',
+            'img/units/orc1.png',
+            'img/units/orc2.png',
+            'img/units/orc3.png',
+            'img/units/vampire0.png',
+            'img/units/ghost0.png',
+            'img/units/elf0.png',
+            'img/units/head0.png',
+            'img/units/head1.png',
+            'img/units/head2.png',
+            'img/units/head3.png',
+            'img/units/head4.png',
+            'img/units/head5.png',
+            'img/units/torso0.png',
+            'img/units/torso1.png',
+            'img/units/torso2.png',
+            'img/units/torso3.png',
+            'img/units/torso4.png',
+            'img/units/leg0.png',
+            'img/units/leg1.png',
+            'img/units/leg2.png',
+            'img/units/leg3.png',
+            'img/units/leg4.png',
+            'img/tileset.png'
+        ],
 
 
     /**
@@ -2380,7 +2420,7 @@ rd.define('game.main', (function() {
 
     /**
      * Update all the entities
-     * @param {object} delta
+     * @param {int} delta
      */
     update = function(delta) {
         gameTime += delta;
@@ -2390,12 +2430,93 @@ rd.define('game.main', (function() {
 
 
     /**
+     * Update a unit while moving
+     * @param {object} unit
+     * @param {int}    index
+     */
+    updateMoveAnimation = function(unit, index) {
+        var path = unit.path;
+
+        unit.moving = true;
+
+        // Vertical movement
+        if (unitStats[index].nextTile[0] === path[0][0]) {
+
+            // Move top if next tile is above current
+            if (unit.nextTile[1] > path[0][1]) {
+                unit.pos[1] = path[0][1] + ((1 / unit.steps) * unit.currentStep);
+
+            // Move bottom if next tile is below current
+            } else if (unit.nextTile[1] < path[0][1]) {
+                unit.pos[1] = path[0][1] - ((1 / unit.steps) * unit.currentStep);
+            }
+
+        // Horizontal movement
+        } else {
+
+            // Move left if next tile is on the left side of the current
+            if (unit.nextTile[0] > path[0][0]) {
+                unit.pos[0] = path[0][0] + ((1 / unit.steps) * unit.currentStep);
+                unit.skin.setPos([0, 64]);
+                unit.gear.head.setPos([0, 64]);
+                unit.gear.torso.setPos([0, 64]);
+                unit.gear.leg.setPos([0, 64]);
+                unitDirection = 64;
+
+            // Move right if next tile is on the right side of the current
+            } else if (unit.nextTile[0] < path[0][0]) {
+                unit.pos[0] = path[0][0] - ((1 / unit.steps) * unit.currentStep);
+                unit.skin.setPos([0, 0]);
+                unit.gear.head.setPos([0, 0]);
+                unit.gear.torso.setPos([0, 0]);
+                unit.gear.leg.setPos([0, 0]);
+                unitDirection = 0;
+            }
+        }
+
+        // End of an animation from tile to tile
+        if (unit.currentStep === 1) {
+            unit.nextTile = path[0];
+
+            // Remove the first tile in the array
+            path.splice(0, 1);
+
+            // Reset to start animation for next tile
+            unit.currentStep = unit.steps;
+
+            tileCounter++;
+        }
+
+        unit.currentStep--;
+    },
+
+
+    /**
+     * Update a unit when stopping
+     * @param {object} unit
+     * @param {int}    index
+     */
+    stopMoveAnimation = function(unit, index) {
+        if (unit.moving) {
+            unit.moving = false;
+            units[index].stop(unitDirection);
+            canvas.enableUtils();
+
+        } else if (unit.unitFighting) {
+            var frames = unit.skin.getFrames();
+            if (frames.framesLength - 1 === frames.index) {
+                units[index].stop();
+            }
+        }
+    },
+
+
+    /**
      * Update all the entities (e.g. sprite positions)
      * @param {object} delta
      */
     updateEntities = function(delta) {
-        var unit,
-            path;
+        var unit;
 
         for (var i = 0; i < unitStats.length; i++) {
             unit = unitStats[i];
@@ -2405,80 +2526,15 @@ rd.define('game.main', (function() {
             unit.gear.torso.update(delta);
             unit.gear.leg.update(delta);
 
+            // Continue walking
             if (unit.path.length > 0) {
-                unit.moving = true;
-                path = unit.path;
+                updateMoveAnimation(unit, i);
 
-                // Vertical movement
-                if (unitStats[i].nextTile[0] === path[0][0]) {
-
-                    // Move top if next tile is above current
-                    if (unit.nextTile[1] > path[0][1]) {
-                        unit.pos[1] = path[0][1] + ((1 / unit.steps) * unit.currentStep);
-
-                    // Move bottom if next tile is below current
-                    } else if (unit.nextTile[1] < path[0][1]) {
-                        unit.pos[1] = path[0][1] - ((1 / unit.steps) * unit.currentStep);
-                    }
-
-                // Horizontal movement
-                } else {
-
-                    // Move left if next tile is on the left side of the current
-                    if (unit.nextTile[0] > path[0][0]) {
-                        unit.pos[0] = path[0][0] + ((1 / unit.steps) * unit.currentStep);
-                        unit.skin.setPos([0, 64]);
-                        unit.gear.head.setPos([0, 64]);
-                        unit.gear.torso.setPos([0, 64]);
-                        unit.gear.leg.setPos([0, 64]);
-                        unitDirection = 64;
-
-                    // Move right if next tile is on the right side of the current
-                    } else if (unit.nextTile[0] < path[0][0]) {
-                        unit.pos[0] = path[0][0] - ((1 / unit.steps) * unit.currentStep);
-                        unit.skin.setPos([0, 0]);
-                        unit.gear.head.setPos([0, 0]);
-                        unit.gear.torso.setPos([0, 0]);
-                        unit.gear.leg.setPos([0, 0]);
-                        unitDirection = 0;
-                    }
-                }
-
-                // End of an animation from tile to tile
-                if (unit.currentStep === 1) {
-                    unit.nextTile = path[0];
-
-                    // Remove the first tile in the array
-                    path.splice(0, 1);
-
-                    // Reset to start animation for next tile
-                    unit.currentStep = unit.steps;
-
-                    tileCounter++;
-                }
-
-                unit.currentStep--;
+            // Stop walking
             } else {
-                if (unit.moving) {
-                    stopWalking(unit, i, unitDirection);
-                } else if (unit.unitFighting) {
-                    var frames = unit.skin.getFrames();
-                    if (frames.framesLength - 1 === frames.index) {
-                        units[i].stop();
-                    }
-                }
+                stopMoveAnimation(unit, i);
             }
         }
-    },
-
-
-    /**
-     * Stop the walk animation and show hud
-     */
-    stopWalking = function(unit, id, direction) {
-        unit.moving = false;
-        units[id].stop(direction);
-        canvas.enableUtils();
     },
 
 
@@ -2531,52 +2587,13 @@ rd.define('game.main', (function() {
      * @memberOf rd.game.main
      */
     init = function() {
-        rd.utils.resources.load([
-            'img/units/human0.png',
-            'img/units/human1.png',
-            'img/units/human2.png',
-            'img/units/human3.png',
-            'img/units/human4.png',
-            'img/units/human5.png',
-            'img/units/human6.png',
-            'img/units/zombie0.png',
-            'img/units/zombie1.png',
-            'img/units/zombie2.png',
-            'img/units/zombie3.png',
-            'img/units/zombie4.png',
-            'img/units/zombie5.png',
-            'img/units/zombie6.png',
-            'img/units/orc0.png',
-            'img/units/orc1.png',
-            'img/units/orc2.png',
-            'img/units/orc3.png',
-            'img/units/vampire0.png',
-            'img/units/ghost0.png',
-            'img/units/elf0.png',
-            'img/units/head0.png',
-            'img/units/head1.png',
-            'img/units/head2.png',
-            'img/units/head3.png',
-            'img/units/head4.png',
-            'img/units/head5.png',
-            'img/units/torso0.png',
-            'img/units/torso1.png',
-            'img/units/torso2.png',
-            'img/units/torso3.png',
-            'img/units/torso4.png',
-            'img/units/leg0.png',
-            'img/units/leg1.png',
-            'img/units/leg2.png',
-            'img/units/leg3.png',
-            'img/units/leg4.png',
-            'img/tileset.png'
-        ]);
+        rd.utils.resources.load(resourcesList);
 
         /** Initialize if all ressources are loaded */
         rd.utils.resources.onReady(function() {
             // Units
             rd.game.units.init(function() {
-                // Game
+                // Game preparation
                 lastTime = Date.now();
                 unitStats = rd.game.units.getStats();
                 units = rd.game.units.get();
@@ -2615,6 +2632,5 @@ rd.define('game.main', (function() {
     };
 
 })());
-
 
 rd.game.main.init();
