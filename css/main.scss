@@ -1,19 +1,21 @@
+@import "mixins";
+
 * {
-	padding: 0;
-	margin: 0;
 	border: 0 none;
+	margin: 0;
+	padding: 0;
 }
 
-html {
+html, body {
 	height: 100%;
 	width: 100%;
+	overflow: hidden;
 }
 
 body {
-    background-color: #333;
+    background: url("../img/bg.jpg") no-repeat scroll center bottom #000;
+    background-size: cover;
     cursor: url("../img/cursors/default.png"), auto;
-    height: 100%;
-	width: 100%;
 
 	&.cursor-help {
 		cursor: url("../img/cursors/help.png"), auto;
@@ -45,17 +47,18 @@ body {
 }
 
 canvas {
-	width: 768px;
-	height: 640px;
 	display: block;
+	height: 640px;
+	margin-left: -384px;
+	margin-top: -320px;
+	outline: 3px solid #000;
 	position: absolute;
-	top: 50%;
-	margin-top: -323px;
-	margin-left: -397px;
-	left: 50%;
-	border: 3px solid #000;
+	width: 768px;
+    left: 50%;
+    top: 50%;
+    opacity: 0;
 }
 
-.preload {
-	display: none;
-}
+@import "loading";
+@import "effects";
+@import "splash";

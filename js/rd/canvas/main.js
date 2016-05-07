@@ -17,7 +17,6 @@ rd.define('canvas.main', (function() {
         ctxTop1 = canvasTop1.getContext('2d'),
         ctxAnim = canvasAnim.getContext('2d'),
         ctxUtils = canvasUtils.getContext('2d'),
-        // should be in an external file ...
         mapLayers,
         ground1,
         ground2,
@@ -37,6 +36,7 @@ rd.define('canvas.main', (function() {
     /**
      * Draw the images of a sprite onto the canvas
      * @param {object} ctx Canvas context
+     * @param {array}  array
      */
     drawImage = function(ctx, array) {
         // Each row

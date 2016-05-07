@@ -1,0 +1,51 @@
+#loading {
+    background-color: #000;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    &.hide {
+        @include transition(opacity 4s ease-in);
+        opacity: 0;
+
+        .ldr {
+            @include transition(opacity 0.5s);
+            opacity: 0;
+        }
+    }
+}
+
+.ldr {
+    font-size: 0;
+    height: 20px;
+    left: 50%;
+    margin-left: -10px;
+    margin-top: -10px;
+    position: absolute;
+    top: 50%;
+    width: 19px;
+}
+
+.ldr-blk {
+    @include animation(pulse 0.75s ease-in infinite alternate);
+    background-color: #555;
+    display: inline-block;
+    height: 36%;
+    margin: 7%;
+    width: 36%;
+}
+
+.anim-delay {
+    @include animation-delay(0.75s);
+}
+
+@include keyframes(pulse) {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}

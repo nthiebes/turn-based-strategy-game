@@ -1,0 +1,98 @@
+@mixin border-radius($radius) {
+    -webkit-border-radius: $radius;
+       -moz-border-radius: $radius;
+            border-radius: $radius;
+}
+
+@mixin user-select($select) {
+    -moz-user-select: -moz-$select;
+    -webkit-touch-callout: $select;
+      -webkit-user-select: $select;
+       -khtml-user-select: $select;
+         -moz-user-select: $select;
+          -ms-user-select: $select;
+}
+
+@mixin box-shadow($shadow...){
+    -webkit-box-shadow: $shadow;
+       -moz-box-shadow: $shadow;
+        -ms-box-shadow: $shadow;
+         -o-box-shadow: $shadow;
+            box-shadow: $shadow;
+}
+
+@mixin transition($transition...){
+    -webkit-transition: $transition;
+       -moz-transition: $transition;
+        -ms-transition: $transition;
+         -o-transition: $transition;
+            transition: $transition;
+}
+
+@mixin animation($animation){
+    -webkit-animation: $animation;
+       -moz-animation: $animation;
+        -ms-animation: $animation;
+         -o-animation: $animation;
+            animation: $animation;
+}
+
+@mixin animation-delay($delay){
+    -webkit-animation-delay: $delay;
+       -moz-animation-delay: $delay;
+        -ms-animation-delay: $delay;
+         -o-animation-delay: $delay;
+            animation-delay: $delay;
+}
+
+@mixin transform($transform...){
+    -webkit-transform: $transform;
+       -moz-transform: $transform;
+        -ms-transform: $transform;
+         -o-transform: $transform;
+            transform: $transform;
+}
+
+@mixin transform-origin($transform){
+    -webkit-transform-origin: $transform;
+       -moz-transform-origin: $transform;
+        -ms-transform-origin: $transform;
+         -o-transform-origin: $transform;
+            transform-origin: $transform;
+}
+
+@mixin backface-visibility($visibility) {
+    -webkit-backface-visibility: $visibility;
+       -moz-backface-visibility: $visibility;
+            backface-visibility: $visibility;
+}
+
+@mixin box-sizing(){
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+@mixin keyframes($name){
+    @-webkit-keyframes #{$name}{
+        @content; 
+    }
+    @-moz-keyframes #{$name}{
+        @content;
+    }
+    @-ms-keyframes #{$name}{
+        @content;
+    }
+    @-o-keyframes #{$name}{
+        @content;
+    }
+    @keyframes #{$name}{
+        @content;
+    } 
+}
+
+@mixin filter($data){
+    -webkit-filter: $data;
+    -moz-filter: $data;
+    filter: $data;
+}
