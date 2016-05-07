@@ -25,6 +25,7 @@ module.exports = function(grunt) {
                     'js/rd/game/map.js',
                     'js/rd/game/ui.js',
                     'js/rd/game/main.js',
+                    'js/rd/ui/menu.js',
                     'js/rd/splash.js',
                     'js/rd/main.js',
                     'js/libs/howler.js'

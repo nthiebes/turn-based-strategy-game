@@ -46,19 +46,8 @@ body {
 	}
 }
 
-canvas {
-	display: block;
-	height: 640px;
-	margin-left: -384px;
-	margin-top: -320px;
-	outline: 3px solid #000;
-	position: absolute;
-	width: 768px;
-    left: 50%;
-    top: 50%;
-    opacity: 0;
-}
-
 @import "loading";
 @import "effects";
 @import "splash";
+@import "menu";
+@import "canvas";

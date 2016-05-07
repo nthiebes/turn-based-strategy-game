@@ -98,7 +98,7 @@ rd.define('splash', (function() {
             splash.className += ' hide';
             fog.className += ' show';
             
-            // rd.ui.menu.init();
+            rd.ui.menu.init();
 
             requestTimeout(function() {
                 splash.remove();
@@ -127,6 +127,8 @@ rd.define('splash', (function() {
             splash.className += ' hide';
             lightning.className += ' show';
             fog.className += ' show';
+
+            rd.ui.menu.init();
 
             requestTimeout(function() {
                 splash.remove();

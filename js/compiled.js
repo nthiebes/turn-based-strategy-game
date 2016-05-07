@@ -2357,46 +2357,7 @@ rd.define('game.main', (function() {
         unitDirection,
         canvas = rd.canvas.main,
         currentMap = 0,
-        resourcesList = [
-            'img/units/human0.png',
-            'img/units/human1.png',
-            'img/units/human2.png',
-            'img/units/human3.png',
-            'img/units/human4.png',
-            'img/units/human5.png',
-            'img/units/human6.png',
-            'img/units/zombie0.png',
-            'img/units/zombie1.png',
-            'img/units/zombie2.png',
-            'img/units/zombie3.png',
-            'img/units/zombie4.png',
-            'img/units/zombie5.png',
-            'img/units/zombie6.png',
-            'img/units/orc0.png',
-            'img/units/orc1.png',
-            'img/units/orc2.png',
-            'img/units/orc3.png',
-            'img/units/vampire0.png',
-            'img/units/ghost0.png',
-            'img/units/elf0.png',
-            'img/units/head0.png',
-            'img/units/head1.png',
-            'img/units/head2.png',
-            'img/units/head3.png',
-            'img/units/head4.png',
-            'img/units/head5.png',
-            'img/units/torso0.png',
-            'img/units/torso1.png',
-            'img/units/torso2.png',
-            'img/units/torso3.png',
-            'img/units/torso4.png',
-            'img/units/leg0.png',
-            'img/units/leg1.png',
-            'img/units/leg2.png',
-            'img/units/leg3.png',
-            'img/units/leg4.png',
-            'img/tileset.png'
-        ],
+        canvasWrapper = document.getElementById('canvas-wrapper'),
 
 
     /**
@@ -2602,6 +2563,7 @@ rd.define('game.main', (function() {
                 units[currentUnit].setFieldsInRange(canvas.calculateAttackRangeFields(currentUnitStats.pos, currentUnitStats.attackRange));
                 main();
                 rd.game.ui.init();
+                canvasWrapper.className += ' show';
 
                 // Default movable
                 canvas.drawMovable({
@@ -2626,6 +2588,49 @@ rd.define('game.main', (function() {
         getCurrentUnitStats: getCurrentUnitStats,
         getCurrentUnit: getCurrentUnit,
         endTurn: endTurn
+    };
+
+})());
+
+/**
+ * Menus
+ * @namespace rd.ui.menu
+ */
+rd.define('ui.menu', (function() {
+
+    /**
+     * Variables
+     */
+    var menuMain = document.getElementById('menu-main'),
+        itemContinue = document.getElementById('item-continue'),
+
+
+    /**
+     * Register event listener
+     */
+    eventListener = function() {
+        itemContinue.addEventListener('click', function() {
+            menuMain.className = menuMain.className.replace(/ show/i, '');
+            rd.game.main.init();
+        });
+    },
+
+
+    /**
+     * Initialization
+     */
+    init = function() {
+        eventListener();
+
+        menuMain.className += ' show';
+    };
+
+
+    /**
+     * Return public functions
+     */
+    return {
+        init: init
     };
 
 })());
@@ -2730,7 +2735,7 @@ rd.define('splash', (function() {
             splash.className += ' hide';
             fog.className += ' show';
             
-            // rd.ui.menu.init();
+            rd.ui.menu.init();
 
             requestTimeout(function() {
                 splash.remove();
@@ -2759,6 +2764,8 @@ rd.define('splash', (function() {
             splash.className += ' hide';
             lightning.className += ' show';
             fog.className += ' show';
+
+            rd.ui.menu.init();
 
             requestTimeout(function() {
                 splash.remove();

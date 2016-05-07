@@ -4,20 +4,15 @@
     <title>RIDANE &#60;&#62; The Upheaval of War</title>
     <meta charset="utf-8">
     <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
+    <link href='https://fonts.googleapis.com/css?family=PT+Sans:700,400' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="css/style.css" type="text/css">
 </head>
 
 <body>
-    <canvas id="canvas-ground1" width="768" height="640"></canvas>
-    <canvas id="canvas-ground2" width="768" height="640"></canvas>
-    <canvas id="canvas-utils" width="768" height="640"></canvas>
-    <canvas id="canvas-anim" width="768" height="640"></canvas>
-    <canvas id="canvas-top1" width="768" height="640"></canvas>
-
-    <div id="main-menu">
+    <div id="menu-main">
         <div class="top"></div>
         <ul>
-            <li id="menu-login">LOGIN</li>
+            <li id="item-continue">CONTINUE</li>
             <li>NEW GAME</li>
             <li>ABOUT</li>
             <li>OPTIONS</li>
@@ -25,7 +20,15 @@
         </ul>
     </div>
 
-    <button id="end-turn">End Turn</button>
+    <div id="canvas-wrapper">
+        <canvas id="canvas-ground1" width="768" height="640"></canvas>
+        <canvas id="canvas-ground2" width="768" height="640"></canvas>
+        <canvas id="canvas-utils" width="768" height="640"></canvas>
+        <canvas id="canvas-anim" width="768" height="640"></canvas>
+        <canvas id="canvas-top1" width="768" height="640"></canvas>
+
+        <button id="end-turn">End Turn</button>
+    </div>
 
     <div id="splash">
         <div id="logo"></div>

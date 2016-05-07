@@ -1,0 +1,22 @@
+#canvas-wrapper {
+    opacity: 0;
+    visibility: hidden;
+
+    &.show {
+        @include transition(opacity 1s linear);
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+canvas {
+    display: block;
+    height: 640px;
+    margin-left: -384px;
+    margin-top: -320px;
+    outline: 3px solid #000;
+    position: absolute;
+    width: 768px;
+    left: 50%;
+    top: 50%;
+}
