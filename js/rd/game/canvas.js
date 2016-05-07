@@ -667,7 +667,9 @@ rd.define('game.canvas', (function() {
             } else {
                 break;
             }
-            if (x0 === x1 && y0 === y1) break;
+            if (x0 === x1 && y0 === y1) {
+                break;
+            }
             var e2 = err;
             if (e2 > -dx) {
                 err -= dy; x0 += sx;
