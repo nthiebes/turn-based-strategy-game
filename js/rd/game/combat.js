@@ -86,7 +86,7 @@ rd.define('game.combat', (function() {
         units[defender].setHealth(newHealth);
 
         requestTimeout(function() {
-            rd.canvas.main.enableUtils();
+            rd.game.main.endTurn();
         }, 1000);
     };
 

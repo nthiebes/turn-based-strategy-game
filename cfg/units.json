@@ -12,8 +12,8 @@
             "leg": 1
         },
         "weapons": {
-            "primary": "sword0",
-            "secondary": "shield0"
+            "primary": "primary1",
+            "secondary": "secondary0"
         }
     },
 
@@ -30,8 +30,8 @@
             "leg": 2
         },
         "weapons": {
-            "primary": "dagger0",
-            "secondary": "fist0"
+            "primary": "primary0",
+            "secondary": "secondary0"
         }
     },
 
@@ -41,15 +41,15 @@
         "race": "orc",
         "skin": 0,
         "health": 100,
-        "armor": "iron",
+        "armor": "leather",
         "gear": {
             "head": 0,
             "torso": 3,
             "leg": 3
         },
         "weapons": {
-            "primary": "axe0",
-            "secondary": "fist0"
+            "primary": "primary3",
+            "secondary": "secondary1"
         }
     },
 
@@ -61,13 +61,13 @@
         "health": 100,
         "armor": "leather",
         "gear": {
-            "head": 0,
+            "head": 1,
             "torso": 3,
             "leg": 3
         },
         "weapons": {
-            "primary": "shortbow0",
-            "secondary": "fist0"
+            "primary": "primary5",
+            "secondary": "secondary0"
         }
     }
 }

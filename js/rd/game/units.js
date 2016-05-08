@@ -22,10 +22,14 @@ rd.define('game.units', (function() {
      */
     add = function(cfg) {
         var newUnit = JSON.parse(JSON.stringify(unitsCfg[cfg.key])), // Copy object
-            side = cfg.team === 1 ? 0 : 64;
+            side = cfg.team === 1 ? 0 : 64,
+            sideWeapon = cfg.team === 1 ? 0 : 100,
+            sideWeaponLeft = cfg.team === 1 ? 0 : 36;
         newUnit.pos = cfg.pos;
         newUnit.team = cfg.team;
         newUnit.side = side;
+        newUnit.sideWeapon = sideWeapon;
+        newUnit.sideWeaponLeft = sideWeaponLeft;
         newUnit.weaponsCfg = JSON.parse(JSON.stringify(weaponsCfg));
         newUnit.armorCfg = JSON.parse(JSON.stringify(armorCfg));
         newUnit.racesCfg = JSON.parse(JSON.stringify(racesCfg));
@@ -33,6 +37,8 @@ rd.define('game.units', (function() {
         newUnit.gear.head = new rd.utils.sprite(getHeadPreset(newUnit.gear.head, side));
         newUnit.gear.torso = new rd.utils.sprite(getTorsoPreset(newUnit.gear.torso, side));
         newUnit.gear.leg = new rd.utils.sprite(getLegPreset(newUnit.gear.leg, side));
+        newUnit.primary = new rd.utils.sprite(getWeaponPreset(newUnit.weapons.primary, sideWeapon, sideWeaponLeft));
+        newUnit.secondary = new rd.utils.sprite(getWeaponPreset(newUnit.weapons.secondary, sideWeapon, sideWeaponLeft));
         units.push(new rd.game.unit(newUnit));
         rd.game.map.updateMap(cfg.pos[0], cfg.pos[1], 'id-' + unitCount);
         unitCount++;
@@ -102,6 +108,23 @@ rd.define('game.units', (function() {
             'url': 'img/units/leg' + leg + '.png',
             'pos': [0, 128 + side],
             'size': [64, 64],
+            'speed': 4,
+            'frames': [0]
+        };
+    },
+
+
+    /**
+     * Weapon sprite preset
+     * @param  {string}  leg
+     * @param  {integer} sideWeapon
+     * @return {object}
+     */
+    getWeaponPreset = function(weapon, sideWeapon, sideWeaponLeft) {
+        return {
+            'url': 'img/units/' + weapon + '.png',
+            'pos': [0 + sideWeaponLeft, 237 + sideWeapon],
+            'size': [100, 100],
             'speed': 4,
             'frames': [0]
         };

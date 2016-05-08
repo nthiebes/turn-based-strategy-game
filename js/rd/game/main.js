@@ -81,7 +81,9 @@ rd.define('game.main', (function() {
                 unit.gear.head.setPos([0, 64]);
                 unit.gear.torso.setPos([0, 64]);
                 unit.gear.leg.setPos([0, 64]);
-                unitDirection = 64;
+                unit.primary.setPos([36, 136]);
+                unit.secondary.setPos([36, 136]);
+                unitDirection = 'left';
 
             // Move right if next tile is on the right side of the current
             } else if (unit.nextTile[0] < path[0][0]) {
@@ -90,7 +92,9 @@ rd.define('game.main', (function() {
                 unit.gear.head.setPos([0, 0]);
                 unit.gear.torso.setPos([0, 0]);
                 unit.gear.leg.setPos([0, 0]);
-                unitDirection = 0;
+                unit.primary.setPos([0, 36]);
+                unit.secondary.setPos([0, 36]);
+                unitDirection = 'right';
             }
         }
 
@@ -147,6 +151,8 @@ rd.define('game.main', (function() {
             unit.gear.head.update(delta);
             unit.gear.torso.update(delta);
             unit.gear.leg.update(delta);
+            unit.primary.update(delta);
+            unit.secondary.update(delta);
 
             // Continue walking
             if (unit.path.length > 0) {

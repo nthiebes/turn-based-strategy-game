@@ -328,7 +328,7 @@ rd.define('canvas.main', (function() {
         var fullWidth = 48;
         for (var i = 0; i < list.length; i++) {
             // Unit gear
-            renderEntity(list[i], list[i].skin, list[i].gear.leg, list[i].gear.torso, list[i].gear.head);
+            renderEntity(list[i], list[i].secondary, list[i].skin, list[i].gear.leg, list[i].gear.torso, list[i].gear.head, list[i].primary);
 
             // Health bar
             var test = 100 / fullWidth,
