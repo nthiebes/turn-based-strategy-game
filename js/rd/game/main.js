@@ -77,12 +77,12 @@ rd.define('game.main', (function() {
             // Move left if next tile is on the left side of the current
             if (unit.nextTile[0] > path[0][0]) {
                 unit.pos[0] = path[0][0] + ((1 / unit.steps) * unit.currentStep);
-                unit.skin.setPos([0, 64]);
-                unit.gear.head.setPos([0, 64]);
-                unit.gear.torso.setPos([0, 64]);
-                unit.gear.leg.setPos([0, 64]);
-                unit.primary.setPos([36, 136]);
-                unit.secondary.setPos([36, 136]);
+                unit.skin.setPos([0, 128]);
+                unit.gear.head.setPos([0, 128]);
+                unit.gear.torso.setPos([0, 128]);
+                unit.gear.leg.setPos([0, 128]);
+                unit.primary.setPos([0, 128]);
+                unit.secondary.setPos([0, 128]);
                 unitDirection = 'left';
 
             // Move right if next tile is on the right side of the current
@@ -92,8 +92,8 @@ rd.define('game.main', (function() {
                 unit.gear.head.setPos([0, 0]);
                 unit.gear.torso.setPos([0, 0]);
                 unit.gear.leg.setPos([0, 0]);
-                unit.primary.setPos([0, 36]);
-                unit.secondary.setPos([0, 36]);
+                unit.primary.setPos([0, 0]);
+                unit.secondary.setPos([0, 0]);
                 unitDirection = 'right';
             }
         }
@@ -124,6 +124,7 @@ rd.define('game.main', (function() {
         if (unit.moving) {
             unit.moving = false;
             units[index].stop(unitDirection);
+            unitDirection = null;
             if (!unit.unitFighting) {
                 canvas.enableUtils();
             }
@@ -131,7 +132,8 @@ rd.define('game.main', (function() {
         } else if (unit.unitFighting) {
             var frames = unit.skin.getFrames();
             if (frames.framesLength - 1 === frames.index) {
-                units[index].stop();
+                units[index].stop(unitDirection);
+                unitDirection = null;
             }
         }
     },

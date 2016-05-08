@@ -328,7 +328,7 @@ rd.define('canvas.main', (function() {
         var fullWidth = 48;
         for (var i = 0; i < list.length; i++) {
             // Unit gear
-            renderEntity(list[i], list[i].secondary, list[i].skin, list[i].gear.leg, list[i].gear.torso, list[i].gear.head, list[i].primary);
+            renderEntity(list[i], list[i].secondary, list[i].skin, list[i].gear.leg, list[i].gear.torso, list[i].primary, list[i].gear.head);
 
             // Health bar
             var test = 100 / fullWidth,
@@ -362,7 +362,7 @@ rd.define('canvas.main', (function() {
      */
     renderEntity = function() {
         ctxAnim.save();
-        ctxAnim.translate(arguments[0].pos[0] * fieldWidth, arguments[0].pos[1] * fieldWidth + arguments[0].posOffset);
+        ctxAnim.translate(arguments[0].pos[0] * fieldWidth - 32, arguments[0].pos[1] * fieldWidth - 70); 
 
         for (var i = 1; i < arguments.length; i++) {
             arguments[i].render(ctxAnim);

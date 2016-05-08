@@ -22,14 +22,10 @@ rd.define('game.units', (function() {
      */
     add = function(cfg) {
         var newUnit = JSON.parse(JSON.stringify(unitsCfg[cfg.key])), // Copy object
-            side = cfg.team === 1 ? 0 : 64,
-            sideWeapon = cfg.team === 1 ? 0 : 100,
-            sideWeaponLeft = cfg.team === 1 ? 0 : 36;
+            side = cfg.team === 1 ? 0 : 128;
         newUnit.pos = cfg.pos;
         newUnit.team = cfg.team;
         newUnit.side = side;
-        newUnit.sideWeapon = sideWeapon;
-        newUnit.sideWeaponLeft = sideWeaponLeft;
         newUnit.weaponsCfg = JSON.parse(JSON.stringify(weaponsCfg));
         newUnit.armorCfg = JSON.parse(JSON.stringify(armorCfg));
         newUnit.racesCfg = JSON.parse(JSON.stringify(racesCfg));
@@ -37,8 +33,8 @@ rd.define('game.units', (function() {
         newUnit.gear.head = new rd.utils.sprite(getHeadPreset(newUnit.gear.head, side));
         newUnit.gear.torso = new rd.utils.sprite(getTorsoPreset(newUnit.gear.torso, side));
         newUnit.gear.leg = new rd.utils.sprite(getLegPreset(newUnit.gear.leg, side));
-        newUnit.primary = new rd.utils.sprite(getWeaponPreset(newUnit.weapons.primary, sideWeapon, sideWeaponLeft));
-        newUnit.secondary = new rd.utils.sprite(getWeaponPreset(newUnit.weapons.secondary, sideWeapon, sideWeaponLeft));
+        newUnit.primary = new rd.utils.sprite(getWeaponPreset(newUnit.weapons.primary, side));
+        newUnit.secondary = new rd.utils.sprite(getWeaponPreset(newUnit.weapons.secondary, side));
         units.push(new rd.game.unit(newUnit));
         rd.game.map.updateMap(cfg.pos[0], cfg.pos[1], 'id-' + unitCount);
         unitCount++;
@@ -55,8 +51,8 @@ rd.define('game.units', (function() {
     getSkinPreset = function(race, skin, side) {
         return {
             'url': 'img/units/' + race + skin + '.png',
-            'pos': [0, 128 + side],
-            'size': [64, 64],
+            'pos': [0, 256 + side],
+            'size': [128, 128],
             'speed': 4,
             'frames': [0]
         };
@@ -72,8 +68,8 @@ rd.define('game.units', (function() {
     getHeadPreset = function(head, side) {
         return {
             'url': 'img/units/head' + head + '.png',
-            'pos': [0, 128 + side],
-            'size': [64, 64],
+            'pos': [0, 256 + side],
+            'size': [128, 128],
             'speed': 4,
             'frames': [0]
         };
@@ -89,8 +85,8 @@ rd.define('game.units', (function() {
     getTorsoPreset = function(torso, side) {
         return {
             'url': 'img/units/torso' + torso + '.png',
-            'pos': [0, 128 + side],
-            'size': [64, 64],
+            'pos': [0, 256 + side],
+            'size': [128, 128],
             'speed': 4,
             'frames': [0]
         };
@@ -106,8 +102,8 @@ rd.define('game.units', (function() {
     getLegPreset = function(leg, side) {
         return {
             'url': 'img/units/leg' + leg + '.png',
-            'pos': [0, 128 + side],
-            'size': [64, 64],
+            'pos': [0, 256 + side],
+            'size': [128, 128],
             'speed': 4,
             'frames': [0]
         };
@@ -120,11 +116,11 @@ rd.define('game.units', (function() {
      * @param  {integer} sideWeapon
      * @return {object}
      */
-    getWeaponPreset = function(weapon, sideWeapon, sideWeaponLeft) {
+    getWeaponPreset = function(weapon, side) {
         return {
             'url': 'img/units/' + weapon + '.png',
-            'pos': [0 + sideWeaponLeft, 237 + sideWeapon],
-            'size': [100, 100],
+            'pos': [0, 256 + side],
+            'size': [128, 128],
             'speed': 4,
             'frames': [0]
         };

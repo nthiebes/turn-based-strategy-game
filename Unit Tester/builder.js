@@ -2,7 +2,7 @@
  * Ridane Unit Builder
  */
 var unitBuilder = function(){
-	var speed = 5,
+	var speed = 4,
 		baseUrl = '../img/units/';
 
 	var init = function(){
@@ -10,17 +10,17 @@ var unitBuilder = function(){
 		nico = new Unit({
 			name: 'Nico',
 			pos: [0, 0],
-			skin: new Sprite(baseUrl + 'human1.png', [0, 128], [64, 64], speed, [0], 'horizontal', false, false), // url, pos, size, speed, frames, dir, once, inProgress
+			skin: new Sprite(baseUrl + 'human1.png', [0, 256], [128, 128], speed, [0], 'horizontal', false, false), // url, pos, size, speed, frames, dir, once, inProgress
 			dirt: false,
 			blood: true,
 			gear: {
-				head: new Sprite(baseUrl + 'head0.png', [0, 128], [64, 64], speed, [0], 'horizontal', false, false),
-				torso: new Sprite(baseUrl + 'torso0.png', [0, 128], [64, 64], speed, [0], 'horizontal', false, false),
-				leg: new Sprite(baseUrl + 'leg0.png', [0, 128], [64, 64], speed, [0], 'horizontal', false, false)
+				head: new Sprite(baseUrl + 'head0.png', [0, 256], [128, 128], speed, [0], 'horizontal', false, false),
+				torso: new Sprite(baseUrl + 'torso0.png', [0, 256], [128, 128], speed, [0], 'horizontal', false, false),
+				leg: new Sprite(baseUrl + 'leg0.png', [0, 256], [128, 128], speed, [0], 'horizontal', false, false)
 			},
 			weapon: {
-				primary: new Sprite(baseUrl + 'primary0.png', [0, 237], [100, 100], speed, [0], 'horizontal', false, false),
-				secondary: new Sprite(baseUrl + 'secondary0.png', [0, 237], [100, 100], speed, [0], 'horizontal', false, false),
+				primary: new Sprite(baseUrl + 'primary0.png', [0, 256], [128, 128], speed, [0], 'horizontal', false, false),
+				secondary: new Sprite(baseUrl + 'secondary0.png', [0, 256], [128, 128], speed, [0], 'horizontal', false, false),
 			},
 			attributes: {
 				strength: 1
@@ -39,11 +39,7 @@ var unitBuilder = function(){
 
 var gameTime = 0,
 	nico,
-	fps,
 	side = 0,
-	sideWeapon = 0,
-	sideWeaponLeft = 0,
-	elmFps = document.getElementById('fps'),
 	units = [],
 	lastTime;
 
@@ -99,22 +95,22 @@ $('#builder-auto').on('click', function(){
 
 
 $('#builder-idle').on('click', function(){
-	nico.skin.pos = [0, 128 + side];
+	nico.skin.pos = [0, 256 + side];
 	nico.skin.frames = [0];
 
-	nico.gear.head.pos = [0, 128 + side];
+	nico.gear.head.pos = [0, 256 + side];
 	nico.gear.head.frames = [0];
 
-	nico.gear.torso.pos = [0, 128 + side];
+	nico.gear.torso.pos = [0, 256 + side];
 	nico.gear.torso.frames = [0];
 
-	nico.gear.leg.pos = [0, 128 + side];
+	nico.gear.leg.pos = [0, 256 + side];
 	nico.gear.leg.frames = [0];
 
-	nico.weapon.primary.pos = [0 + sideWeaponLeft, 237 + sideWeapon];
+	nico.weapon.primary.pos = [0, 256 + side];
 	nico.weapon.primary.frames = [0];
 
-	nico.weapon.secondary.pos = [0 + sideWeaponLeft, 237 + sideWeapon];
+	nico.weapon.secondary.pos = [0, 256 + side];
 	nico.weapon.secondary.frames = [0];
 });
 
@@ -131,37 +127,61 @@ $('#builder-walk').on('click', function(){
 	nico.gear.leg.pos = [0, 0 + side];
 	nico.gear.leg.frames = [0, 1, 2, 3];
 
-	nico.weapon.primary.pos = [0 + sideWeaponLeft, 36 + sideWeapon];
+	nico.weapon.primary.pos = [0, 0 + side];
 	nico.weapon.primary.frames = [0, 1, 2, 3];
 
-	nico.weapon.secondary.pos = [0 + sideWeaponLeft, 36 + sideWeapon];
+	nico.weapon.secondary.pos = [0, 0 + side];
 	nico.weapon.secondary.frames = [0, 1, 2, 3];
 });
 
 $('#builder-attack').on('click', function(){
-	nico.skin.pos = [0, 128 + side];
-	nico.skin.frames = [0, 1, 2];
+    var ranged = false;
+    if (nico.weapon.primary.url === '../img/units/primary4.png') {
+        ranged = true;
+    }
 
-	nico.gear.head.pos = [0, 128 + side];
-	nico.gear.head.frames = [0, 1, 2];
+	nico.skin.pos = [0, 256 + side];
+    if (ranged) {
+        nico.skin.frames = [0, 2, 2];
+    } else {
+        nico.skin.frames = [0, 1, 2];
+    }
 
-	nico.gear.torso.pos = [0, 128 + side];
-	nico.gear.torso.frames = [0, 1, 2];
+	nico.gear.head.pos = [0, 256 + side];
+    if (ranged) {
+        nico.gear.head.frames = [0, 2, 2];
+    } else {
+        nico.gear.head.frames = [0, 1, 2];
+    }
 
-	nico.gear.leg.pos = [0, 128 + side];
-	nico.gear.leg.frames = [0, 1, 2];
+	nico.gear.torso.pos = [0, 256 + side];
+    if (ranged) {
+        nico.gear.torso.frames = [0, 2, 2];
+    } else {
+        nico.gear.torso.frames = [0, 1, 2];
+    }
 
-	nico.weapon.primary.pos = [0 + sideWeaponLeft, 237 + sideWeapon];
-	nico.weapon.primary.frames = [0, 1, 2];
+	nico.gear.leg.pos = [0, 256 + side];
+    if (ranged) {
+        nico.gear.leg.frames = [0, 2, 2];
+    } else {
+        nico.gear.leg.frames = [0, 1, 2];
+    }
+	
+	nico.weapon.primary.pos = [0, 256 + side];
+    if (ranged) {
+        nico.weapon.primary.frames = [0, 1, 2];
+    } else {
+        nico.weapon.primary.frames = [0, 1, 2];
+    }
+	
 
-	nico.weapon.secondary.pos = [0 + sideWeaponLeft, 237 + sideWeapon];
+	nico.weapon.secondary.pos = [0, 256 + side];
 	nico.weapon.secondary.frames = [0, 1, 2];
 });
 
 $('#builder-left').on('click', function(){
-	side = 64;
-	sideWeapon = 100;
-	sideWeaponLeft = 36;
+	side = 128;
 
 	// nico.skin.pos = [0, 192];
 	// nico.gear.head.pos = [0, 192];
@@ -171,8 +191,6 @@ $('#builder-left').on('click', function(){
 
 $('#builder-right').on('click', function(){
 	side = 0;
-	sideWeapon = 0;
-	sideWeaponLeft = 0;
 
 	// nico.skin.pos = [0, 128];
 	// nico.gear.head.pos = [0, 128];
@@ -236,7 +254,7 @@ function updateEntities(dt) {
 
 function renderEntities(list) {
     for(var i=0; i<list.length; i++) {
-        renderEntity(list[i], list[i].weapon.secondary, list[i].skin, list[i].gear.leg, list[i].gear.torso, list[i].gear.head, list[i].weapon.primary);
+        renderEntity(list[i], list[i].weapon.secondary, list[i].skin, list[i].gear.leg, list[i].gear.torso, list[i].weapon.primary, list[i].gear.head);
     }    
 }
 

@@ -13,6 +13,4 @@ var Unit = function(cfg){
     me.pos = cfg.pos;
     me.gear = cfg.gear;
     me.weapon = cfg.weapon;
-
-    console.log(cfg);
 };

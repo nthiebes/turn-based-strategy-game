@@ -45,11 +45,10 @@ rd.define('utils.sprite', function(cfg) {
             }
 
             // End animation
-            if (idx >= max){
+            if (idx >= max) {
                 me._index = 0;
             }
-        }
-        else {
+        } else {
             frame = 0;
         }
 
@@ -60,8 +59,7 @@ rd.define('utils.sprite', function(cfg) {
 
         if (me.dir === 'vertical') {
             y += frame * me.size[1];
-        }
-        else {
+        } else {
             x += frame * me.size[0];
         }
 
@@ -115,7 +113,6 @@ rd.define('utils.sprite', function(cfg) {
     setPos = function(newPos) {
         me.pos = newPos;
     };
-
 
     me.pos = cfg.pos;
     me.size = cfg.size;

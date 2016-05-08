@@ -1,11 +1,10 @@
 {
     "nico1": {
         "name": "Human swordsman",
-        "posOffset": -6,
         "race": "human",
         "skin": 1,
         "health": 100,
-        "armor": "iron",
+        "armor": "steel",
         "gear": {
             "head": 2,
             "torso": 1,
@@ -19,7 +18,6 @@
 
     "nico2": {
         "name": "Elven ninja",
-        "posOffset": -6,
         "race": "elf",
         "skin": 0,
         "health": 100,
@@ -37,14 +35,13 @@
 
     "enemy1": {
         "name": "Orc warrior",
-        "posOffset": -6,
         "race": "orc",
         "skin": 0,
         "health": 100,
         "armor": "leather",
         "gear": {
             "head": 0,
-            "torso": 3,
+            "torso": 0,
             "leg": 3
         },
         "weapons": {
@@ -55,9 +52,8 @@
 
     "enemy2": {
         "name": "Orc archer",
-        "posOffset": -6,
         "race": "orc",
-        "skin": 3,
+        "skin": 2,
         "health": 100,
         "armor": "leather",
         "gear": {
@@ -66,7 +62,7 @@
             "leg": 3
         },
         "weapons": {
-            "primary": "primary5",
+            "primary": "primary4",
             "secondary": "secondary0"
         }
     }

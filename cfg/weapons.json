@@ -24,15 +24,15 @@
     },
 
     "primary4": {
-        "name": "dagger0",
-        "damageMelee": 1,
-        "attackRange": 1
-    },
-
-    "primary5": {
         "name": "shortbow0",
         "damageRanged": 1,
         "attackRange": 5
+    },
+
+    "primary5": {
+        "name": "dagger0",
+        "damageMelee": 1,
+        "attackRange": 1
     },
 
     "primary6": {

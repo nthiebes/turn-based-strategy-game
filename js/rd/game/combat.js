@@ -28,11 +28,11 @@ rd.define('game.combat', (function() {
         } else if (attackerStats.pos[0] > defenderStats.pos[0]) {
             units[attacker].turn('left');
         } else if (attackerStats.pos[0] === defenderStats.pos[0]) {
-            if (attackerStats.team === 1) {
-                units[attacker].turn('right');
-            } else {
-                units[attacker].turn('left');
-            }
+            // if (attackerStats.team === 1) {
+            //     units[attacker].turn('right');
+            // } else {
+            //     units[attacker].turn('left');
+            // }
         }
 
         units[attacker].attack();
