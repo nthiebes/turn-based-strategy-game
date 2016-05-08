@@ -54,6 +54,7 @@ rd.define('main', (function() {
             'img/units/secondary0.png',
             'img/units/secondary1.png',
             'img/units/secondary2.png',
+            'img/units/wounded.png',
             'img/cursors/default.png',
             'img/cursors/bottom.png',
             'img/cursors/help.png',

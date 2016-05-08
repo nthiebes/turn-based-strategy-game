@@ -29,12 +29,13 @@ rd.define('game.units', (function() {
         newUnit.weaponsCfg = JSON.parse(JSON.stringify(weaponsCfg));
         newUnit.armorCfg = JSON.parse(JSON.stringify(armorCfg));
         newUnit.racesCfg = JSON.parse(JSON.stringify(racesCfg));
-        newUnit.skin = new rd.utils.sprite(getSkinPreset(newUnit.race, newUnit.skin, side));
-        newUnit.gear.head = new rd.utils.sprite(getHeadPreset(newUnit.gear.head, side));
-        newUnit.gear.torso = new rd.utils.sprite(getTorsoPreset(newUnit.gear.torso, side));
-        newUnit.gear.leg = new rd.utils.sprite(getLegPreset(newUnit.gear.leg, side));
-        newUnit.primary = new rd.utils.sprite(getWeaponPreset(newUnit.weapons.primary, side));
-        newUnit.secondary = new rd.utils.sprite(getWeaponPreset(newUnit.weapons.secondary, side));
+        newUnit.skin = new rd.utils.sprite(getPreset(newUnit.race + newUnit.skin, side));
+        newUnit.gear.head = new rd.utils.sprite(getPreset('head' + newUnit.gear.head, side));
+        newUnit.gear.torso = new rd.utils.sprite(getPreset('torso' + newUnit.gear.torso, side));
+        newUnit.gear.leg = new rd.utils.sprite(getPreset('leg' + newUnit.gear.leg, side));
+        newUnit.primary = new rd.utils.sprite(getPreset(newUnit.weapons.primary, side));
+        newUnit.secondary = new rd.utils.sprite(getPreset(newUnit.weapons.secondary, side));
+        newUnit.wounded = new rd.utils.sprite(getPreset('wounded', side));
         units.push(new rd.game.unit(newUnit));
         rd.game.map.updateMap(cfg.pos[0], cfg.pos[1], 'id-' + unitCount);
         unitCount++;
@@ -42,83 +43,14 @@ rd.define('game.units', (function() {
 
 
     /**
-     * Skin sprite preset
-     * @param  {string}  race
-     * @param  {integer} skin
+     * Sprite preset
+     * @param  {string}  name
      * @param  {integer} side
      * @return {object}
      */
-    getSkinPreset = function(race, skin, side) {
+    getPreset = function(name, side) {
         return {
-            'url': 'img/units/' + race + skin + '.png',
-            'pos': [0, 256 + side],
-            'size': [128, 128],
-            'speed': 4,
-            'frames': [0]
-        };
-    },
-
-
-    /**
-     * Head sprite preset
-     * @param  {string}  head
-     * @param  {integer} side
-     * @return {object}
-     */
-    getHeadPreset = function(head, side) {
-        return {
-            'url': 'img/units/head' + head + '.png',
-            'pos': [0, 256 + side],
-            'size': [128, 128],
-            'speed': 4,
-            'frames': [0]
-        };
-    },
-
-
-    /**
-     * Torso sprite preset
-     * @param  {string}  torso
-     * @param  {integer} side
-     * @return {object}
-     */
-    getTorsoPreset = function(torso, side) {
-        return {
-            'url': 'img/units/torso' + torso + '.png',
-            'pos': [0, 256 + side],
-            'size': [128, 128],
-            'speed': 4,
-            'frames': [0]
-        };
-    },
-
-
-    /**
-     * Leg sprite preset
-     * @param  {string}  leg
-     * @param  {integer} side
-     * @return {object}
-     */
-    getLegPreset = function(leg, side) {
-        return {
-            'url': 'img/units/leg' + leg + '.png',
-            'pos': [0, 256 + side],
-            'size': [128, 128],
-            'speed': 4,
-            'frames': [0]
-        };
-    },
-
-
-    /**
-     * Weapon sprite preset
-     * @param  {string}  leg
-     * @param  {integer} sideWeapon
-     * @return {object}
-     */
-    getWeaponPreset = function(weapon, side) {
-        return {
-            'url': 'img/units/' + weapon + '.png',
+            'url': 'img/units/' + name + '.png',
             'pos': [0, 256 + side],
             'size': [128, 128],
             'speed': 4,
@@ -152,6 +84,22 @@ rd.define('game.units', (function() {
 
 
     /**
+     * Remove a unit from the units array
+     * @param {integer} index
+     */
+    removeUnit = function(index, stats) {
+        units.splice(index, 1);
+
+        // Update all unit arrays
+        rd.game.map.updateMap(stats.pos[0], stats.pos[1], 0);
+        rd.game.map.updateUnitStats();
+        rd.game.main.updateUnits();
+        rd.game.main.updateUnitStats();
+        rd.canvas.main.updateUnitStats();
+    },
+
+
+    /**
      * Initialization
      * @memberOf rd.game.units
      */
@@ -170,7 +118,7 @@ rd.define('game.units', (function() {
 
                         add({
                             key: 'nico1',
-                            pos: [0, 4],
+                            pos: [9, 3],
                             team: 1
                         });
                         // add({
@@ -208,7 +156,8 @@ rd.define('game.units', (function() {
     return {
         init: init,
         get: get,
-        getStats: getStats
+        getStats: getStats,
+        removeUnit: removeUnit
     };
 
 })());

@@ -691,6 +691,10 @@ rd.define('canvas.main', (function() {
             // Unit gear
             renderEntity(list[i], list[i].secondary, list[i].skin, list[i].gear.leg, list[i].gear.torso, list[i].primary, list[i].gear.head);
 
+            if (list[i].isWounded) {
+                renderEntity(list[i], list[i].wounded);
+            }
+
             // Health bar
             var test = 100 / fullWidth,
                 healthWidth = Math.round((list[i].health) / test);
@@ -1107,6 +1111,14 @@ rd.define('canvas.main', (function() {
 
 
     /**
+     * Set new unit stats
+     */
+    updateUnitStats = function() {
+        unitStats = rd.game.units.getStats();
+    },
+
+
+    /**
      * Canvas initialization
      * @memberOf rd.canvas.main
      */
@@ -1143,6 +1155,7 @@ rd.define('canvas.main', (function() {
         enableUtils: enableUtils,
         areUtilsDisabled: areUtilsDisabled,
         calculateAttackRangeFields: calculateAttackRangeFields,
+        updateUnitStats: updateUnitStats,
         init: init
     };
 
@@ -1188,6 +1201,9 @@ rd.define('game.unit', function(cfg) {
         me.secondary.setPos([0, 256 + me.side]);
         me.secondary.setFrames([0]);
 
+        me.wounded.setPos([0, 256 + me.side]);
+        me.wounded.setFrames([0]);
+
         // Round new position
         me.pos[0] = Math.round(me.pos[0]);
         me.pos[1] = Math.round(me.pos[1]);
@@ -1230,6 +1246,9 @@ rd.define('game.unit', function(cfg) {
 
         me.secondary.setPos([0, 0 + me.side]);
         me.secondary.setFrames([0, 1, 2, 3]);
+
+        me.wounded.setPos([0, 0 + me.side]);
+        me.wounded.setFrames([0, 1, 2, 3]);
 
         me.path = config.path.splice(1, config.path.length);
 
@@ -1278,6 +1297,14 @@ rd.define('game.unit', function(cfg) {
             me.gear.leg.setFrames([0, 1, 2, 2]);
         }
         me.gear.leg.setIndex(0);
+
+        me.wounded.setPos([0, 256 + me.side]);
+        if (me.ranged) {
+            me.wounded.setFrames([0, 2, 2, 2]);
+        } else {
+            me.wounded.setFrames([0, 1, 2, 2]);
+        }
+        me.wounded.setIndex(0);
         
         me.primary.setPos([0, 256 + me.side]);
         me.primary.setFrames([0, 1, 2, 2]);
@@ -1303,6 +1330,7 @@ rd.define('game.unit', function(cfg) {
         me.gear.leg.setPos([0, 256 + me.side]);
         me.primary.setPos([0, 256 + me.side]);
         me.secondary.setPos([0, 256 + me.side]);
+        me.wounded.setPos([0, 256 + me.side]);
     },
 
 
@@ -1323,6 +1351,16 @@ rd.define('game.unit', function(cfg) {
      */
     setHealth = function(newHealth) {
         me.health = newHealth;
+    },
+
+
+    /**
+     * Set the wounded status
+     * @memberOf rd.game.unit
+     * @param {array} wounded
+     */
+    setWounded = function(wounded) {
+        me.isWounded = wounded;
     },
 
 
@@ -1382,7 +1420,7 @@ rd.define('game.unit', function(cfg) {
     me.skills = cfg.skills;
     me.dead = cfg.dead;
     me.visible = cfg.visible || true;
-    me.wounded = cfg.wounded;
+    me.isWounded = false;
     me.weapons = cfg.weapons;
     me.health = cfg.health || 0;
     me.attributes = cfg.racesCfg[cfg.race];
@@ -1393,6 +1431,7 @@ rd.define('game.unit', function(cfg) {
     me.attributes.defense += (cfg.weaponsCfg[cfg.weapons.secondary].defense || 0);
     me.primary = cfg.primary;
     me.secondary = cfg.secondary;
+    me.wounded = cfg.wounded;
     me.currentMoveRange = me.attributes.moveRange;
     me.attackRange = cfg.weaponsCfg[me.weapons.primary].attackRange;
     me.path = [];
@@ -1401,6 +1440,9 @@ rd.define('game.unit', function(cfg) {
     me.currentStep = 20;
     me.unitFighting = false;
     me.ranged = me.attackRange > 1 ? true : false;
+    me.arrow = cfg.weaponsCfg[me.weapons.primary].arrow;
+    me.bolt = cfg.weaponsCfg[me.weapons.primary].bolt;
+    me.bullet = cfg.weaponsCfg[me.weapons.primary].bullet;
 
 
     /**
@@ -1416,7 +1458,8 @@ rd.define('game.unit', function(cfg) {
         getFieldsInRange: getFieldsInRange,
         isInRange: isInRange,
         resetMoveRange: resetMoveRange,
-        setHealth: setHealth
+        setHealth: setHealth,
+        setWounded: setWounded
     };
 
 });
@@ -1428,11 +1471,16 @@ rd.define('game.unit', function(cfg) {
 rd.define('game.combat', (function() {
 
     /**
-     * Just testing stuff ...
+     * Variables
      */
     var units,
 
 
+    /**
+     * To battle!
+     * @param {object} attacker
+     * @param {object} defender
+     */
     fight = function(attacker, defender) {
         units = rd.game.units.get();
 
@@ -1440,77 +1488,108 @@ rd.define('game.combat', (function() {
             defenderStats = units[defender].get(),
             attackerAttr = attackerStats.attributes,
             defenderAttr = defenderStats.attributes,
-            damageAttacker;
-
-        console.log( attackerStats, defenderStats );
-
+            damageAttacker,
+            baseDmg,
+            modifier = 0,
+            modifiedDmg,
+            newHealth,
+            wounded;
 
         // Turn units
         if (attackerStats.pos[0] < defenderStats.pos[0]) {
             units[attacker].turn('right');
         } else if (attackerStats.pos[0] > defenderStats.pos[0]) {
             units[attacker].turn('left');
-        } else if (attackerStats.pos[0] === defenderStats.pos[0]) {
-            // if (attackerStats.team === 1) {
-            //     units[attacker].turn('right');
-            // } else {
-            //     units[attacker].turn('left');
-            // }
         }
 
+        // Attack animation
         units[attacker].attack();
 
-        
-
-        
-
+        // Base damage
         if (attackerStats.attackRange > 1) {
             damageAttacker = attackerAttr.damageRanged;
         } else {
             damageAttacker = attackerAttr.damageMelee;
         }
+        baseDmg =  7 * damageAttacker;
 
+        // console.log(damageAttacker, 'damage');
+        // console.log('vs');
+        // console.log(defenderAttr.defense, 'defense');
+        // console.log('base damage:', baseDmg);
 
-        console.log(damageAttacker, 'damage');
-        console.log('vs');
-        console.log(defenderAttr.defense, 'defense');
-
-        var baseDmg =  7 * damageAttacker;
-
-
-        console.log('base damage:', baseDmg);
-
-        var modifier = 0;
-
+        // Calculate damage modifiers
         if (damageAttacker > defenderAttr.defense) {
             modifier = 0.1 * (damageAttacker - defenderAttr.defense);
-            console.log('bonus:', modifier);
+            // console.log('bonus:', modifier);
         } else if (damageAttacker < defenderAttr.defense) {
             modifier = 0.1 * (damageAttacker - defenderAttr.defense);
-            console.log('reduction:', modifier);
+            // console.log('reduction:', modifier);
         }
+        modifiedDmg = baseDmg * (1 + modifier);
 
-        var modifiedDmg = baseDmg * (1 + modifier);
+        // console.log('modified damage:', modifiedDmg);
 
-        console.log('modified damage:', modifiedDmg);
-
-        var newHealth = (defenderStats.health - modifiedDmg > 0 ? defenderStats.health - modifiedDmg : 0);
-
+        // Calculate health
+        newHealth = (defenderStats.health - modifiedDmg > 0 ? defenderStats.health - modifiedDmg : 0);
         newHealth = Math.floor(newHealth);
+        wounded = newHealth < 50 ? true : false;
 
-        console.log('health', newHealth);
-
-        var wounded = newHealth < 50 ? true : false;
-
-        // var wounded = kills % 1 !== 0 ? true : false;
-
-        console.log('wounded:', wounded);
-
-        units[defender].setHealth(newHealth);
+        // console.log('health', newHealth);
+        // console.log('wounded:', wounded);
 
         requestTimeout(function() {
-            rd.game.main.endTurn();
+            if (attackerStats.arrow) {
+                fireArrow(attackerStats);
+            }
+            if (attackerStats.bolt) {
+                fireBolt(attackerStats);
+            }
+            if (attackerStats.bullet) {
+                fireBullet(attackerStats);
+            }
+        }, 400);
+
+        requestTimeout(function() {
+            units[defender].setHealth(newHealth);
+            units[defender].setWounded(wounded);
+
+            if (newHealth > 0) {
+                // Alive
+                // Hit animation
+                // Next player
+            } else {
+                // Dead
+                // Death animation
+                rd.game.units.removeUnit(defender, defenderStats);
+            }
+
+            // Show damage
+        }, 600);
+
+        requestTimeout(function() {
+            if (newHealth > 0) {
+                rd.game.main.endTurn();
+                // Fight back
+            } else {
+                rd.game.main.endTurn();
+            }
         }, 1000);
+    },
+
+
+    fireArrow = function() {
+
+    },
+
+    
+    fireBolt = function() {
+
+    },
+
+
+    fireBullet = function() {
+
     };
 
 
@@ -1522,6 +1601,7 @@ rd.define('game.combat', (function() {
     };
 
 })());
+
 /**
  * Units controller
  * @namespace rd.game.units
@@ -1553,12 +1633,13 @@ rd.define('game.units', (function() {
         newUnit.weaponsCfg = JSON.parse(JSON.stringify(weaponsCfg));
         newUnit.armorCfg = JSON.parse(JSON.stringify(armorCfg));
         newUnit.racesCfg = JSON.parse(JSON.stringify(racesCfg));
-        newUnit.skin = new rd.utils.sprite(getSkinPreset(newUnit.race, newUnit.skin, side));
-        newUnit.gear.head = new rd.utils.sprite(getHeadPreset(newUnit.gear.head, side));
-        newUnit.gear.torso = new rd.utils.sprite(getTorsoPreset(newUnit.gear.torso, side));
-        newUnit.gear.leg = new rd.utils.sprite(getLegPreset(newUnit.gear.leg, side));
-        newUnit.primary = new rd.utils.sprite(getWeaponPreset(newUnit.weapons.primary, side));
-        newUnit.secondary = new rd.utils.sprite(getWeaponPreset(newUnit.weapons.secondary, side));
+        newUnit.skin = new rd.utils.sprite(getPreset(newUnit.race + newUnit.skin, side));
+        newUnit.gear.head = new rd.utils.sprite(getPreset('head' + newUnit.gear.head, side));
+        newUnit.gear.torso = new rd.utils.sprite(getPreset('torso' + newUnit.gear.torso, side));
+        newUnit.gear.leg = new rd.utils.sprite(getPreset('leg' + newUnit.gear.leg, side));
+        newUnit.primary = new rd.utils.sprite(getPreset(newUnit.weapons.primary, side));
+        newUnit.secondary = new rd.utils.sprite(getPreset(newUnit.weapons.secondary, side));
+        newUnit.wounded = new rd.utils.sprite(getPreset('wounded', side));
         units.push(new rd.game.unit(newUnit));
         rd.game.map.updateMap(cfg.pos[0], cfg.pos[1], 'id-' + unitCount);
         unitCount++;
@@ -1566,83 +1647,14 @@ rd.define('game.units', (function() {
 
 
     /**
-     * Skin sprite preset
-     * @param  {string}  race
-     * @param  {integer} skin
+     * Sprite preset
+     * @param  {string}  name
      * @param  {integer} side
      * @return {object}
      */
-    getSkinPreset = function(race, skin, side) {
+    getPreset = function(name, side) {
         return {
-            'url': 'img/units/' + race + skin + '.png',
-            'pos': [0, 256 + side],
-            'size': [128, 128],
-            'speed': 4,
-            'frames': [0]
-        };
-    },
-
-
-    /**
-     * Head sprite preset
-     * @param  {string}  head
-     * @param  {integer} side
-     * @return {object}
-     */
-    getHeadPreset = function(head, side) {
-        return {
-            'url': 'img/units/head' + head + '.png',
-            'pos': [0, 256 + side],
-            'size': [128, 128],
-            'speed': 4,
-            'frames': [0]
-        };
-    },
-
-
-    /**
-     * Torso sprite preset
-     * @param  {string}  torso
-     * @param  {integer} side
-     * @return {object}
-     */
-    getTorsoPreset = function(torso, side) {
-        return {
-            'url': 'img/units/torso' + torso + '.png',
-            'pos': [0, 256 + side],
-            'size': [128, 128],
-            'speed': 4,
-            'frames': [0]
-        };
-    },
-
-
-    /**
-     * Leg sprite preset
-     * @param  {string}  leg
-     * @param  {integer} side
-     * @return {object}
-     */
-    getLegPreset = function(leg, side) {
-        return {
-            'url': 'img/units/leg' + leg + '.png',
-            'pos': [0, 256 + side],
-            'size': [128, 128],
-            'speed': 4,
-            'frames': [0]
-        };
-    },
-
-
-    /**
-     * Weapon sprite preset
-     * @param  {string}  leg
-     * @param  {integer} sideWeapon
-     * @return {object}
-     */
-    getWeaponPreset = function(weapon, side) {
-        return {
-            'url': 'img/units/' + weapon + '.png',
+            'url': 'img/units/' + name + '.png',
             'pos': [0, 256 + side],
             'size': [128, 128],
             'speed': 4,
@@ -1676,6 +1688,22 @@ rd.define('game.units', (function() {
 
 
     /**
+     * Remove a unit from the units array
+     * @param {integer} index
+     */
+    removeUnit = function(index, stats) {
+        units.splice(index, 1);
+
+        // Update all unit arrays
+        rd.game.map.updateMap(stats.pos[0], stats.pos[1], 0);
+        rd.game.map.updateUnitStats();
+        rd.game.main.updateUnits();
+        rd.game.main.updateUnitStats();
+        rd.canvas.main.updateUnitStats();
+    },
+
+
+    /**
      * Initialization
      * @memberOf rd.game.units
      */
@@ -1694,7 +1722,7 @@ rd.define('game.units', (function() {
 
                         add({
                             key: 'nico1',
-                            pos: [0, 4],
+                            pos: [9, 3],
                             team: 1
                         });
                         // add({
@@ -1732,7 +1760,8 @@ rd.define('game.units', (function() {
     return {
         init: init,
         get: get,
-        getStats: getStats
+        getStats: getStats,
+        removeUnit: removeUnit
     };
 
 })());
@@ -1826,8 +1855,8 @@ rd.define('game.map', (function() {
 
         // Return tile x,y that we clicked
         var cell = [
-            Math.floor(x/tileSize),
-            Math.floor(y/tileSize)
+            Math.floor(x / tileSize),
+            Math.floor(y / tileSize)
         ];
 
         cell[1] = cell[1] < 10 ? cell[1] : 9;
@@ -1845,7 +1874,7 @@ rd.define('game.map', (function() {
                 if (rd.game.main.getCurrentUnitId() === hoverUnitId) {
                     drawPath(cell);
                 }
-            
+
             // Field hover
             } else {
                 canvas.clearUtils();
@@ -1881,11 +1910,11 @@ rd.define('game.map', (function() {
                     // Mouse over from left
                     if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + 16 &&
                         y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48 && range === 1) {
-                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0]-1,cell[1]]);
+                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0] - 1,cell[1]]);
 
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[0] > 0 && currentPath[currentPath.length-1]) {
-                            drawPath([cell[0]-1,cell[1]], true);
+                        if (currentPath.length - 1 <= currentUnitStats.currentMoveRange && cell[0] > 0 && currentPath[currentPath.length - 1]) {
+                            drawPath([cell[0] - 1,cell[1]], true);
                             body.className = 'cursor-right';
                             meleePossible = true;
                         }
@@ -1893,11 +1922,11 @@ rd.define('game.map', (function() {
                     // Mouse over from right
                     } else if (x >= cell[0] * tileSize + 48 && x <= cell[0] * tileSize + 64 &&
                                 y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48 && range === 1) {
-                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0]+1,cell[1]]);
-                        
+                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0] + 1,cell[1]]);
+
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[0] < 11 && currentPath[currentPath.length-1]) {
-                            drawPath([cell[0]+1,cell[1]], true);
+                        if (currentPath.length - 1 <= currentUnitStats.currentMoveRange && cell[0] < 11 && currentPath[currentPath.length - 1]) {
+                            drawPath([cell[0] + 1,cell[1]], true);
                             body.className = 'cursor-left';
                             meleePossible = true;
                         }
@@ -1905,11 +1934,11 @@ rd.define('game.map', (function() {
                     // Mouse over from top
                     } else if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + tileSize &&
                                 y >= cell[1] * tileSize && y <= cell[1] * tileSize + 16 && range === 1) {
-                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1]-1]);
-                        
+                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1] - 1]);
+
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[1] > 0 && currentPath[currentPath.length-1]) {
-                            drawPath([cell[0],cell[1]-1], true);
+                        if (currentPath.length - 1 <= currentUnitStats.currentMoveRange && cell[1] > 0 && currentPath[currentPath.length - 1]) {
+                            drawPath([cell[0],cell[1] - 1], true);
                             body.className = 'cursor-bottom';
                             meleePossible = true;
                         }
@@ -1917,11 +1946,11 @@ rd.define('game.map', (function() {
                     // Mouse over from bottom
                     } else if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + tileSize &&
                                 y >= cell[1] * tileSize + 48 && y <= cell[1] * tileSize + 64 && range === 1) {
-                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1]+1]);
-                        
+                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1] + 1]);
+
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[1] < 9 && currentPath[currentPath.length-1]) {
-                            drawPath([cell[0],cell[1]+1], true);
+                        if (currentPath.length - 1 <= currentUnitStats.currentMoveRange && cell[1] < 9 && currentPath[currentPath.length - 1]) {
+                            drawPath([cell[0],cell[1] + 1], true);
                             body.className = 'cursor-top';
                             meleePossible = true;
                         }
@@ -2004,8 +2033,8 @@ rd.define('game.map', (function() {
             canvas.renderMoveRange(rd.game.main.getCurrentUnitStats());
 
             // Highlight the path tiles
-            for (var i=0; i<currentPath.length; i++) {
-                if (i === 0 || i === currentPath.length-1) {
+            for (var i = 0; i < currentPath.length; i++) {
+                if (i === 0 || i === currentPath.length - 1) {
                     type = 'current';
                 } else {
                     type = 'move';
@@ -2065,8 +2094,8 @@ rd.define('game.map', (function() {
 
         // Return tile x,y that we clicked
         var cell = [
-                Math.floor(x/tileSize),
-                Math.floor(y/tileSize)
+                Math.floor(x / tileSize),
+                Math.floor(y / tileSize)
             ],
             cellType = map[ cell[1] ][ cell[0] ],
             clickUnitId,
@@ -2089,7 +2118,7 @@ rd.define('game.map', (function() {
 
                 // Walk and then attack
                 if (currentPath && currentPath.length > 1 && meleePossible) {
-                    startWalking(currentPath[currentPath.length-1], true, clickUnitId);
+                    startWalking(currentPath[currentPath.length - 1], true, clickUnitId);
                     body.className = 'default';
                     rd.canvas.main.disableUtils();
                 // Just attack
@@ -2147,7 +2176,7 @@ rd.define('game.map', (function() {
         canvas.highlightMovableTiles();
         canvas.renderAttackRange(currentPath, rd.game.main.getCurrentUnitStats().attackRange);
         canvas.renderMoveRange(rd.game.main.getCurrentUnitStats());
-        
+
         canvas.drawMovable({
             lineWidth: 2,
             lineRgbColor: 'current',
@@ -2201,8 +2230,8 @@ rd.define('game.map', (function() {
         var maxWalkableTileNum = 0;
 
         // keep track of the world dimensions
-        // Note that this A-star implementation expects the world array to be square: 
-        // it must have equal height and width. If your game world is rectangular, 
+        // Note that this A-star implementation expects the world array to be square:
+        // it must have equal height and width. If your game world is rectangular,
         // just fill the array with dummy values to pad the empty space.
         var worldWidth = world[0].length;
         var worldHeight = world.length;
@@ -2211,7 +2240,7 @@ rd.define('game.map', (function() {
         // which heuristic should we use?
         // default: no diagonals (Manhattan)
         var distanceFunction = ManhattanDistance;
-        var findNeighbours = function(){}; // empty
+        var findNeighbours = function() {}; // empty
 
         // distanceFunction functions
         // these return how far away a point is to another
@@ -2236,14 +2265,14 @@ rd.define('game.map', (function() {
             myE = E < worldWidth && canWalkHere(E, y),
             myW = W > -1 && canWalkHere(W, y),
             result = [];
-            if(myN)
-            result.push({x:x, y:N});
-            if(myE)
-            result.push({x:E, y:y});
-            if(myS)
-            result.push({x:x, y:S});
-            if(myW)
-            result.push({x:W, y:y});
+            if (myN)
+            result.push({x: x, y: N});
+            if (myE)
+            result.push({x: E, y: y});
+            if (myS)
+            result.push({x: x, y: S});
+            if (myW)
+            result.push({x: W, y: y});
             findNeighbours(myN, myS, myE, myW, N, S, E, W, result);
             return result;
         }
@@ -2260,18 +2289,18 @@ rd.define('game.map', (function() {
         function Node(Parent, Point) {
             var newNode = {
                 // pointer to another Node object
-                Parent:Parent,
+                Parent: Parent,
                 // array index of this Node in the world linear array
-                value:Point.x + (Point.y * worldWidth),
+                value: Point.x + (Point.y * worldWidth),
                 // the location coordinates of this Node
-                x:Point.x,
-                y:Point.y,
+                x: Point.x,
+                y: Point.y,
                 // the heuristic estimated cost
                 // of an entire path using this node
-                f:0,
+                f: 0,
                 // the distanceFunction cost to get
                 // from the starting point to this node
-                g:0
+                g: 0
             };
 
             return newNode;
@@ -2280,8 +2309,8 @@ rd.define('game.map', (function() {
         // Path function, executes AStar algorithm operations
         function calculatePath() {
             // create Nodes from the Start and End x,y coordinates
-            var mypathStart = Node(null, {x:pathStart[0], y:pathStart[1]});
-            var mypathEnd = Node(null, {x:pathEnd[0], y:pathEnd[1]});
+            var mypathStart = Node(null, {x: pathStart[0], y: pathStart[1]});
+            var mypathEnd = Node(null, {x: pathEnd[0], y: pathEnd[1]});
             // create an array that will contain all world cells
             var AStar = new Array(worldSize);
             // list of currently open Nodes
@@ -2303,8 +2332,7 @@ rd.define('game.map', (function() {
                 max = worldSize;
                 min = -1;
                 for (i = 0; i < length; i++) {
-                    if(Open[i].f < max)
-                    {
+                    if (Open[i].f < max) {
                         max = Open[i].f;
                         min = i;
                     }
@@ -2322,8 +2350,7 @@ rd.define('game.map', (function() {
                     AStar = Closed = Open = [];
                     // we want to return start to finish
                     result.reverse();
-                }
-                else { // not the destination
+                } else { // not the destination
                     // find which nearby nodes are walkable
                     myNeighbours = Neighbours(myNode.x, myNode.y);
                     // test each one that hasn't been tried already
@@ -2355,6 +2382,14 @@ rd.define('game.map', (function() {
 
 
     /**
+     * Set new unit stats
+     */
+    updateUnitStats = function() {
+        unitStats = rd.game.units.getStats();
+    },
+
+
+    /**
      * Initialization
      * @memberOf rd.game.map
      */
@@ -2370,10 +2405,12 @@ rd.define('game.map', (function() {
         init: init,
         getMap: getMap,
         updateMap: updateMap,
-        redrawUtils: redrawUtils
+        redrawUtils: redrawUtils,
+        updateUnitStats: updateUnitStats
     };
 
 })());
+
 /**
  * Units controller
  * @namespace rd.game.ui
@@ -2504,6 +2541,7 @@ rd.define('game.main', (function() {
                 unit.gear.leg.setPos([0, 128]);
                 unit.primary.setPos([0, 128]);
                 unit.secondary.setPos([0, 128]);
+                unit.wounded.setPos([0, 128]);
                 unitDirection = 'left';
 
             // Move right if next tile is on the right side of the current
@@ -2515,6 +2553,7 @@ rd.define('game.main', (function() {
                 unit.gear.leg.setPos([0, 0]);
                 unit.primary.setPos([0, 0]);
                 unit.secondary.setPos([0, 0]);
+                unit.wounded.setPos([0, 0]);
                 unitDirection = 'right';
             }
         }
@@ -2576,6 +2615,7 @@ rd.define('game.main', (function() {
             unit.gear.leg.update(delta);
             unit.primary.update(delta);
             unit.secondary.update(delta);
+            unit.wounded.update(delta);
 
             // Continue walking
             if (unit.path.length > 0) {
@@ -2620,15 +2660,34 @@ rd.define('game.main', (function() {
 
 
     /**
+     * Set new unit stats
+     */
+    updateUnitStats = function() {
+        unitStats = rd.game.units.getStats();
+    },
+
+
+    /**
+     * Set new units array
+     */
+    updateUnits = function() {
+        units = rd.game.units.get();
+    },
+
+
+    /**
      * Ende the current turn
      * @memberOf rd.game.main
      */
     endTurn = function() {
         getCurrentUnit().resetMoveRange();
         currentUnit++;
+        
         if (!units[currentUnit]) {
             currentUnit = 0;
         }
+        
+        rd.game.map.redrawUtils();
         canvas.enableUtils();
     },
 
@@ -2678,7 +2737,9 @@ rd.define('game.main', (function() {
         getCurrentUnitId: getCurrentUnitId,
         getCurrentUnitStats: getCurrentUnitStats,
         getCurrentUnit: getCurrentUnit,
-        endTurn: endTurn
+        endTurn: endTurn,
+        updateUnitStats: updateUnitStats,
+        updateUnits: updateUnits
     };
 
 })());
@@ -2935,6 +2996,7 @@ rd.define('main', (function() {
             'img/units/secondary0.png',
             'img/units/secondary1.png',
             'img/units/secondary2.png',
+            'img/units/wounded.png',
             'img/cursors/default.png',
             'img/cursors/bottom.png',
             'img/cursors/help.png',

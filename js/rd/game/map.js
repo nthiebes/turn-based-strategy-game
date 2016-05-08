@@ -87,8 +87,8 @@ rd.define('game.map', (function() {
 
         // Return tile x,y that we clicked
         var cell = [
-            Math.floor(x/tileSize),
-            Math.floor(y/tileSize)
+            Math.floor(x / tileSize),
+            Math.floor(y / tileSize)
         ];
 
         cell[1] = cell[1] < 10 ? cell[1] : 9;
@@ -106,7 +106,7 @@ rd.define('game.map', (function() {
                 if (rd.game.main.getCurrentUnitId() === hoverUnitId) {
                     drawPath(cell);
                 }
-            
+
             // Field hover
             } else {
                 canvas.clearUtils();
@@ -142,11 +142,11 @@ rd.define('game.map', (function() {
                     // Mouse over from left
                     if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + 16 &&
                         y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48 && range === 1) {
-                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0]-1,cell[1]]);
+                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0] - 1,cell[1]]);
 
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[0] > 0 && currentPath[currentPath.length-1]) {
-                            drawPath([cell[0]-1,cell[1]], true);
+                        if (currentPath.length - 1 <= currentUnitStats.currentMoveRange && cell[0] > 0 && currentPath[currentPath.length - 1]) {
+                            drawPath([cell[0] - 1,cell[1]], true);
                             body.className = 'cursor-right';
                             meleePossible = true;
                         }
@@ -154,11 +154,11 @@ rd.define('game.map', (function() {
                     // Mouse over from right
                     } else if (x >= cell[0] * tileSize + 48 && x <= cell[0] * tileSize + 64 &&
                                 y >= cell[1] * tileSize + 16 && y <= cell[1] * tileSize + 48 && range === 1) {
-                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0]+1,cell[1]]);
-                        
+                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0] + 1,cell[1]]);
+
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[0] < 11 && currentPath[currentPath.length-1]) {
-                            drawPath([cell[0]+1,cell[1]], true);
+                        if (currentPath.length - 1 <= currentUnitStats.currentMoveRange && cell[0] < 11 && currentPath[currentPath.length - 1]) {
+                            drawPath([cell[0] + 1,cell[1]], true);
                             body.className = 'cursor-left';
                             meleePossible = true;
                         }
@@ -166,11 +166,11 @@ rd.define('game.map', (function() {
                     // Mouse over from top
                     } else if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + tileSize &&
                                 y >= cell[1] * tileSize && y <= cell[1] * tileSize + 16 && range === 1) {
-                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1]-1]);
-                        
+                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1] - 1]);
+
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[1] > 0 && currentPath[currentPath.length-1]) {
-                            drawPath([cell[0],cell[1]-1], true);
+                        if (currentPath.length - 1 <= currentUnitStats.currentMoveRange && cell[1] > 0 && currentPath[currentPath.length - 1]) {
+                            drawPath([cell[0],cell[1] - 1], true);
                             body.className = 'cursor-bottom';
                             meleePossible = true;
                         }
@@ -178,11 +178,11 @@ rd.define('game.map', (function() {
                     // Mouse over from bottom
                     } else if (x >= cell[0] * tileSize && x <= cell[0] * tileSize + tileSize &&
                                 y >= cell[1] * tileSize + 48 && y <= cell[1] * tileSize + 64 && range === 1) {
-                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1]+1]);
-                        
+                        currentPath = findPath(map, rd.game.main.getCurrentUnitStats().pos, [cell[0],cell[1] + 1]);
+
                         // Show hover effect if unit can be reached in melee
-                        if (currentPath.length-1 <= currentUnitStats.currentMoveRange && cell[1] < 9 && currentPath[currentPath.length-1]) {
-                            drawPath([cell[0],cell[1]+1], true);
+                        if (currentPath.length - 1 <= currentUnitStats.currentMoveRange && cell[1] < 9 && currentPath[currentPath.length - 1]) {
+                            drawPath([cell[0],cell[1] + 1], true);
                             body.className = 'cursor-top';
                             meleePossible = true;
                         }
@@ -265,8 +265,8 @@ rd.define('game.map', (function() {
             canvas.renderMoveRange(rd.game.main.getCurrentUnitStats());
 
             // Highlight the path tiles
-            for (var i=0; i<currentPath.length; i++) {
-                if (i === 0 || i === currentPath.length-1) {
+            for (var i = 0; i < currentPath.length; i++) {
+                if (i === 0 || i === currentPath.length - 1) {
                     type = 'current';
                 } else {
                     type = 'move';
@@ -326,8 +326,8 @@ rd.define('game.map', (function() {
 
         // Return tile x,y that we clicked
         var cell = [
-                Math.floor(x/tileSize),
-                Math.floor(y/tileSize)
+                Math.floor(x / tileSize),
+                Math.floor(y / tileSize)
             ],
             cellType = map[ cell[1] ][ cell[0] ],
             clickUnitId,
@@ -350,7 +350,7 @@ rd.define('game.map', (function() {
 
                 // Walk and then attack
                 if (currentPath && currentPath.length > 1 && meleePossible) {
-                    startWalking(currentPath[currentPath.length-1], true, clickUnitId);
+                    startWalking(currentPath[currentPath.length - 1], true, clickUnitId);
                     body.className = 'default';
                     rd.canvas.main.disableUtils();
                 // Just attack
@@ -408,7 +408,7 @@ rd.define('game.map', (function() {
         canvas.highlightMovableTiles();
         canvas.renderAttackRange(currentPath, rd.game.main.getCurrentUnitStats().attackRange);
         canvas.renderMoveRange(rd.game.main.getCurrentUnitStats());
-        
+
         canvas.drawMovable({
             lineWidth: 2,
             lineRgbColor: 'current',
@@ -462,8 +462,8 @@ rd.define('game.map', (function() {
         var maxWalkableTileNum = 0;
 
         // keep track of the world dimensions
-        // Note that this A-star implementation expects the world array to be square: 
-        // it must have equal height and width. If your game world is rectangular, 
+        // Note that this A-star implementation expects the world array to be square:
+        // it must have equal height and width. If your game world is rectangular,
         // just fill the array with dummy values to pad the empty space.
         var worldWidth = world[0].length;
         var worldHeight = world.length;
@@ -472,7 +472,7 @@ rd.define('game.map', (function() {
         // which heuristic should we use?
         // default: no diagonals (Manhattan)
         var distanceFunction = ManhattanDistance;
-        var findNeighbours = function(){}; // empty
+        var findNeighbours = function() {}; // empty
 
         // distanceFunction functions
         // these return how far away a point is to another
@@ -497,14 +497,14 @@ rd.define('game.map', (function() {
             myE = E < worldWidth && canWalkHere(E, y),
             myW = W > -1 && canWalkHere(W, y),
             result = [];
-            if(myN)
-            result.push({x:x, y:N});
-            if(myE)
-            result.push({x:E, y:y});
-            if(myS)
-            result.push({x:x, y:S});
-            if(myW)
-            result.push({x:W, y:y});
+            if (myN)
+            result.push({x: x, y: N});
+            if (myE)
+            result.push({x: E, y: y});
+            if (myS)
+            result.push({x: x, y: S});
+            if (myW)
+            result.push({x: W, y: y});
             findNeighbours(myN, myS, myE, myW, N, S, E, W, result);
             return result;
         }
@@ -521,18 +521,18 @@ rd.define('game.map', (function() {
         function Node(Parent, Point) {
             var newNode = {
                 // pointer to another Node object
-                Parent:Parent,
+                Parent: Parent,
                 // array index of this Node in the world linear array
-                value:Point.x + (Point.y * worldWidth),
+                value: Point.x + (Point.y * worldWidth),
                 // the location coordinates of this Node
-                x:Point.x,
-                y:Point.y,
+                x: Point.x,
+                y: Point.y,
                 // the heuristic estimated cost
                 // of an entire path using this node
-                f:0,
+                f: 0,
                 // the distanceFunction cost to get
                 // from the starting point to this node
-                g:0
+                g: 0
             };
 
             return newNode;
@@ -541,8 +541,8 @@ rd.define('game.map', (function() {
         // Path function, executes AStar algorithm operations
         function calculatePath() {
             // create Nodes from the Start and End x,y coordinates
-            var mypathStart = Node(null, {x:pathStart[0], y:pathStart[1]});
-            var mypathEnd = Node(null, {x:pathEnd[0], y:pathEnd[1]});
+            var mypathStart = Node(null, {x: pathStart[0], y: pathStart[1]});
+            var mypathEnd = Node(null, {x: pathEnd[0], y: pathEnd[1]});
             // create an array that will contain all world cells
             var AStar = new Array(worldSize);
             // list of currently open Nodes
@@ -564,8 +564,7 @@ rd.define('game.map', (function() {
                 max = worldSize;
                 min = -1;
                 for (i = 0; i < length; i++) {
-                    if(Open[i].f < max)
-                    {
+                    if (Open[i].f < max) {
                         max = Open[i].f;
                         min = i;
                     }
@@ -583,8 +582,7 @@ rd.define('game.map', (function() {
                     AStar = Closed = Open = [];
                     // we want to return start to finish
                     result.reverse();
-                }
-                else { // not the destination
+                } else { // not the destination
                     // find which nearby nodes are walkable
                     myNeighbours = Neighbours(myNode.x, myNode.y);
                     // test each one that hasn't been tried already
@@ -616,6 +614,14 @@ rd.define('game.map', (function() {
 
 
     /**
+     * Set new unit stats
+     */
+    updateUnitStats = function() {
+        unitStats = rd.game.units.getStats();
+    },
+
+
+    /**
      * Initialization
      * @memberOf rd.game.map
      */
@@ -631,7 +637,8 @@ rd.define('game.map', (function() {
         init: init,
         getMap: getMap,
         updateMap: updateMap,
-        redrawUtils: redrawUtils
+        redrawUtils: redrawUtils,
+        updateUnitStats: updateUnitStats
     };
 
 })());

@@ -26,7 +26,8 @@
     "primary4": {
         "name": "shortbow0",
         "damageRanged": 1,
-        "attackRange": 5
+        "attackRange": 5,
+        "arrow": true
     },
 
     "primary5": {
@@ -38,29 +39,33 @@
     "primary6": {
         "name": "longbow0",
         "damageRanged": 2,
-        "attackRange": 7
+        "attackRange": 7,
+        "arrow": true
     },
 
     "primary7": {
         "name": "crossbow0",
         "damageRanged": 3,
-        "attackRange": 6
+        "attackRange": 6,
+        "bolt": true
     },
 
     "primary8": {
         "name": "musket0",
         "damageRanged": 4,
-        "attackRange": 5
+        "attackRange": 5,
+        "bullet": true
     },
 
     "primary9": {
         "name": "rifle0",
         "damageRanged": 4,
-        "attackRange": 7
+        "attackRange": 7,
+        "bullet": true
     },
 
     "secondary0": {
-        "name": "first0",
+        "name": "fist0",
         "defense": 2
     },
 

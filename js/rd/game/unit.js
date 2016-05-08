@@ -38,6 +38,9 @@ rd.define('game.unit', function(cfg) {
         me.secondary.setPos([0, 256 + me.side]);
         me.secondary.setFrames([0]);
 
+        me.wounded.setPos([0, 256 + me.side]);
+        me.wounded.setFrames([0]);
+
         // Round new position
         me.pos[0] = Math.round(me.pos[0]);
         me.pos[1] = Math.round(me.pos[1]);
@@ -80,6 +83,9 @@ rd.define('game.unit', function(cfg) {
 
         me.secondary.setPos([0, 0 + me.side]);
         me.secondary.setFrames([0, 1, 2, 3]);
+
+        me.wounded.setPos([0, 0 + me.side]);
+        me.wounded.setFrames([0, 1, 2, 3]);
 
         me.path = config.path.splice(1, config.path.length);
 
@@ -128,6 +134,14 @@ rd.define('game.unit', function(cfg) {
             me.gear.leg.setFrames([0, 1, 2, 2]);
         }
         me.gear.leg.setIndex(0);
+
+        me.wounded.setPos([0, 256 + me.side]);
+        if (me.ranged) {
+            me.wounded.setFrames([0, 2, 2, 2]);
+        } else {
+            me.wounded.setFrames([0, 1, 2, 2]);
+        }
+        me.wounded.setIndex(0);
         
         me.primary.setPos([0, 256 + me.side]);
         me.primary.setFrames([0, 1, 2, 2]);
@@ -153,6 +167,7 @@ rd.define('game.unit', function(cfg) {
         me.gear.leg.setPos([0, 256 + me.side]);
         me.primary.setPos([0, 256 + me.side]);
         me.secondary.setPos([0, 256 + me.side]);
+        me.wounded.setPos([0, 256 + me.side]);
     },
 
 
@@ -173,6 +188,16 @@ rd.define('game.unit', function(cfg) {
      */
     setHealth = function(newHealth) {
         me.health = newHealth;
+    },
+
+
+    /**
+     * Set the wounded status
+     * @memberOf rd.game.unit
+     * @param {array} wounded
+     */
+    setWounded = function(wounded) {
+        me.isWounded = wounded;
     },
 
 
@@ -232,7 +257,7 @@ rd.define('game.unit', function(cfg) {
     me.skills = cfg.skills;
     me.dead = cfg.dead;
     me.visible = cfg.visible || true;
-    me.wounded = cfg.wounded;
+    me.isWounded = false;
     me.weapons = cfg.weapons;
     me.health = cfg.health || 0;
     me.attributes = cfg.racesCfg[cfg.race];
@@ -243,6 +268,7 @@ rd.define('game.unit', function(cfg) {
     me.attributes.defense += (cfg.weaponsCfg[cfg.weapons.secondary].defense || 0);
     me.primary = cfg.primary;
     me.secondary = cfg.secondary;
+    me.wounded = cfg.wounded;
     me.currentMoveRange = me.attributes.moveRange;
     me.attackRange = cfg.weaponsCfg[me.weapons.primary].attackRange;
     me.path = [];
@@ -251,6 +277,9 @@ rd.define('game.unit', function(cfg) {
     me.currentStep = 20;
     me.unitFighting = false;
     me.ranged = me.attackRange > 1 ? true : false;
+    me.arrow = cfg.weaponsCfg[me.weapons.primary].arrow;
+    me.bolt = cfg.weaponsCfg[me.weapons.primary].bolt;
+    me.bullet = cfg.weaponsCfg[me.weapons.primary].bullet;
 
 
     /**
@@ -266,7 +295,8 @@ rd.define('game.unit', function(cfg) {
         getFieldsInRange: getFieldsInRange,
         isInRange: isInRange,
         resetMoveRange: resetMoveRange,
-        setHealth: setHealth
+        setHealth: setHealth,
+        setWounded: setWounded
     };
 
 });

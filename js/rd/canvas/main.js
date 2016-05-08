@@ -330,6 +330,10 @@ rd.define('canvas.main', (function() {
             // Unit gear
             renderEntity(list[i], list[i].secondary, list[i].skin, list[i].gear.leg, list[i].gear.torso, list[i].primary, list[i].gear.head);
 
+            if (list[i].isWounded) {
+                renderEntity(list[i], list[i].wounded);
+            }
+
             // Health bar
             var test = 100 / fullWidth,
                 healthWidth = Math.round((list[i].health) / test);
@@ -746,6 +750,14 @@ rd.define('canvas.main', (function() {
 
 
     /**
+     * Set new unit stats
+     */
+    updateUnitStats = function() {
+        unitStats = rd.game.units.getStats();
+    },
+
+
+    /**
      * Canvas initialization
      * @memberOf rd.canvas.main
      */
@@ -782,6 +794,7 @@ rd.define('canvas.main', (function() {
         enableUtils: enableUtils,
         areUtilsDisabled: areUtilsDisabled,
         calculateAttackRangeFields: calculateAttackRangeFields,
+        updateUnitStats: updateUnitStats,
         init: init
     };
 

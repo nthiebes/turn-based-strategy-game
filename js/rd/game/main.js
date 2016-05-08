@@ -83,6 +83,7 @@ rd.define('game.main', (function() {
                 unit.gear.leg.setPos([0, 128]);
                 unit.primary.setPos([0, 128]);
                 unit.secondary.setPos([0, 128]);
+                unit.wounded.setPos([0, 128]);
                 unitDirection = 'left';
 
             // Move right if next tile is on the right side of the current
@@ -94,6 +95,7 @@ rd.define('game.main', (function() {
                 unit.gear.leg.setPos([0, 0]);
                 unit.primary.setPos([0, 0]);
                 unit.secondary.setPos([0, 0]);
+                unit.wounded.setPos([0, 0]);
                 unitDirection = 'right';
             }
         }
@@ -155,6 +157,7 @@ rd.define('game.main', (function() {
             unit.gear.leg.update(delta);
             unit.primary.update(delta);
             unit.secondary.update(delta);
+            unit.wounded.update(delta);
 
             // Continue walking
             if (unit.path.length > 0) {
@@ -199,15 +202,34 @@ rd.define('game.main', (function() {
 
 
     /**
+     * Set new unit stats
+     */
+    updateUnitStats = function() {
+        unitStats = rd.game.units.getStats();
+    },
+
+
+    /**
+     * Set new units array
+     */
+    updateUnits = function() {
+        units = rd.game.units.get();
+    },
+
+
+    /**
      * Ende the current turn
      * @memberOf rd.game.main
      */
     endTurn = function() {
         getCurrentUnit().resetMoveRange();
         currentUnit++;
+        
         if (!units[currentUnit]) {
             currentUnit = 0;
         }
+        
+        rd.game.map.redrawUtils();
         canvas.enableUtils();
     },
 
@@ -257,7 +279,9 @@ rd.define('game.main', (function() {
         getCurrentUnitId: getCurrentUnitId,
         getCurrentUnitStats: getCurrentUnitStats,
         getCurrentUnit: getCurrentUnit,
-        endTurn: endTurn
+        endTurn: endTurn,
+        updateUnitStats: updateUnitStats,
+        updateUnits: updateUnits
     };
 
 })());
