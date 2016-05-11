@@ -114,6 +114,26 @@ $('#builder-idle').on('click', function(){
 	nico.weapon.secondary.frames = [0];
 });
 
+$('#builder-idle2').on('click', function(){
+    nico.skin.pos = [0, 512 + side];
+    nico.skin.frames = [0];
+
+    nico.gear.head.pos = [0, 512 + side];
+    nico.gear.head.frames = [0];
+
+    nico.gear.torso.pos = [0, 512 + side];
+    nico.gear.torso.frames = [0];
+
+    nico.gear.leg.pos = [0, 512 + side];
+    nico.gear.leg.frames = [0];
+
+    nico.weapon.primary.pos = [0, 512 + side];
+    nico.weapon.primary.frames = [0];
+
+    nico.weapon.secondary.pos = [0, 512 + side];
+    nico.weapon.secondary.frames = [0];
+});
+
 $('#builder-walk').on('click', function(){
 	nico.skin.pos = [0, 0 + side];
 	nico.skin.frames = [0, 1, 2, 3];
@@ -174,10 +194,69 @@ $('#builder-attack').on('click', function(){
     } else {
         nico.weapon.primary.frames = [0, 1, 2];
     }
-	
 
 	nico.weapon.secondary.pos = [0, 256 + side];
 	nico.weapon.secondary.frames = [0, 1, 2];
+});
+
+$('#builder-stab').on('click', function(){
+    nico.skin.pos = [0, 512 + side];
+    nico.skin.frames = [0, 1, 2];
+
+    nico.gear.head.pos = [0, 512 + side];
+    nico.gear.head.frames = [0, 1, 2];
+
+    nico.gear.torso.pos = [0, 512 + side];
+    nico.gear.torso.frames = [0, 1, 2];
+
+    nico.gear.leg.pos = [0, 512 + side];
+    nico.gear.leg.frames = [0, 1, 2];
+    
+    nico.weapon.primary.pos = [0, 512 + side];
+    nico.weapon.primary.frames = [0, 1, 2];
+    
+    nico.weapon.secondary.pos = [0, 512 + side];
+    nico.weapon.secondary.frames = [0, 1, 2];
+});
+
+$('#builder-hit').on('click', function(){
+    nico.skin.pos = [0, 768 + side];
+    nico.skin.frames = [0];
+
+    nico.gear.head.pos = [0, 768 + side];
+    nico.gear.head.frames = [0];
+
+    nico.gear.torso.pos = [0, 768 + side];
+    nico.gear.torso.frames = [0];
+
+    nico.gear.leg.pos = [0, 768 + side];
+    nico.gear.leg.frames = [0];
+    
+    nico.weapon.primary.pos = [0, 768 + side];
+    nico.weapon.primary.frames = [0];
+    
+    nico.weapon.secondary.pos = [0, 768 + side];
+    nico.weapon.secondary.frames = [0];
+});
+
+$('#builder-die').on('click', function(){
+    nico.skin.pos = [0, 768 + side];
+    nico.skin.frames = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+
+    nico.gear.head.pos = [0, 768 + side];
+    nico.gear.head.frames = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+
+    nico.gear.torso.pos = [0, 768 + side];
+    nico.gear.torso.frames = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+
+    nico.gear.leg.pos = [0, 768 + side];
+    nico.gear.leg.frames = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    
+    nico.weapon.primary.pos = [0, 768 + side];
+    nico.weapon.primary.frames = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+    
+    nico.weapon.secondary.pos = [0, 768 + side];
+    nico.weapon.secondary.frames = [0, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 });
 
 $('#builder-left').on('click', function(){
