@@ -90,12 +90,11 @@ rd.define('game.combat', (function() {
 
             if (newHealth > 0) {
                 // Alive
-                // Hit animation
+                units[defender].takeDamage();
                 // Next player
             } else {
                 // Dead
-                // Death animation
-                rd.game.units.removeUnit(defender, defenderStats);
+                units[defender].die();
             }
 
             // Show damage
@@ -103,12 +102,13 @@ rd.define('game.combat', (function() {
 
         requestTimeout(function() {
             if (newHealth > 0) {
-                rd.game.main.endTurn();
                 // Fight back
             } else {
-                rd.game.main.endTurn();
+                rd.game.units.removeUnit(defender, defenderStats);
             }
-        }, 1000);
+
+            rd.game.main.endTurn();
+        }, 1400);
     },
 
 

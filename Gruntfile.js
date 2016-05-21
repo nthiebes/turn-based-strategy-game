@@ -22,6 +22,7 @@ module.exports = function(grunt) {
                     'js/rd/game/unit.js',
                     'js/rd/game/combat.js',
                     'js/rd/game/units.js',
+                    'js/rd/game/animations.js',
                     'js/rd/game/map.js',
                     'js/rd/game/ui.js',
                     'js/rd/game/main.js',

@@ -17,6 +17,7 @@ rd.define('canvas.main', (function() {
         ctxTop1 = canvasTop1.getContext('2d'),
         ctxAnim = canvasAnim.getContext('2d'),
         ctxUtils = canvasUtils.getContext('2d'),
+        animations,
         mapLayers,
         ground1,
         ground2,
@@ -317,6 +318,7 @@ rd.define('canvas.main', (function() {
         // Clear canvas hack
         canvasAnim.width = canvasAnim.width;
         renderEntities(unitStats);
+        renderAnimations(animations.get());
     },
 
 
@@ -366,12 +368,26 @@ rd.define('canvas.main', (function() {
      */
     renderEntity = function() {
         ctxAnim.save();
-        ctxAnim.translate(arguments[0].pos[0] * fieldWidth - 32, arguments[0].pos[1] * fieldWidth - 70); 
+        ctxAnim.translate(arguments[0].pos[0] * fieldWidth - 32, arguments[0].pos[1] * fieldWidth - 70);
 
         for (var i = 1; i < arguments.length; i++) {
             arguments[i].render(ctxAnim);
         }
         ctxAnim.restore();
+    },
+
+
+    /**
+     * Render all the animations
+     * @param {array} list
+     */
+    renderAnimations = function(list) {
+        for (var i = 0; i < list.length; i++) {
+            ctxAnim.save();
+            ctxAnim.translate(list[i].pos[0] * fieldWidth, list[i].pos[1] * fieldWidth);
+            list[i].sprite.render(ctxAnim);
+            ctxAnim.restore();
+        }
     },
 
 
@@ -762,6 +778,7 @@ rd.define('canvas.main', (function() {
      * @memberOf rd.canvas.main
      */
     init = function(mapJson) {
+        animations = rd.game.animations;
         mapLayers = mapJson.map;
         ground1 = mapLayers[0];
         ground2 = mapLayers[1];

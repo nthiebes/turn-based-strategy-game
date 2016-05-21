@@ -45,8 +45,8 @@ rd.define('game.unit', function(cfg) {
         me.pos[0] = Math.round(me.pos[0]);
         me.pos[1] = Math.round(me.pos[1]);
 
-        if (me.unitFighting) {
-            me.unitFighting = false;
+        if (me.animationInProgress) {
+            me.animationInProgress = false;
         }
 
         // Start combat
@@ -101,7 +101,7 @@ rd.define('game.unit', function(cfg) {
      * @memberOf rd.game.unit
      */
     attack = function() {
-        me.unitFighting = true;
+        me.animationInProgress = true;
 
         me.skin.setPos([0, 256 + me.side]);
         if (me.ranged) {
@@ -150,6 +150,64 @@ rd.define('game.unit', function(cfg) {
         me.secondary.setPos([0, 256 + me.side]);
         me.secondary.setFrames([0, 1, 2, 2]);
         me.secondary.setIndex(0);
+    },
+
+
+    /**
+     * Play the 'take damage' animation
+     * @memberOf rd.game.unit
+     */
+    takeDamage = function() {
+        me.animationInProgress = true;
+
+        me.skin.setPos([0, 768 + me.side]);
+        me.skin.setFrames([0, 0]);
+
+        me.gear.head.setPos([0, 768 + me.side]);
+        me.gear.head.setFrames([0, 0]);
+
+        me.gear.torso.setPos([0, 768 + me.side]);
+        me.gear.torso.setFrames([0, 0]);
+
+        me.gear.leg.setPos([0, 768 + me.side]);
+        me.gear.leg.setFrames([0, 0]);
+
+        me.primary.setPos([0, 768 + me.side]);
+        me.primary.setFrames([0, 0]);
+
+        me.secondary.setPos([0, 768 + me.side]);
+        me.secondary.setFrames([0, 0]);
+
+        me.wounded.setPos([0, 768 + me.side]);
+        me.wounded.setFrames([0, 0]);
+    },
+
+
+    /**
+     * Play the die animation
+     * @memberOf rd.game.unit
+     */
+    die = function() {
+        me.skin.setPos([0, 768 + me.side]);
+        me.skin.setFrames([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+
+        me.gear.head.setPos([0, 768 + me.side]);
+        me.gear.head.setFrames([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+
+        me.gear.torso.setPos([0, 768 + me.side]);
+        me.gear.torso.setFrames([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+
+        me.gear.leg.setPos([0, 768 + me.side]);
+        me.gear.leg.setFrames([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+
+        me.primary.setPos([0, 768 + me.side]);
+        me.primary.setFrames([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+
+        me.secondary.setPos([0, 768 + me.side]);
+        me.secondary.setFrames([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+
+        me.wounded.setPos([0, 768 + me.side]);
+        me.wounded.setFrames([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
     },
 
 
@@ -245,6 +303,7 @@ rd.define('game.unit', function(cfg) {
         return me;
     };
 
+
     me.name = cfg.name;
     me.skin = cfg.skin;
     me.pos = cfg.pos;
@@ -255,7 +314,6 @@ rd.define('game.unit', function(cfg) {
     me.armor = cfg.armor;
     me.moving = false;
     me.skills = cfg.skills;
-    me.dead = cfg.dead;
     me.visible = cfg.visible || true;
     me.isWounded = false;
     me.weapons = cfg.weapons;
@@ -275,7 +333,7 @@ rd.define('game.unit', function(cfg) {
     me.fieldsInRange = [];
     me.steps = 20;
     me.currentStep = 20;
-    me.unitFighting = false;
+    me.animationInProgress = false;
     me.ranged = me.attackRange > 1 ? true : false;
     me.arrow = cfg.weaponsCfg[me.weapons.primary].arrow;
     me.bolt = cfg.weaponsCfg[me.weapons.primary].bolt;
@@ -296,7 +354,9 @@ rd.define('game.unit', function(cfg) {
         isInRange: isInRange,
         resetMoveRange: resetMoveRange,
         setHealth: setHealth,
-        setWounded: setWounded
+        setWounded: setWounded,
+        takeDamage: takeDamage,
+        die: die
     };
 
 });

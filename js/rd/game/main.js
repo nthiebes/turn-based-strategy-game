@@ -16,6 +16,7 @@ rd.define('game.main', (function() {
         tileCounter = 0,
         unitDirection,
         canvas = rd.canvas.main,
+        animations = rd.game.animations,
         currentMap = 0,
         canvasWrapper = document.getElementById('canvas-wrapper'),
 
@@ -127,11 +128,11 @@ rd.define('game.main', (function() {
             unit.moving = false;
             units[index].stop(unitDirection);
             unitDirection = null;
-            if (!unit.unitFighting) {
+            if (!unit.animationInProgress) {
                 canvas.enableUtils();
             }
 
-        } else if (unit.unitFighting) {
+        } else if (unit.animationInProgress) {
             var frames = unit.skin.getFrames();
             if (frames.framesLength - 1 === frames.index) {
                 units[index].stop(unitDirection);
@@ -168,6 +169,8 @@ rd.define('game.main', (function() {
                 stopMoveAnimation(unit, i);
             }
         }
+
+        animations.updateEntities(delta);
     },
 
 
@@ -222,15 +225,38 @@ rd.define('game.main', (function() {
      * @memberOf rd.game.main
      */
     endTurn = function() {
+        var team1 = 0,
+            team2 = 0;
+        for (var i in unitStats) {
+            if (unitStats[i].team === 1) {
+                team1++;
+            } else {
+                team2++;
+            }
+        }
+
+        if (team1 === 0 || team2 === 0) {
+            endGame();
+            return;
+        }
+
         getCurrentUnit().resetMoveRange();
         currentUnit++;
-        
+
         if (!units[currentUnit]) {
             currentUnit = 0;
         }
-        
+
         rd.game.map.redrawUtils();
         canvas.enableUtils();
+    },
+
+
+    /**
+     * End the game
+     */
+    endGame = function() {
+        console.log('GAME ENDED');
     },
 
 
@@ -253,9 +279,10 @@ rd.define('game.main', (function() {
                 canvas.renderAttackRange(currentUnitStats.pos, currentUnitStats.attackRange);
                 canvas.renderMoveRange(currentUnitStats);
                 units[currentUnit].setFieldsInRange(canvas.calculateAttackRangeFields(currentUnitStats.pos, currentUnitStats.attackRange));
-                main();
+                rd.game.animations.init();
                 rd.game.ui.init();
                 canvasWrapper.className += ' show';
+                main();
 
                 // Default movable
                 canvas.drawMovable({

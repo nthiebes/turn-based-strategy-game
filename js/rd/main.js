@@ -67,7 +67,8 @@ rd.define('main', (function() {
             'img/bg.jpg',
             'img/splash-bg.jpg',
             'img/fog.png',
-            'img/main-menu.png'
+            'img/main-menu.png',
+            'img/animations.png'
         ],
 
 

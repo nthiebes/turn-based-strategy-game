@@ -378,6 +378,7 @@ rd.define('canvas.main', (function() {
         ctxTop1 = canvasTop1.getContext('2d'),
         ctxAnim = canvasAnim.getContext('2d'),
         ctxUtils = canvasUtils.getContext('2d'),
+        animations,
         mapLayers,
         ground1,
         ground2,
@@ -678,6 +679,7 @@ rd.define('canvas.main', (function() {
         // Clear canvas hack
         canvasAnim.width = canvasAnim.width;
         renderEntities(unitStats);
+        renderAnimations(animations.get());
     },
 
 
@@ -727,12 +729,26 @@ rd.define('canvas.main', (function() {
      */
     renderEntity = function() {
         ctxAnim.save();
-        ctxAnim.translate(arguments[0].pos[0] * fieldWidth - 32, arguments[0].pos[1] * fieldWidth - 70); 
+        ctxAnim.translate(arguments[0].pos[0] * fieldWidth - 32, arguments[0].pos[1] * fieldWidth - 70);
 
         for (var i = 1; i < arguments.length; i++) {
             arguments[i].render(ctxAnim);
         }
         ctxAnim.restore();
+    },
+
+
+    /**
+     * Render all the animations
+     * @param {array} list
+     */
+    renderAnimations = function(list) {
+        for (var i = 0; i < list.length; i++) {
+            ctxAnim.save();
+            ctxAnim.translate(list[i].pos[0] * fieldWidth, list[i].pos[1] * fieldWidth);
+            list[i].sprite.render(ctxAnim);
+            ctxAnim.restore();
+        }
     },
 
 
@@ -1123,6 +1139,7 @@ rd.define('canvas.main', (function() {
      * @memberOf rd.canvas.main
      */
     init = function(mapJson) {
+        animations = rd.game.animations;
         mapLayers = mapJson.map;
         ground1 = mapLayers[0];
         ground2 = mapLayers[1];
@@ -1208,8 +1225,8 @@ rd.define('game.unit', function(cfg) {
         me.pos[0] = Math.round(me.pos[0]);
         me.pos[1] = Math.round(me.pos[1]);
 
-        if (me.unitFighting) {
-            me.unitFighting = false;
+        if (me.animationInProgress) {
+            me.animationInProgress = false;
         }
 
         // Start combat
@@ -1264,7 +1281,7 @@ rd.define('game.unit', function(cfg) {
      * @memberOf rd.game.unit
      */
     attack = function() {
-        me.unitFighting = true;
+        me.animationInProgress = true;
 
         me.skin.setPos([0, 256 + me.side]);
         if (me.ranged) {
@@ -1313,6 +1330,64 @@ rd.define('game.unit', function(cfg) {
         me.secondary.setPos([0, 256 + me.side]);
         me.secondary.setFrames([0, 1, 2, 2]);
         me.secondary.setIndex(0);
+    },
+
+
+    /**
+     * Play the 'take damage' animation
+     * @memberOf rd.game.unit
+     */
+    takeDamage = function() {
+        me.animationInProgress = true;
+
+        me.skin.setPos([0, 768 + me.side]);
+        me.skin.setFrames([0, 0]);
+
+        me.gear.head.setPos([0, 768 + me.side]);
+        me.gear.head.setFrames([0, 0]);
+
+        me.gear.torso.setPos([0, 768 + me.side]);
+        me.gear.torso.setFrames([0, 0]);
+
+        me.gear.leg.setPos([0, 768 + me.side]);
+        me.gear.leg.setFrames([0, 0]);
+
+        me.primary.setPos([0, 768 + me.side]);
+        me.primary.setFrames([0, 0]);
+
+        me.secondary.setPos([0, 768 + me.side]);
+        me.secondary.setFrames([0, 0]);
+
+        me.wounded.setPos([0, 768 + me.side]);
+        me.wounded.setFrames([0, 0]);
+    },
+
+
+    /**
+     * Play the die animation
+     * @memberOf rd.game.unit
+     */
+    die = function() {
+        me.skin.setPos([0, 768 + me.side]);
+        me.skin.setFrames([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+
+        me.gear.head.setPos([0, 768 + me.side]);
+        me.gear.head.setFrames([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+
+        me.gear.torso.setPos([0, 768 + me.side]);
+        me.gear.torso.setFrames([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+
+        me.gear.leg.setPos([0, 768 + me.side]);
+        me.gear.leg.setFrames([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+
+        me.primary.setPos([0, 768 + me.side]);
+        me.primary.setFrames([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+
+        me.secondary.setPos([0, 768 + me.side]);
+        me.secondary.setFrames([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+
+        me.wounded.setPos([0, 768 + me.side]);
+        me.wounded.setFrames([0, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
     },
 
 
@@ -1408,6 +1483,7 @@ rd.define('game.unit', function(cfg) {
         return me;
     };
 
+
     me.name = cfg.name;
     me.skin = cfg.skin;
     me.pos = cfg.pos;
@@ -1418,7 +1494,6 @@ rd.define('game.unit', function(cfg) {
     me.armor = cfg.armor;
     me.moving = false;
     me.skills = cfg.skills;
-    me.dead = cfg.dead;
     me.visible = cfg.visible || true;
     me.isWounded = false;
     me.weapons = cfg.weapons;
@@ -1438,7 +1513,7 @@ rd.define('game.unit', function(cfg) {
     me.fieldsInRange = [];
     me.steps = 20;
     me.currentStep = 20;
-    me.unitFighting = false;
+    me.animationInProgress = false;
     me.ranged = me.attackRange > 1 ? true : false;
     me.arrow = cfg.weaponsCfg[me.weapons.primary].arrow;
     me.bolt = cfg.weaponsCfg[me.weapons.primary].bolt;
@@ -1459,7 +1534,9 @@ rd.define('game.unit', function(cfg) {
         isInRange: isInRange,
         resetMoveRange: resetMoveRange,
         setHealth: setHealth,
-        setWounded: setWounded
+        setWounded: setWounded,
+        takeDamage: takeDamage,
+        die: die
     };
 
 });
@@ -1556,12 +1633,11 @@ rd.define('game.combat', (function() {
 
             if (newHealth > 0) {
                 // Alive
-                // Hit animation
+                units[defender].takeDamage();
                 // Next player
             } else {
                 // Dead
-                // Death animation
-                rd.game.units.removeUnit(defender, defenderStats);
+                units[defender].die();
             }
 
             // Show damage
@@ -1569,12 +1645,13 @@ rd.define('game.combat', (function() {
 
         requestTimeout(function() {
             if (newHealth > 0) {
-                rd.game.main.endTurn();
                 // Fight back
             } else {
-                rd.game.main.endTurn();
+                rd.game.units.removeUnit(defender, defenderStats);
             }
-        }, 1000);
+
+            rd.game.main.endTurn();
+        }, 1400);
     },
 
 
@@ -1762,6 +1839,70 @@ rd.define('game.units', (function() {
         get: get,
         getStats: getStats,
         removeUnit: removeUnit
+    };
+
+})());
+
+/**
+ * Animations controller
+ * @namespace rd.game.animations
+ */
+rd.define('game.animations', (function() {
+
+    /**
+     * Variables
+     */
+    var animations = [],
+
+
+    /**
+     * Update sprites
+     * @param {int} delta
+     */
+    updateEntities = function(delta) {
+        for (var i = 0; i < animations.length; i++) {
+            if (animations[i].active) {
+                animations[i].sprite.update(delta);
+            }
+        }
+    },
+
+
+    /**
+     * Get the animations
+     * @return {array}
+     */
+    get = function() {
+        return animations;
+    },
+
+
+    /**
+     * Initialization
+     * @memberOf rd.game.animations
+     */
+    init = function() {
+        animations.push({
+            sprite: new rd.utils.sprite({
+                'url': 'img/animations.png',
+                'pos': [0, 0],
+                'size': [64, 64],
+                'speed': 4,
+                'frames': [0, 1, 2, 3, 4, 5, 6, 7]
+            }),
+            active: true,
+            pos: [1, 1]
+        });
+    };
+
+
+    /**
+     * Return public functions
+     */
+    return {
+        init: init,
+        updateEntities: updateEntities,
+        get: get
     };
 
 })());
@@ -2474,6 +2615,7 @@ rd.define('game.main', (function() {
         tileCounter = 0,
         unitDirection,
         canvas = rd.canvas.main,
+        animations = rd.game.animations,
         currentMap = 0,
         canvasWrapper = document.getElementById('canvas-wrapper'),
 
@@ -2585,11 +2727,11 @@ rd.define('game.main', (function() {
             unit.moving = false;
             units[index].stop(unitDirection);
             unitDirection = null;
-            if (!unit.unitFighting) {
+            if (!unit.animationInProgress) {
                 canvas.enableUtils();
             }
 
-        } else if (unit.unitFighting) {
+        } else if (unit.animationInProgress) {
             var frames = unit.skin.getFrames();
             if (frames.framesLength - 1 === frames.index) {
                 units[index].stop(unitDirection);
@@ -2626,6 +2768,8 @@ rd.define('game.main', (function() {
                 stopMoveAnimation(unit, i);
             }
         }
+
+        animations.updateEntities(delta);
     },
 
 
@@ -2680,15 +2824,38 @@ rd.define('game.main', (function() {
      * @memberOf rd.game.main
      */
     endTurn = function() {
+        var team1 = 0,
+            team2 = 0;
+        for (var i in unitStats) {
+            if (unitStats[i].team === 1) {
+                team1++;
+            } else {
+                team2++;
+            }
+        }
+
+        if (team1 === 0 || team2 === 0) {
+            endGame();
+            return;
+        }
+
         getCurrentUnit().resetMoveRange();
         currentUnit++;
-        
+
         if (!units[currentUnit]) {
             currentUnit = 0;
         }
-        
+
         rd.game.map.redrawUtils();
         canvas.enableUtils();
+    },
+
+
+    /**
+     * End the game
+     */
+    endGame = function() {
+        console.log('GAME ENDED');
     },
 
 
@@ -2711,9 +2878,10 @@ rd.define('game.main', (function() {
                 canvas.renderAttackRange(currentUnitStats.pos, currentUnitStats.attackRange);
                 canvas.renderMoveRange(currentUnitStats);
                 units[currentUnit].setFieldsInRange(canvas.calculateAttackRangeFields(currentUnitStats.pos, currentUnitStats.attackRange));
-                main();
+                rd.game.animations.init();
                 rd.game.ui.init();
                 canvasWrapper.className += ' show';
+                main();
 
                 // Default movable
                 canvas.drawMovable({
@@ -3009,7 +3177,8 @@ rd.define('main', (function() {
             'img/bg.jpg',
             'img/splash-bg.jpg',
             'img/fog.png',
-            'img/main-menu.png'
+            'img/main-menu.png',
+            'img/animations.png'
         ],
 
 
