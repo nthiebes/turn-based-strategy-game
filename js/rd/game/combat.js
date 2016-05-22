@@ -74,13 +74,13 @@ rd.define('game.combat', (function() {
 
         requestTimeout(function() {
             if (attackerStats.arrow) {
-                fireArrow(attackerStats);
+                fireArrow(attackerStats, defenderStats);
             }
             if (attackerStats.bolt) {
-                fireBolt(attackerStats);
+                fireBolt(attackerStats, defenderStats);
             }
             if (attackerStats.bullet) {
-                fireBullet(attackerStats);
+                fireBullet(attackerStats, defenderStats);
             }
         }, 400);
 
@@ -103,27 +103,75 @@ rd.define('game.combat', (function() {
         requestTimeout(function() {
             if (newHealth > 0) {
                 // Fight back
+                rd.game.main.endTurn();
             } else {
                 rd.game.units.removeUnit(defender, defenderStats);
+                rd.game.main.endTurn(true);
             }
-
-            rd.game.main.endTurn();
         }, 1400);
     },
 
 
-    fireArrow = function() {
+    /**
+     * Trigger arrow animation
+     * @param {object} attackerStats
+     * @param {object} defenderStats
+     */
+    fireArrow = function(attackerStats, defenderStats) {
+        var a = defenderStats.pos[1] - attackerStats.pos[1],
+            b = defenderStats.pos[0] - attackerStats.pos[0];
 
+        rd.game.animations.play({
+            name: 'arrow',
+            speed: Math.sqrt(a * a + b * b) * 4,
+            angle: Math.atan2(a, b),
+            x1: attackerStats.pos[0] + 0.5,
+            y1: attackerStats.pos[1] + 0.5,
+            x2: defenderStats.pos[0] + 0.5,
+            y2: defenderStats.pos[1] + 0.5
+        });
     },
 
-    
-    fireBolt = function() {
 
+    /**
+     * Trigger bolt animation
+     * @param {object} attackerStats
+     * @param {object} defenderStats
+     */
+    fireBolt = function(attackerStats, defenderStats) {
+        var a = defenderStats.pos[1] - attackerStats.pos[1],
+            b = defenderStats.pos[0] - attackerStats.pos[0];
+
+        rd.game.animations.play({
+            name: 'bolt',
+            speed: Math.sqrt(a * a + b * b) * 3,
+            angle: Math.atan2(a, b),
+            x1: attackerStats.pos[0] + 0.5,
+            y1: attackerStats.pos[1] + 0.5,
+            x2: defenderStats.pos[0] + 0.5,
+            y2: defenderStats.pos[1] + 0.5
+        });
     },
 
 
-    fireBullet = function() {
+    /**
+     * Trigger bullet animation
+     * @param {object} attackerStats
+     * @param {object} defenderStats
+     */
+    fireBullet = function(attackerStats, defenderStats) {
+        var a = defenderStats.pos[1] - attackerStats.pos[1],
+            b = defenderStats.pos[0] - attackerStats.pos[0];
 
+        rd.game.animations.play({
+            name: 'bullet',
+            speed: Math.sqrt(a * a + b * b) * 2,
+            angle: Math.atan2(a, b),
+            x1: attackerStats.pos[0] + 0.5,
+            y1: attackerStats.pos[1] + 0.5,
+            x2: defenderStats.pos[0] + 0.5,
+            y2: defenderStats.pos[1] + 0.5
+        });
     };
 
 

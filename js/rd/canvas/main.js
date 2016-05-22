@@ -382,11 +382,16 @@ rd.define('canvas.main', (function() {
      * @param {array} list
      */
     renderAnimations = function(list) {
-        for (var i = 0; i < list.length; i++) {
-            ctxAnim.save();
-            ctxAnim.translate(list[i].pos[0] * fieldWidth, list[i].pos[1] * fieldWidth);
-            list[i].sprite.render(ctxAnim);
-            ctxAnim.restore();
+        for (var i in list) {
+            if (list[i].active) {
+                ctxAnim.save();
+                ctxAnim.translate(list[i].pos[0] * fieldWidth, list[i].pos[1] * fieldWidth);
+                if (list[i].angle) {
+                    ctxAnim.rotate(list[i].angle);
+                }
+                list[i].sprite.render(ctxAnim);
+                ctxAnim.restore();
+            }
         }
     },
 

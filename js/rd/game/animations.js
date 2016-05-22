@@ -7,7 +7,7 @@ rd.define('game.animations', (function() {
     /**
      * Variables
      */
-    var animations = [],
+    var animations = {},
 
 
     /**
@@ -15,9 +15,32 @@ rd.define('game.animations', (function() {
      * @param {int} delta
      */
     updateEntities = function(delta) {
-        for (var i = 0; i < animations.length; i++) {
-            if (animations[i].active) {
-                animations[i].sprite.update(delta);
+        var animation;
+        for (var i in animations) {
+            animation = animations[i];
+            if (animation.active) {
+                updateEntity(delta, animation);
+            }
+        }
+    },
+
+
+    /**
+     * Update one sprite
+     * @param {int}    delta
+     * @param {object} animation
+     */
+    updateEntity = function(delta, animation) {
+        // Path animation
+        if (animation.path) {
+            if (animation.path[ animation.pathIndex ]) {
+                animation.pos[0] = animation.path[ animation.pathIndex ][0];
+                animation.pos[1] = animation.path[ animation.pathIndex ][1];
+                animation.sprite.update(delta);
+                animation.pathIndex++;
+            } else {
+                animation.active = false;
+                animation.pathIndex = 0;
             }
         }
     },
@@ -33,21 +56,77 @@ rd.define('game.animations', (function() {
 
 
     /**
+     * Play an animation
+     * @param {object} cfg
+     */
+    play = function(cfg) {
+        animations[cfg.name].angle = cfg.angle;
+        animations[cfg.name].path = getPath(cfg);
+        animations[cfg.name].active = true;
+    },
+
+
+    /**
+     * Get points between two points
+     * @param  {object} cfg
+     * @return {array}
+     */
+    getPath = function(cfg) {
+        var path = [],
+            speed = cfg.speed,
+            x1 = cfg.x1,
+            y1 = cfg.y1,
+            x2 = cfg.x2,
+            y2 = cfg.y2,
+            lastX = x1,
+            lastY = y1,
+            x = (x2 - x1) / speed,
+            y = (y2 - y1) / speed;
+
+        for (var i = 0; i <= speed; i++) {
+            path.push([lastX, lastY]);
+            lastX = lastX + x;
+            lastY = lastY + y;
+        }
+
+        return path;
+    },
+
+
+    /**
      * Initialization
      * @memberOf rd.game.animations
      */
     init = function() {
-        animations.push({
+        animations.arrow = {
             sprite: new rd.utils.sprite({
                 'url': 'img/animations.png',
                 'pos': [0, 0],
                 'size': [64, 64],
-                'speed': 4,
-                'frames': [0, 1, 2, 3, 4, 5, 6, 7]
+                'speed': 0,
+                'frames': [0]
+            }),
+            active: false,
+            pos: [],
+            path: [],
+            pathIndex: 0,
+            angle: 0
+        };
+
+        animations.bullet = {
+            sprite: new rd.utils.sprite({
+                'url': 'img/animations.png',
+                'pos': [0, 64],
+                'size': [64, 64],
+                'speed': 0,
+                'frames': [0]
             }),
             active: true,
-            pos: [1, 1]
-        });
+            pos: [],
+            path: [],
+            pathIndex: 0,
+            angle: 0
+        };
     };
 
 
@@ -57,7 +136,8 @@ rd.define('game.animations', (function() {
     return {
         init: init,
         updateEntities: updateEntities,
-        get: get
+        get: get,
+        play: play
     };
 
 })());

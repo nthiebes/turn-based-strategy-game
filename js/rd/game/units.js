@@ -91,6 +91,10 @@ rd.define('game.units', (function() {
         units.splice(index, 1);
 
         // Update all unit arrays
+        var unitStats = getStats();
+        for (var i in unitStats) {
+            rd.game.map.updateMap(unitStats[i].pos[0], unitStats[i].pos[1], 'id-' + i);
+        }
         rd.game.map.updateMap(stats.pos[0], stats.pos[1], 0);
         rd.game.map.updateUnitStats();
         rd.game.main.updateUnits();
@@ -121,11 +125,11 @@ rd.define('game.units', (function() {
                             pos: [9, 3],
                             team: 1
                         });
-                        // add({
-                        //     key: 'nicoclone',
-                        //     pos: [0, 6],
-                        //     team: 1
-                        // });
+                        add({
+                            key: 'nico3',
+                            pos: [8, 4],
+                            team: 1
+                        });
                         add({
                             key: 'enemy1',
                             pos: [11, 5],

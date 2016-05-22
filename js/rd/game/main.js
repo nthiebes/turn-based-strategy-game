@@ -224,7 +224,7 @@ rd.define('game.main', (function() {
      * Ende the current turn
      * @memberOf rd.game.main
      */
-    endTurn = function() {
+    endTurn = function(unitDied) {
         var team1 = 0,
             team2 = 0;
         for (var i in unitStats) {
@@ -240,9 +240,15 @@ rd.define('game.main', (function() {
             return;
         }
 
-        getCurrentUnit().resetMoveRange();
-        currentUnit++;
+        if (getCurrentUnit()) {
+            getCurrentUnit().resetMoveRange();
+        }
 
+        if (!unitDied) {
+            currentUnit++;
+        }
+
+        // Continue with first unit
         if (!units[currentUnit]) {
             currentUnit = 0;
         }

@@ -33,6 +33,23 @@
         }
     },
 
+    "nico3": {
+        "name": "Musketman",
+        "race": "vampire",
+        "skin": 0,
+        "health": 100,
+        "armor": "cloth",
+        "gear": {
+            "head": 0,
+            "torso": 0,
+            "leg": 0
+        },
+        "weapons": {
+            "primary": "primary8",
+            "secondary": "secondary0"
+        }
+    },
+
     "enemy1": {
         "name": "Orc warrior",
         "race": "orc",

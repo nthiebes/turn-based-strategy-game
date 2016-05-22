@@ -14,7 +14,7 @@
     "primary2": {
         "name": "speer0",
         "damageMelee": 1,
-        "attackRange": 2
+        "attackRange": 1
     },
 
     "primary3": {
@@ -31,8 +31,8 @@
     },
 
     "primary5": {
-        "name": "dagger0",
-        "damageMelee": 1,
+        "name": "halberdier",
+        "damageMelee": 2,
         "attackRange": 1
     },
 
@@ -62,6 +62,12 @@
         "damageRanged": 4,
         "attackRange": 7,
         "bullet": true
+    },
+
+    "primary10": {
+        "name": "dagger0",
+        "damageMelee": 1,
+        "attackRange": 1
     },
 
     "secondary0": {

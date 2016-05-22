@@ -743,11 +743,16 @@ rd.define('canvas.main', (function() {
      * @param {array} list
      */
     renderAnimations = function(list) {
-        for (var i = 0; i < list.length; i++) {
-            ctxAnim.save();
-            ctxAnim.translate(list[i].pos[0] * fieldWidth, list[i].pos[1] * fieldWidth);
-            list[i].sprite.render(ctxAnim);
-            ctxAnim.restore();
+        for (var i in list) {
+            if (list[i].active) {
+                ctxAnim.save();
+                ctxAnim.translate(list[i].pos[0] * fieldWidth, list[i].pos[1] * fieldWidth);
+                if (list[i].angle) {
+                    ctxAnim.rotate(list[i].angle);
+                }
+                list[i].sprite.render(ctxAnim);
+                ctxAnim.restore();
+            }
         }
     },
 
@@ -1617,13 +1622,13 @@ rd.define('game.combat', (function() {
 
         requestTimeout(function() {
             if (attackerStats.arrow) {
-                fireArrow(attackerStats);
+                fireArrow(attackerStats, defenderStats);
             }
             if (attackerStats.bolt) {
-                fireBolt(attackerStats);
+                fireBolt(attackerStats, defenderStats);
             }
             if (attackerStats.bullet) {
-                fireBullet(attackerStats);
+                fireBullet(attackerStats, defenderStats);
             }
         }, 400);
 
@@ -1646,27 +1651,75 @@ rd.define('game.combat', (function() {
         requestTimeout(function() {
             if (newHealth > 0) {
                 // Fight back
+                rd.game.main.endTurn();
             } else {
                 rd.game.units.removeUnit(defender, defenderStats);
+                rd.game.main.endTurn(true);
             }
-
-            rd.game.main.endTurn();
         }, 1400);
     },
 
 
-    fireArrow = function() {
+    /**
+     * Trigger arrow animation
+     * @param {object} attackerStats
+     * @param {object} defenderStats
+     */
+    fireArrow = function(attackerStats, defenderStats) {
+        var a = defenderStats.pos[1] - attackerStats.pos[1],
+            b = defenderStats.pos[0] - attackerStats.pos[0];
 
+        rd.game.animations.play({
+            name: 'arrow',
+            speed: Math.sqrt(a * a + b * b) * 4,
+            angle: Math.atan2(a, b),
+            x1: attackerStats.pos[0] + 0.5,
+            y1: attackerStats.pos[1] + 0.5,
+            x2: defenderStats.pos[0] + 0.5,
+            y2: defenderStats.pos[1] + 0.5
+        });
     },
 
-    
-    fireBolt = function() {
 
+    /**
+     * Trigger bolt animation
+     * @param {object} attackerStats
+     * @param {object} defenderStats
+     */
+    fireBolt = function(attackerStats, defenderStats) {
+        var a = defenderStats.pos[1] - attackerStats.pos[1],
+            b = defenderStats.pos[0] - attackerStats.pos[0];
+
+        rd.game.animations.play({
+            name: 'bolt',
+            speed: Math.sqrt(a * a + b * b) * 3,
+            angle: Math.atan2(a, b),
+            x1: attackerStats.pos[0] + 0.5,
+            y1: attackerStats.pos[1] + 0.5,
+            x2: defenderStats.pos[0] + 0.5,
+            y2: defenderStats.pos[1] + 0.5
+        });
     },
 
 
-    fireBullet = function() {
+    /**
+     * Trigger bullet animation
+     * @param {object} attackerStats
+     * @param {object} defenderStats
+     */
+    fireBullet = function(attackerStats, defenderStats) {
+        var a = defenderStats.pos[1] - attackerStats.pos[1],
+            b = defenderStats.pos[0] - attackerStats.pos[0];
 
+        rd.game.animations.play({
+            name: 'bullet',
+            speed: Math.sqrt(a * a + b * b) * 2,
+            angle: Math.atan2(a, b),
+            x1: attackerStats.pos[0] + 0.5,
+            y1: attackerStats.pos[1] + 0.5,
+            x2: defenderStats.pos[0] + 0.5,
+            y2: defenderStats.pos[1] + 0.5
+        });
     };
 
 
@@ -1772,6 +1825,10 @@ rd.define('game.units', (function() {
         units.splice(index, 1);
 
         // Update all unit arrays
+        var unitStats = getStats();
+        for (var i in unitStats) {
+            rd.game.map.updateMap(unitStats[i].pos[0], unitStats[i].pos[1], 'id-' + i);
+        }
         rd.game.map.updateMap(stats.pos[0], stats.pos[1], 0);
         rd.game.map.updateUnitStats();
         rd.game.main.updateUnits();
@@ -1802,11 +1859,11 @@ rd.define('game.units', (function() {
                             pos: [9, 3],
                             team: 1
                         });
-                        // add({
-                        //     key: 'nicoclone',
-                        //     pos: [0, 6],
-                        //     team: 1
-                        // });
+                        add({
+                            key: 'nico3',
+                            pos: [8, 4],
+                            team: 1
+                        });
                         add({
                             key: 'enemy1',
                             pos: [11, 5],
@@ -1852,7 +1909,7 @@ rd.define('game.animations', (function() {
     /**
      * Variables
      */
-    var animations = [],
+    var animations = {},
 
 
     /**
@@ -1860,9 +1917,32 @@ rd.define('game.animations', (function() {
      * @param {int} delta
      */
     updateEntities = function(delta) {
-        for (var i = 0; i < animations.length; i++) {
-            if (animations[i].active) {
-                animations[i].sprite.update(delta);
+        var animation;
+        for (var i in animations) {
+            animation = animations[i];
+            if (animation.active) {
+                updateEntity(delta, animation);
+            }
+        }
+    },
+
+
+    /**
+     * Update one sprite
+     * @param {int}    delta
+     * @param {object} animation
+     */
+    updateEntity = function(delta, animation) {
+        // Path animation
+        if (animation.path) {
+            if (animation.path[ animation.pathIndex ]) {
+                animation.pos[0] = animation.path[ animation.pathIndex ][0];
+                animation.pos[1] = animation.path[ animation.pathIndex ][1];
+                animation.sprite.update(delta);
+                animation.pathIndex++;
+            } else {
+                animation.active = false;
+                animation.pathIndex = 0;
             }
         }
     },
@@ -1878,21 +1958,77 @@ rd.define('game.animations', (function() {
 
 
     /**
+     * Play an animation
+     * @param {object} cfg
+     */
+    play = function(cfg) {
+        animations[cfg.name].angle = cfg.angle;
+        animations[cfg.name].path = getPath(cfg);
+        animations[cfg.name].active = true;
+    },
+
+
+    /**
+     * Get points between two points
+     * @param  {object} cfg
+     * @return {array}
+     */
+    getPath = function(cfg) {
+        var path = [],
+            speed = cfg.speed,
+            x1 = cfg.x1,
+            y1 = cfg.y1,
+            x2 = cfg.x2,
+            y2 = cfg.y2,
+            lastX = x1,
+            lastY = y1,
+            x = (x2 - x1) / speed,
+            y = (y2 - y1) / speed;
+
+        for (var i = 0; i <= speed; i++) {
+            path.push([lastX, lastY]);
+            lastX = lastX + x;
+            lastY = lastY + y;
+        }
+
+        return path;
+    },
+
+
+    /**
      * Initialization
      * @memberOf rd.game.animations
      */
     init = function() {
-        animations.push({
+        animations.arrow = {
             sprite: new rd.utils.sprite({
                 'url': 'img/animations.png',
                 'pos': [0, 0],
                 'size': [64, 64],
-                'speed': 4,
-                'frames': [0, 1, 2, 3, 4, 5, 6, 7]
+                'speed': 0,
+                'frames': [0]
+            }),
+            active: false,
+            pos: [],
+            path: [],
+            pathIndex: 0,
+            angle: 0
+        };
+
+        animations.bullet = {
+            sprite: new rd.utils.sprite({
+                'url': 'img/animations.png',
+                'pos': [0, 64],
+                'size': [64, 64],
+                'speed': 0,
+                'frames': [0]
             }),
             active: true,
-            pos: [1, 1]
-        });
+            pos: [],
+            path: [],
+            pathIndex: 0,
+            angle: 0
+        };
     };
 
 
@@ -1902,7 +2038,8 @@ rd.define('game.animations', (function() {
     return {
         init: init,
         updateEntities: updateEntities,
-        get: get
+        get: get,
+        play: play
     };
 
 })());
@@ -2823,7 +2960,7 @@ rd.define('game.main', (function() {
      * Ende the current turn
      * @memberOf rd.game.main
      */
-    endTurn = function() {
+    endTurn = function(unitDied) {
         var team1 = 0,
             team2 = 0;
         for (var i in unitStats) {
@@ -2839,9 +2976,15 @@ rd.define('game.main', (function() {
             return;
         }
 
-        getCurrentUnit().resetMoveRange();
-        currentUnit++;
+        if (getCurrentUnit()) {
+            getCurrentUnit().resetMoveRange();
+        }
 
+        if (!unitDied) {
+            currentUnit++;
+        }
+
+        // Continue with first unit
         if (!units[currentUnit]) {
             currentUnit = 0;
         }
@@ -3161,6 +3304,9 @@ rd.define('main', (function() {
             'img/units/primary3.png',
             'img/units/primary4.png',
             'img/units/primary5.png',
+            'img/units/primary6.png',
+            'img/units/primary7.png',
+            'img/units/primary8.png',
             'img/units/secondary0.png',
             'img/units/secondary1.png',
             'img/units/secondary2.png',
