@@ -1205,25 +1205,25 @@ rd.define('game.unit', function(cfg) {
             turn(direction);
         }
 
-        me.skin.setPos([0, 256 + me.side]);
+        me.skin.setPos([0, me.idleOffset + me.side]);
         me.skin.setFrames([0]);
 
-        me.gear.head.setPos([0, 256 + me.side]);
+        me.gear.head.setPos([0, me.idleOffset + me.side]);
         me.gear.head.setFrames([0]);
 
-        me.gear.torso.setPos([0, 256 + me.side]);
+        me.gear.torso.setPos([0, me.idleOffset + me.side]);
         me.gear.torso.setFrames([0]);
 
-        me.gear.leg.setPos([0, 256 + me.side]);
+        me.gear.leg.setPos([0, me.idleOffset + me.side]);
         me.gear.leg.setFrames([0]);
 
-        me.primary.setPos([0, 256 + me.side]);
+        me.primary.setPos([0, me.idleOffset + me.side]);
         me.primary.setFrames([0]);
 
-        me.secondary.setPos([0, 256 + me.side]);
+        me.secondary.setPos([0, me.idleOffset + me.side]);
         me.secondary.setFrames([0]);
 
-        me.wounded.setPos([0, 256 + me.side]);
+        me.wounded.setPos([0, me.idleOffset + me.side]);
         me.wounded.setFrames([0]);
 
         // Round new position
@@ -1288,7 +1288,7 @@ rd.define('game.unit', function(cfg) {
     attack = function() {
         me.animationInProgress = true;
 
-        me.skin.setPos([0, 256 + me.side]);
+        me.skin.setPos([0, me.idleOffset + me.side]);
         if (me.ranged) {
             me.skin.setFrames([0, 2, 2, 2]);
         } else {
@@ -1296,7 +1296,7 @@ rd.define('game.unit', function(cfg) {
         }
         me.skin.setIndex(0);
         
-        me.gear.head.setPos([0, 256 + me.side]);
+        me.gear.head.setPos([0, me.idleOffset + me.side]);
         if (me.ranged) {
             me.gear.head.setFrames([0, 2, 2, 2]);
         } else {
@@ -1304,7 +1304,7 @@ rd.define('game.unit', function(cfg) {
         }
         me.gear.head.setIndex(0);
         
-        me.gear.torso.setPos([0, 256 + me.side]);
+        me.gear.torso.setPos([0, me.idleOffset + me.side]);
         if (me.ranged) {
             me.gear.torso.setFrames([0, 2, 2, 2]);
         } else {
@@ -1312,7 +1312,7 @@ rd.define('game.unit', function(cfg) {
         }
         me.gear.torso.setIndex(0);
         
-        me.gear.leg.setPos([0, 256 + me.side]);
+        me.gear.leg.setPos([0, me.idleOffset + me.side]);
         if (me.ranged) {
             me.gear.leg.setFrames([0, 2, 2, 2]);
         } else {
@@ -1320,7 +1320,7 @@ rd.define('game.unit', function(cfg) {
         }
         me.gear.leg.setIndex(0);
 
-        me.wounded.setPos([0, 256 + me.side]);
+        me.wounded.setPos([0, me.idleOffset + me.side]);
         if (me.ranged) {
             me.wounded.setFrames([0, 2, 2, 2]);
         } else {
@@ -1328,11 +1328,11 @@ rd.define('game.unit', function(cfg) {
         }
         me.wounded.setIndex(0);
         
-        me.primary.setPos([0, 256 + me.side]);
+        me.primary.setPos([0, me.idleOffset + me.side]);
         me.primary.setFrames([0, 1, 2, 2]);
         me.primary.setIndex(0);
 
-        me.secondary.setPos([0, 256 + me.side]);
+        me.secondary.setPos([0, me.idleOffset + me.side]);
         me.secondary.setFrames([0, 1, 2, 2]);
         me.secondary.setIndex(0);
     },
@@ -1404,13 +1404,13 @@ rd.define('game.unit', function(cfg) {
     turn = function(direction) {
         me.side = direction === 'left' ? 128 : 0;
 
-        me.skin.setPos([0, 256 + me.side]);
-        me.gear.head.setPos([0, 256 + me.side]);
-        me.gear.torso.setPos([0, 256 + me.side]);
-        me.gear.leg.setPos([0, 256 + me.side]);
-        me.primary.setPos([0, 256 + me.side]);
-        me.secondary.setPos([0, 256 + me.side]);
-        me.wounded.setPos([0, 256 + me.side]);
+        me.skin.setPos([0, me.idleOffset + me.side]);
+        me.gear.head.setPos([0, me.idleOffset + me.side]);
+        me.gear.torso.setPos([0, me.idleOffset + me.side]);
+        me.gear.leg.setPos([0, me.idleOffset + me.side]);
+        me.primary.setPos([0, me.idleOffset + me.side]);
+        me.secondary.setPos([0, me.idleOffset + me.side]);
+        me.wounded.setPos([0, me.idleOffset + me.side]);
     },
 
 
@@ -1523,6 +1523,7 @@ rd.define('game.unit', function(cfg) {
     me.arrow = cfg.weaponsCfg[me.weapons.primary].arrow;
     me.bolt = cfg.weaponsCfg[me.weapons.primary].bolt;
     me.bullet = cfg.weaponsCfg[me.weapons.primary].bullet;
+    me.idleOffset = cfg.idleOffset;
 
 
     /**
@@ -1720,6 +1721,26 @@ rd.define('game.combat', (function() {
             x2: defenderStats.pos[0] + 0.5,
             y2: defenderStats.pos[1] + 0.5
         });
+
+        rd.game.animations.play({
+            name: 'smoke1',
+            speed: 30,
+            angle: 0,
+            x1: attackerStats.pos[0] + (attackerStats.side > 0 ? 0 : 1),
+            y1: attackerStats.pos[1] - 0.4,
+            x2: attackerStats.pos[0] + (attackerStats.side > 0 ? 0 : 1),
+            y2: attackerStats.pos[1] - 0.8
+        });
+
+        // rd.game.animations.play({
+        //     name: 'smoke2',
+        //     speed: 30,
+        //     angle: 0,
+        //     x1: attackerStats.pos[0] + (attackerStats.side > 0 ? 0 : 1),
+        //     y1: attackerStats.pos[1] - 0.3,
+        //     x2: attackerStats.pos[0] + (attackerStats.side > 0 ? 0 : 1),
+        //     y2: attackerStats.pos[1] - 0.7
+        // });
     };
 
 
@@ -1763,13 +1784,14 @@ rd.define('game.units', (function() {
         newUnit.weaponsCfg = JSON.parse(JSON.stringify(weaponsCfg));
         newUnit.armorCfg = JSON.parse(JSON.stringify(armorCfg));
         newUnit.racesCfg = JSON.parse(JSON.stringify(racesCfg));
-        newUnit.skin = new rd.utils.sprite(getPreset(newUnit.race + newUnit.skin, side));
-        newUnit.gear.head = new rd.utils.sprite(getPreset('head' + newUnit.gear.head, side));
-        newUnit.gear.torso = new rd.utils.sprite(getPreset('torso' + newUnit.gear.torso, side));
-        newUnit.gear.leg = new rd.utils.sprite(getPreset('leg' + newUnit.gear.leg, side));
-        newUnit.primary = new rd.utils.sprite(getPreset(newUnit.weapons.primary, side));
-        newUnit.secondary = new rd.utils.sprite(getPreset(newUnit.weapons.secondary, side));
-        newUnit.wounded = new rd.utils.sprite(getPreset('wounded', side));
+        newUnit.idleOffset = newUnit.weaponsCfg[newUnit.weapons.primary].bullet ? 512 : 256;
+        newUnit.skin = new rd.utils.sprite(getPreset(newUnit.race + newUnit.skin, side, newUnit.idleOffset));
+        newUnit.gear.head = new rd.utils.sprite(getPreset('head' + newUnit.gear.head, side, newUnit.idleOffset));
+        newUnit.gear.torso = new rd.utils.sprite(getPreset('torso' + newUnit.gear.torso, side, newUnit.idleOffset));
+        newUnit.gear.leg = new rd.utils.sprite(getPreset('leg' + newUnit.gear.leg, side, newUnit.idleOffset));
+        newUnit.primary = new rd.utils.sprite(getPreset(newUnit.weapons.primary, side, newUnit.idleOffset));
+        newUnit.secondary = new rd.utils.sprite(getPreset(newUnit.weapons.secondary, side, newUnit.idleOffset));
+        newUnit.wounded = new rd.utils.sprite(getPreset('wounded', side, newUnit.idleOffset));
         units.push(new rd.game.unit(newUnit));
         rd.game.map.updateMap(cfg.pos[0], cfg.pos[1], 'id-' + unitCount);
         unitCount++;
@@ -1782,10 +1804,10 @@ rd.define('game.units', (function() {
      * @param  {integer} side
      * @return {object}
      */
-    getPreset = function(name, side) {
+    getPreset = function(name, side, idleOffset) {
         return {
             'url': 'img/units/' + name + '.png',
-            'pos': [0, 256 + side],
+            'pos': [0, idleOffset + side],
             'size': [128, 128],
             'speed': 4,
             'frames': [0]
@@ -2019,6 +2041,36 @@ rd.define('game.animations', (function() {
             sprite: new rd.utils.sprite({
                 'url': 'img/animations.png',
                 'pos': [0, 64],
+                'size': [64, 64],
+                'speed': 0,
+                'frames': [0]
+            }),
+            active: true,
+            pos: [],
+            path: [],
+            pathIndex: 0,
+            angle: 0
+        };
+
+        animations.smoke1 = {
+            sprite: new rd.utils.sprite({
+                'url': 'img/animations.png',
+                'pos': [0, 128],
+                'size': [64, 64],
+                'speed': 0,
+                'frames': [0]
+            }),
+            active: true,
+            pos: [],
+            path: [],
+            pathIndex: 0,
+            angle: 0
+        };
+
+        animations.smoke2 = {
+            sprite: new rd.utils.sprite({
+                'url': 'img/animations.png',
+                'pos': [0, 192],
                 'size': [64, 64],
                 'speed': 0,
                 'frames': [0]
@@ -2980,6 +3032,9 @@ rd.define('game.main', (function() {
             getCurrentUnit().resetMoveRange();
         }
 
+        // TODO:
+        // only if dead unit has a higher index
+        //
         if (!unitDied) {
             currentUnit++;
         }

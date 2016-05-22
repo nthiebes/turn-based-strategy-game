@@ -127,6 +127,36 @@ rd.define('game.animations', (function() {
             pathIndex: 0,
             angle: 0
         };
+
+        animations.smoke1 = {
+            sprite: new rd.utils.sprite({
+                'url': 'img/animations.png',
+                'pos': [0, 128],
+                'size': [64, 64],
+                'speed': 0,
+                'frames': [0]
+            }),
+            active: true,
+            pos: [],
+            path: [],
+            pathIndex: 0,
+            angle: 0
+        };
+
+        animations.smoke2 = {
+            sprite: new rd.utils.sprite({
+                'url': 'img/animations.png',
+                'pos': [0, 192],
+                'size': [64, 64],
+                'speed': 0,
+                'frames': [0]
+            }),
+            active: true,
+            pos: [],
+            path: [],
+            pathIndex: 0,
+            angle: 0
+        };
     };
 
 

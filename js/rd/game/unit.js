@@ -20,25 +20,25 @@ rd.define('game.unit', function(cfg) {
             turn(direction);
         }
 
-        me.skin.setPos([0, 256 + me.side]);
+        me.skin.setPos([0, me.idleOffset + me.side]);
         me.skin.setFrames([0]);
 
-        me.gear.head.setPos([0, 256 + me.side]);
+        me.gear.head.setPos([0, me.idleOffset + me.side]);
         me.gear.head.setFrames([0]);
 
-        me.gear.torso.setPos([0, 256 + me.side]);
+        me.gear.torso.setPos([0, me.idleOffset + me.side]);
         me.gear.torso.setFrames([0]);
 
-        me.gear.leg.setPos([0, 256 + me.side]);
+        me.gear.leg.setPos([0, me.idleOffset + me.side]);
         me.gear.leg.setFrames([0]);
 
-        me.primary.setPos([0, 256 + me.side]);
+        me.primary.setPos([0, me.idleOffset + me.side]);
         me.primary.setFrames([0]);
 
-        me.secondary.setPos([0, 256 + me.side]);
+        me.secondary.setPos([0, me.idleOffset + me.side]);
         me.secondary.setFrames([0]);
 
-        me.wounded.setPos([0, 256 + me.side]);
+        me.wounded.setPos([0, me.idleOffset + me.side]);
         me.wounded.setFrames([0]);
 
         // Round new position
@@ -103,7 +103,7 @@ rd.define('game.unit', function(cfg) {
     attack = function() {
         me.animationInProgress = true;
 
-        me.skin.setPos([0, 256 + me.side]);
+        me.skin.setPos([0, me.idleOffset + me.side]);
         if (me.ranged) {
             me.skin.setFrames([0, 2, 2, 2]);
         } else {
@@ -111,7 +111,7 @@ rd.define('game.unit', function(cfg) {
         }
         me.skin.setIndex(0);
         
-        me.gear.head.setPos([0, 256 + me.side]);
+        me.gear.head.setPos([0, me.idleOffset + me.side]);
         if (me.ranged) {
             me.gear.head.setFrames([0, 2, 2, 2]);
         } else {
@@ -119,7 +119,7 @@ rd.define('game.unit', function(cfg) {
         }
         me.gear.head.setIndex(0);
         
-        me.gear.torso.setPos([0, 256 + me.side]);
+        me.gear.torso.setPos([0, me.idleOffset + me.side]);
         if (me.ranged) {
             me.gear.torso.setFrames([0, 2, 2, 2]);
         } else {
@@ -127,7 +127,7 @@ rd.define('game.unit', function(cfg) {
         }
         me.gear.torso.setIndex(0);
         
-        me.gear.leg.setPos([0, 256 + me.side]);
+        me.gear.leg.setPos([0, me.idleOffset + me.side]);
         if (me.ranged) {
             me.gear.leg.setFrames([0, 2, 2, 2]);
         } else {
@@ -135,7 +135,7 @@ rd.define('game.unit', function(cfg) {
         }
         me.gear.leg.setIndex(0);
 
-        me.wounded.setPos([0, 256 + me.side]);
+        me.wounded.setPos([0, me.idleOffset + me.side]);
         if (me.ranged) {
             me.wounded.setFrames([0, 2, 2, 2]);
         } else {
@@ -143,11 +143,11 @@ rd.define('game.unit', function(cfg) {
         }
         me.wounded.setIndex(0);
         
-        me.primary.setPos([0, 256 + me.side]);
+        me.primary.setPos([0, me.idleOffset + me.side]);
         me.primary.setFrames([0, 1, 2, 2]);
         me.primary.setIndex(0);
 
-        me.secondary.setPos([0, 256 + me.side]);
+        me.secondary.setPos([0, me.idleOffset + me.side]);
         me.secondary.setFrames([0, 1, 2, 2]);
         me.secondary.setIndex(0);
     },
@@ -219,13 +219,13 @@ rd.define('game.unit', function(cfg) {
     turn = function(direction) {
         me.side = direction === 'left' ? 128 : 0;
 
-        me.skin.setPos([0, 256 + me.side]);
-        me.gear.head.setPos([0, 256 + me.side]);
-        me.gear.torso.setPos([0, 256 + me.side]);
-        me.gear.leg.setPos([0, 256 + me.side]);
-        me.primary.setPos([0, 256 + me.side]);
-        me.secondary.setPos([0, 256 + me.side]);
-        me.wounded.setPos([0, 256 + me.side]);
+        me.skin.setPos([0, me.idleOffset + me.side]);
+        me.gear.head.setPos([0, me.idleOffset + me.side]);
+        me.gear.torso.setPos([0, me.idleOffset + me.side]);
+        me.gear.leg.setPos([0, me.idleOffset + me.side]);
+        me.primary.setPos([0, me.idleOffset + me.side]);
+        me.secondary.setPos([0, me.idleOffset + me.side]);
+        me.wounded.setPos([0, me.idleOffset + me.side]);
     },
 
 
@@ -338,6 +338,7 @@ rd.define('game.unit', function(cfg) {
     me.arrow = cfg.weaponsCfg[me.weapons.primary].arrow;
     me.bolt = cfg.weaponsCfg[me.weapons.primary].bolt;
     me.bullet = cfg.weaponsCfg[me.weapons.primary].bullet;
+    me.idleOffset = cfg.idleOffset;
 
 
     /**

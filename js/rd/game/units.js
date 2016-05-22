@@ -29,13 +29,14 @@ rd.define('game.units', (function() {
         newUnit.weaponsCfg = JSON.parse(JSON.stringify(weaponsCfg));
         newUnit.armorCfg = JSON.parse(JSON.stringify(armorCfg));
         newUnit.racesCfg = JSON.parse(JSON.stringify(racesCfg));
-        newUnit.skin = new rd.utils.sprite(getPreset(newUnit.race + newUnit.skin, side));
-        newUnit.gear.head = new rd.utils.sprite(getPreset('head' + newUnit.gear.head, side));
-        newUnit.gear.torso = new rd.utils.sprite(getPreset('torso' + newUnit.gear.torso, side));
-        newUnit.gear.leg = new rd.utils.sprite(getPreset('leg' + newUnit.gear.leg, side));
-        newUnit.primary = new rd.utils.sprite(getPreset(newUnit.weapons.primary, side));
-        newUnit.secondary = new rd.utils.sprite(getPreset(newUnit.weapons.secondary, side));
-        newUnit.wounded = new rd.utils.sprite(getPreset('wounded', side));
+        newUnit.idleOffset = newUnit.weaponsCfg[newUnit.weapons.primary].bullet ? 512 : 256;
+        newUnit.skin = new rd.utils.sprite(getPreset(newUnit.race + newUnit.skin, side, newUnit.idleOffset));
+        newUnit.gear.head = new rd.utils.sprite(getPreset('head' + newUnit.gear.head, side, newUnit.idleOffset));
+        newUnit.gear.torso = new rd.utils.sprite(getPreset('torso' + newUnit.gear.torso, side, newUnit.idleOffset));
+        newUnit.gear.leg = new rd.utils.sprite(getPreset('leg' + newUnit.gear.leg, side, newUnit.idleOffset));
+        newUnit.primary = new rd.utils.sprite(getPreset(newUnit.weapons.primary, side, newUnit.idleOffset));
+        newUnit.secondary = new rd.utils.sprite(getPreset(newUnit.weapons.secondary, side, newUnit.idleOffset));
+        newUnit.wounded = new rd.utils.sprite(getPreset('wounded', side, newUnit.idleOffset));
         units.push(new rd.game.unit(newUnit));
         rd.game.map.updateMap(cfg.pos[0], cfg.pos[1], 'id-' + unitCount);
         unitCount++;
@@ -48,10 +49,10 @@ rd.define('game.units', (function() {
      * @param  {integer} side
      * @return {object}
      */
-    getPreset = function(name, side) {
+    getPreset = function(name, side, idleOffset) {
         return {
             'url': 'img/units/' + name + '.png',
-            'pos': [0, 256 + side],
+            'pos': [0, idleOffset + side],
             'size': [128, 128],
             'speed': 4,
             'frames': [0]

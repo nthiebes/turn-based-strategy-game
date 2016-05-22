@@ -172,6 +172,26 @@ rd.define('game.combat', (function() {
             x2: defenderStats.pos[0] + 0.5,
             y2: defenderStats.pos[1] + 0.5
         });
+
+        rd.game.animations.play({
+            name: 'smoke1',
+            speed: 30,
+            angle: 0,
+            x1: attackerStats.pos[0] + (attackerStats.side > 0 ? 0 : 1),
+            y1: attackerStats.pos[1] - 0.4,
+            x2: attackerStats.pos[0] + (attackerStats.side > 0 ? 0 : 1),
+            y2: attackerStats.pos[1] - 0.8
+        });
+
+        // rd.game.animations.play({
+        //     name: 'smoke2',
+        //     speed: 30,
+        //     angle: 0,
+        //     x1: attackerStats.pos[0] + (attackerStats.side > 0 ? 0 : 1),
+        //     y1: attackerStats.pos[1] - 0.3,
+        //     x2: attackerStats.pos[0] + (attackerStats.side > 0 ? 0 : 1),
+        //     y2: attackerStats.pos[1] - 0.7
+        // });
     };
 
 

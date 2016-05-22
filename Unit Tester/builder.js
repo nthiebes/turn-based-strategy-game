@@ -397,6 +397,7 @@ resources.load([
     baseUrl + 'primary3.png',
     baseUrl + 'primary4.png',
     baseUrl + 'primary5.png',
+    baseUrl + 'primary8.png',
     baseUrl + 'secondary0.png',
     baseUrl + 'secondary1.png',
     baseUrl + 'secondary2.png',

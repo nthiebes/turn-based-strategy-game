@@ -244,6 +244,9 @@ rd.define('game.main', (function() {
             getCurrentUnit().resetMoveRange();
         }
 
+        // TODO:
+        // only if dead unit has a higher index
+        //
         if (!unitDied) {
             currentUnit++;
         }
