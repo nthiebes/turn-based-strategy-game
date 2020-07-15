@@ -2,6 +2,9 @@
   "name": "Ridane",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "python -m SimpleHTTPServer 1234"
+  },
   "devDependencies": {
     "grunt": "~0.4.0",
     "grunt-contrib-concat": "~0.3.0",
